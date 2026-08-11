@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Login">
         <activity
+            android:name=".forgetPassword"
+            android:exported="false" />
+        <activity
+            android:name=".signupactivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

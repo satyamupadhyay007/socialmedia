@@ -40,7 +40,7 @@
                 tools:ignore="TextSizeCheck" />
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/newusername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#E7DCDC"
                 android:textColor="@color/black"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:textStyle="bold"
                 android:textSize="20dp"
 
@@ -106,7 +106,7 @@
             />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/gotologin"
         android:layout_width="131dp"
         android:layout_height="wrap_content"
         android:text="Sign Up"
