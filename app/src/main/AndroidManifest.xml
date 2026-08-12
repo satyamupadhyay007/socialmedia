@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Login">
-
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
         <!-- Login / Main Activity -->
         <activity
             android:name=".frontpage"
@@ -24,28 +26,21 @@
             android:exported="false" />
         <activity
             android:name=".login"
-            android:exported="true" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
-
-        <!-- Homepage -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- Homepage -->
         <activity
             android:name=".homepage"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Profile Page -->
+            android:windowSoftInputMode="adjustResize" /> <!-- Profile Page -->
         <activity
             android:name=".profilepage"
             android:exported="false">
-
-
         </activity>
-
     </application>
 
 </manifest>

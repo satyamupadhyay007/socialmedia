@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="@drawable/loginbg"
+    android:background="@drawable/whitebg"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".login">
@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        android:background="@drawable/loginbg"
-        android:backgroundTint="#E7EFE7E7"
+        android:background="@drawable/backgroun"
+        android:backgroundTint="@color/purple"
         app:cardCornerRadius="30dp"
         app:cardElevation="20dp">
 
@@ -49,6 +49,8 @@
                 android:drawablePadding="16dp"
                 android:hint="Username"
                 android:inputType="text"
+                android:textColor="@color/black"
+                android:minHeight="48dp"
                 android:padding="8dp" />
 
             <EditText
@@ -61,6 +63,8 @@
                 android:drawablePadding="16dp"
                 android:hint="Password"
                 android:inputType="textPassword"
+                android:textColor="@color/black"
+                android:minHeight="48dp"
                 android:padding="8dp" />
 
             <Button
@@ -68,12 +72,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:backgroundTint="@color/purple"
+                android:backgroundTint="#3956F2"
                 android:text="Sign in"
                 android:textAlignment="center"
                 android:textSize="30dp"
                 android:textStyle="bold"
-                tools:text=" Sign in" />
+                tools:text=" Sign in"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/forgetPassword"
@@ -98,17 +103,21 @@
         android:id="@+id/signupText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Not Registered..? "
+        android:text="Not Registered..?"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="23sp"
+
         android:textStyle="bold"
+        android:layout_marginBottom="10dp"
             />
 
     <Button
-        android:id="@+id/gotologin"
-        android:layout_width="131dp"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:textSize="20sp" />
+        android:id="@+id/createAccount"
+        android:layout_width="215dp"
+        android:layout_height="60dp"
+        android:backgroundTint="#0E1E7C"
+        android:text="Create account"
+        android:textColor="@color/white"
+        android:textSize="23sp" />
 </LinearLayout>

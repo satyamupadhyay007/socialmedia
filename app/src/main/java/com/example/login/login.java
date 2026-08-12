@@ -33,7 +33,7 @@ public class login extends AppCompatActivity {
         username = findViewById(R.id.newusername);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.loginButton);
-        signupButton = findViewById(R.id.gotologin);
+        signupButton = findViewById(R.id.createAccount);
 
         // LOGIN BUTTON
         loginButton.setOnClickListener(v -> {
