@@ -7,7 +7,7 @@
     android:background="@drawable/loginbg"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".login">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -76,16 +76,16 @@
                 tools:text=" Sign in" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/forgetPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#E7DCDC"
-                android:textColor="@color/black"
                 android:layout_marginTop="10dp"
-                android:textStyle="bold"
+                android:backgroundTint="#E7DCDC"
+                android:text="Forget Password"
+                android:textColor="@color/black"
                 android:textSize="20dp"
 
-                android:text="Forget Password" />
+                android:textStyle="bold" />
 
 
         </LinearLayout>

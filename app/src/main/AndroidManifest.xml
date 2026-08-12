@@ -14,14 +14,23 @@
 
         <!-- Login / Main Activity -->
         <activity
+            android:name=".frontpage"
+            android:exported="false" />
+        <activity
             android:name=".forgetPassword"
             android:exported="false" />
         <activity
             android:name=".signupactivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
-            android:exported="false" />
+            android:name=".login"
+            android:exported="true" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
 
         <!-- Homepage -->
         <activity
@@ -32,13 +41,8 @@
         <!-- Profile Page -->
         <activity
             android:name=".profilepage"
-            android:exported="true">
+            android:exported="false">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
 

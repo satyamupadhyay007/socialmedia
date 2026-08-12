@@ -2,19 +2,29 @@ package com.example.login;
 
 import android.os.Bundle;
 
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.content.*;
+import android.widget.*;
 
 public class signupactivity extends AppCompatActivity {
 
+    Button login;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signupactivity);
+        login = findViewById(R.id.gotologin);
+        login.setOnClickListener(v ->{
+            Intent login = new Intent(signupactivity.this,login.class);
+            startActivity(login);
+
+        });
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.newpassword), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

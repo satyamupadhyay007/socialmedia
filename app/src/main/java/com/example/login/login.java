@@ -10,13 +10,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class login extends AppCompatActivity {
 
     EditText username;
     EditText password;
     Button loginButton;
     Button signupButton;
-
+    Button forgetPasswordButton;
     FirebaseAuth mAuth;
 
     @Override
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         // Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             Toast.makeText(
-                                    MainActivity.this,
+                                    login.this,
                                     "Login successful",
                                     Toast.LENGTH_SHORT
                             ).show();
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
 
                             Toast.makeText(
-                                    MainActivity.this,
+                                    login.this,
                                     "Login failed: " +
                                             task.getException().getMessage(),
                                     Toast.LENGTH_LONG
@@ -83,15 +83,26 @@ public class MainActivity extends AppCompatActivity {
                     });
         });
 
-        // SIGN UP BUTTON
+
         signupButton.setOnClickListener(v -> {
 
-            Intent intent = new Intent(
-                    MainActivity.this,
+            Intent signup = new Intent(
+                    login.this,
                     signupactivity.class
             );
 
-            startActivity(intent);
+            startActivity(signup);
+        });
+
+        forgetPasswordButton=findViewById(R.id.forgetPassword);
+        forgetPasswordButton.setOnClickListener(v -> {
+
+            Intent forgetPass = new Intent(
+                    login.this,
+                    forgetPassword.class
+            );
+
+            startActivity(forgetPass);
         });
     }
 }
