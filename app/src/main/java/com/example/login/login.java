@@ -5,19 +5,24 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class login extends AppCompatActivity {
 
     EditText username;
     EditText password;
+
     Button loginButton;
     Button signupButton;
     Button forgetPasswordButton;
+
     FirebaseAuth mAuth;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,63 +31,218 @@ public class login extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-        // Firebase Authentication
+        // Firebase
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-        // Connect XML views with Java
+        // Connect XML views
         username = findViewById(R.id.newusername);
         password = findViewById(R.id.password);
+
         loginButton = findViewById(R.id.loginButton);
         signupButton = findViewById(R.id.createAccount);
+        forgetPasswordButton = findViewById(R.id.forgetPassword);
 
+
+        // =========================
         // LOGIN BUTTON
+        // =========================
+
         loginButton.setOnClickListener(v -> {
 
-            String email = username.getText().toString().trim();
-            String userPassword = password.getText().toString().trim();
+            String usernameText =
+                    username.getText().toString().trim();
 
-            // Check empty fields
-            if (email.isEmpty()) {
-                username.setError("Enter your email");
+            String userPassword =
+                    password.getText().toString().trim();
+
+
+            // Check username
+            if (usernameText.isEmpty()) {
+
+                username.setError("Enter username");
                 username.requestFocus();
                 return;
             }
 
+
+            // Check password
             if (userPassword.isEmpty()) {
-                password.setError("Enter your password");
+
+                password.setError("Enter password");
                 password.requestFocus();
                 return;
             }
 
-            // Firebase Login
-            mAuth.signInWithEmailAndPassword(email, userPassword)
-                    .addOnCompleteListener(this, task -> {
 
-                        if (task.isSuccessful()) {
+            // Username is case-insensitive
+            String usernameKey =
+                    usernameText.toLowerCase();
+
+
+            /*
+             * Find username inside:
+             *
+             * usernames
+             *      └── username
+             *            └── uid
+             */
+
+            db.collection("usernames")
+                    .document(usernameKey)
+                    .get()
+                    .addOnSuccessListener(usernameDocument -> {
+
+
+                        // Username doesn't exist
+                        if (!usernameDocument.exists()) {
 
                             Toast.makeText(
                                     login.this,
-                                    "Login successful",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-
-                            // HomeActivity baad mein add karenge
-                            // Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                            // startActivity(intent);
-                            // finish();
-
-                        } else {
-
-                            Toast.makeText(
-                                    login.this,
-                                    "Login failed: " +
-                                            task.getException().getMessage(),
+                                    "Username not found",
                                     Toast.LENGTH_LONG
                             ).show();
+
+                            return;
                         }
+
+
+                        // Get Firebase UID
+                        String userId =
+                                usernameDocument.getString("uid");
+
+
+                        if (userId == null || userId.isEmpty()) {
+
+                            Toast.makeText(
+                                    login.this,
+                                    "User data is incomplete",
+                                    Toast.LENGTH_LONG
+                            ).show();
+
+                            return;
+                        }
+
+
+                        /*
+                         * Now get the user's profile:
+                         *
+                         * users
+                         *    └── UID
+                         *          ├── username
+                         *          └── email
+                         */
+
+                        db.collection("users")
+                                .document(userId)
+                                .get()
+                                .addOnSuccessListener(userDocument -> {
+
+
+                                    if (!userDocument.exists()) {
+
+                                        Toast.makeText(
+                                                login.this,
+                                                "User profile not found",
+                                                Toast.LENGTH_LONG
+                                        ).show();
+
+                                        return;
+                                    }
+
+
+                                    // Get email
+                                    String email =
+                                            userDocument.getString("email");
+
+
+                                    if (email == null ||
+                                            email.isEmpty()) {
+
+                                        Toast.makeText(
+                                                login.this,
+                                                "Email not found for this user",
+                                                Toast.LENGTH_LONG
+                                        ).show();
+
+                                        return;
+                                    }
+
+
+                                    /*
+                                     * Now login using:
+                                     *
+                                     * Email + Password
+                                     *
+                                     * Firebase Authentication
+                                     */
+
+                                    mAuth.signInWithEmailAndPassword(
+                                                    email,
+                                                    userPassword
+                                            )
+                                            .addOnCompleteListener(
+                                                    login.this,
+                                                    task -> {
+
+
+                                                        if (task.isSuccessful()) {
+
+                                                            Toast.makeText(
+                                                                    login.this,
+                                                                    "Login successful!",
+                                                                    Toast.LENGTH_SHORT
+                                                            ).show();
+
+
+
+
+                                                             Intent intent =
+                                                              new Intent(
+                                                             login.this,
+                                                              homepage.class
+                                                              );
+
+                                                             startActivity(intent);
+                                                             finish();
+
+
+                                                        } else {
+
+                                                            Toast.makeText(
+                                                                    login.this,
+                                                                    "Incorrect password",
+                                                                    Toast.LENGTH_LONG
+                                                            ).show();
+                                                        }
+                                                    }
+                                            );
+                                })
+                                .addOnFailureListener(e -> {
+
+                                    Toast.makeText(
+                                            login.this,
+                                            "Could not get user data",
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                });
+
+                    })
+                    .addOnFailureListener(e -> {
+
+                        Toast.makeText(
+                                login.this,
+                                "Could not check username: "
+                                        + e.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
                     });
         });
 
+
+        // =========================
+        // CREATE ACCOUNT BUTTON
+        // =========================
 
         signupButton.setOnClickListener(v -> {
 
@@ -94,7 +254,11 @@ public class login extends AppCompatActivity {
             startActivity(signup);
         });
 
-        forgetPasswordButton=findViewById(R.id.forgetPassword);
+
+        // =========================
+        // FORGOT PASSWORD BUTTON
+        // =========================
+
         forgetPasswordButton.setOnClickListener(v -> {
 
             Intent forgetPass = new Intent(

@@ -33,7 +33,7 @@
                 android:id="@+id/signup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sign Up"
+                android:text="Sign In"
                 android:textAlignment="center"
                 android:textColor="#3956F2"
                 android:textSize="36sp"
@@ -41,7 +41,7 @@
                 tools:ignore="TextSizeCheck" />
 
             <EditText
-                android:id="@+id/username1"
+                android:id="@+id/recoveryEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -64,7 +64,7 @@
                 android:drawableLeft="@drawable/account"
                 android:drawablePadding="16dp"
                 android:hint="Password"
-                android:inputType="text"
+                android:inputType="textPassword"
                 android:minHeight="48dp"
                 android:textColor="@color/black"
                 android:padding="8dp" />
