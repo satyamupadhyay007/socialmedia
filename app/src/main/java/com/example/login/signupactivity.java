@@ -1,23 +1,20 @@
 package com.example.login;
 
-import android.content.Intent;
+import android.content.*;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.view.*;
+import android.view.inputmethod.*;
+import android.widget.*;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.graphics.*;
+import androidx.core.view.*;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.*;
+import com.google.firebase.firestore.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class signupactivity extends AppCompatActivity {
 
@@ -28,6 +25,12 @@ public class signupactivity extends AppCompatActivity {
     Button signupButton;
     Button loginButton;
 
+    LinearLayout signupProgress;
+
+    TextView signupDot1;
+    TextView signupDot2;
+    TextView signupDot3;
+
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
@@ -36,215 +39,452 @@ public class signupactivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_signupactivity);
 
-        username = findViewById(R.id.recoveryEmail);
-        password = findViewById(R.id.PASSWORD1);
-        email = findViewById(R.id.email);
+        setContentView(
+                R.layout.activity_signupactivity
+        );
 
-        signupButton = findViewById(R.id.login);
-        loginButton = findViewById(R.id.gotologin);
+        // ==========================================
+        // CONNECT XML
+        // ==========================================
+
+        username = findViewById(
+                R.id.recoveryEmail
+        );
+
+        password = findViewById(
+                R.id.PASSWORD1
+        );
+
+        email = findViewById(
+                R.id.email
+        );
+
+        signupButton = findViewById(
+                R.id.login
+        );
+
+        loginButton = findViewById(
+                R.id.gotologin
+        );
+
+        // ==========================================
+        // PROGRESS LOADER
+        // ==========================================
+
+        signupProgress = findViewById(
+                R.id.signupProgress
+        );
+
+        signupDot1 = findViewById(
+                R.id.signupDot1
+        );
+
+        signupDot2 = findViewById(
+                R.id.signupDot2
+        );
+
+        signupDot3 = findViewById(
+                R.id.signupDot3
+        );
+
+        // ==========================================
+        // FIREBASE
+        // ==========================================
 
         mAuth = FirebaseAuth.getInstance();
+
         db = FirebaseFirestore.getInstance();
 
+        // ==========================================
         // SIGN UP
+        // ==========================================
+
         signupButton.setOnClickListener(v -> {
 
-            String usernameText = username.getText().toString().trim();
-            String passwordText = password.getText().toString().trim();
-            String emailText = email.getText().toString().trim();
+            // Hide keyboard
+            hideKeyboard();
 
-            if (usernameText.isEmpty()) {
-                username.setError("Enter username");
+            // Clear previous errors
+            username.setError(null);
+            password.setError(null);
+            email.setError(null);
+
+            String userIdText =
+                    username
+                            .getText()
+                            .toString()
+                            .trim();
+
+            String passwordText =
+                    password
+                            .getText()
+                            .toString()
+                            .trim();
+
+            String emailText =
+                    email
+                            .getText()
+                            .toString()
+                            .trim();
+
+            // ==========================================
+            // USER ID
+            // ==========================================
+
+            if (userIdText.isEmpty()) {
+
+                username.setError(
+                        "Enter User ID"
+                );
+
                 username.requestFocus();
+
                 return;
             }
+
+            // ==========================================
+            // EMAIL
+            // ==========================================
 
             if (emailText.isEmpty()) {
-                email.setError("Enter email");
+
+                email.setError(
+                        "Enter email"
+                );
+
                 email.requestFocus();
+
                 return;
             }
 
+            // ==========================================
+            // PASSWORD
+            // ==========================================
+
             if (passwordText.isEmpty()) {
-                password.setError("Enter password");
+
+                password.setError(
+                        "Enter password"
+                );
+
                 password.requestFocus();
+
                 return;
             }
 
             if (passwordText.length() < 6) {
-                password.setError("Password must be at least 6 characters");
+
+                password.setError(
+                        "Password must be at least 6 characters"
+                );
+
                 password.requestFocus();
+
                 return;
             }
 
-            /*
-             * Username is case-insensitive.
-             * Example:
-             * Ashish123
-             * ashish123
-             * ASHISH123
-             *
-             * All are treated as the same username.
-             */
-            String usernameKey = usernameText.toLowerCase();
+            // ==========================================
+            // START LOADING
+            // ==========================================
 
-            // First create Firebase Authentication account
-            mAuth.createUserWithEmailAndPassword(emailText, passwordText)
+            startSignupLoading();
+
+            // ==========================================
+            // USER ID CASE INSENSITIVE
+            // ==========================================
+
+            String userIdKey =
+                    userIdText.toLowerCase();
+
+            // ==========================================
+            // CREATE FIREBASE AUTH ACCOUNT
+            // ==========================================
+
+            mAuth.createUserWithEmailAndPassword(
+                            emailText,
+                            passwordText
+                    )
                     .addOnCompleteListener(task -> {
+
+                        // ==================================
+                        // AUTH FAILURE
+                        // ==================================
 
                         if (!task.isSuccessful()) {
 
-                            String error = "Signup failed.";
+                            stopSignupLoading();
+
+                            String error =
+                                    "Signup failed";
 
                             if (task.getException() != null) {
-                                error = "Signup failed: "
-                                        + task.getException().getMessage();
+
+                                String firebaseError =
+                                        task.getException()
+                                                .getMessage();
+
+                                if (firebaseError != null) {
+
+                                    error =
+                                            firebaseError;
+                                }
                             }
-
-                            Toast.makeText(
-                                    signupactivity.this,
-                                    error,
-                                    Toast.LENGTH_LONG
-                            ).show();
-
-                            return;
-                        }
-
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-
-                        if (firebaseUser == null) {
-                            Toast.makeText(
-                                    signupactivity.this,
-                                    "Unable to create user.",
-                                    Toast.LENGTH_LONG
-                            ).show();
-
-                            return;
-                        }
-
-                        String userId = firebaseUser.getUid();
-
-                        /*
-                         * usernames/{usernameKey}
-                         *
-                         * Example:
-                         *
-                         * usernames/
-                         *     ashish123
-                         *          uid: ABC123
-                         */
-                        db.runTransaction(transaction -> {
-
-                            var usernameRef = db.collection("usernames")
-                                    .document(usernameKey);
-
-                            var userRef = db.collection("users")
-                                    .document(userId);
-
-                            // Check whether username already exists
-                            var usernameSnapshot = transaction.get(usernameRef);
-
-                            if (usernameSnapshot.exists()) {
-                                throw new RuntimeException("USERNAME_TAKEN");
-                            }
-
-                            // Reserve username
-                            Map<String, Object> usernameData =
-                                    new HashMap<>();
-
-                            usernameData.put("uid", userId);
-                            usernameData.put("username", usernameText);
-
-                            transaction.set(usernameRef, usernameData);
-
-                            // Save user information
-                            Map<String, Object> userData =
-                                    new HashMap<>();
-
-                            userData.put("username", usernameText);
-                            userData.put("email", emailText);
-
-                            transaction.set(userRef, userData);
-
-                            return null;
-
-                        }).addOnSuccessListener(unused -> {
-
-                            Toast.makeText(
-                                    signupactivity.this,
-                                    "Account created successfully!",
-                                    Toast.LENGTH_LONG
-                            ).show();
-
-                            Intent intent = new Intent(
-                                    signupactivity.this,
-                                    homepage.class
-                            );
-
-
-                            startActivity(intent);
-                            finish();
-
-                        }).addOnFailureListener(e -> {
 
                             /*
-                             * Username already exists.
-                             *
-                             * Delete the Firebase Authentication account
-                             * that we just created because the username
-                             * cannot be used.
+                             * Email already registered
                              */
-                            if ("USERNAME_TAKEN".equals(e.getMessage())) {
 
-                                firebaseUser.delete()
-                                        .addOnCompleteListener(deleteTask -> {
+                            if (error.toLowerCase()
+                                    .contains("email")
+                                    &&
+                                    error.toLowerCase()
+                                            .contains("already")) {
 
-                                            Toast.makeText(
-                                                    signupactivity.this,
-                                                    "Username already taken. Please choose another username.",
-                                                    Toast.LENGTH_LONG
-                                            ).show();
+                                email.setError(
+                                        "Email already registered"
+                                );
 
-                                            username.requestFocus();
-                                        });
+                                email.requestFocus();
 
                             } else {
 
-                                /*
-                                 * Some other Firestore error happened.
-                                 */
-                                Toast.makeText(
-                                        signupactivity.this,
-                                        "Could not save user data: "
-                                                + e.getMessage(),
-                                        Toast.LENGTH_LONG
-                                ).show();
+                                email.setError(
+                                        "Could not create account"
+                                );
+
+                                email.requestFocus();
                             }
-                        });
+
+                            return;
+                        }
+
+                        // ==================================
+                        // GET FIREBASE USER
+                        // ==================================
+
+                        FirebaseUser firebaseUser =
+                                mAuth.getCurrentUser();
+
+                        if (firebaseUser == null) {
+
+                            stopSignupLoading();
+
+                            username.setError(
+                                    "Unable to create user"
+                            );
+
+                            username.requestFocus();
+
+                            return;
+                        }
+
+                        // ==================================
+                        // FIREBASE UID
+                        // ==================================
+
+                        String authUid =
+                                firebaseUser.getUid();
+
+                        // ==========================================
+                        // SAVE FIRESTORE DATA
+                        // ==========================================
+
+                        db.runTransaction(
+                                        transaction -> {
+
+                                            // ==================================
+                                            // USERNAME DOCUMENT
+                                            // ==================================
+
+                                            var usernameRef =
+                                                    db.collection(
+                                                            "usernames"
+                                                    ).document(
+                                                            userIdKey
+                                                    );
+
+                                            // ==================================
+                                            // USER PROFILE DOCUMENT
+                                            // ==================================
+
+                                            var userRef =
+                                                    db.collection(
+                                                            "users"
+                                                    ).document(
+                                                            authUid
+                                                    );
+
+                                            // ==================================
+                                            // CHECK USER ID
+                                            // ==================================
+
+                                            var usernameSnapshot =
+                                                    transaction.get(
+                                                            usernameRef
+                                                    );
+
+                                            if (usernameSnapshot.exists()) {
+
+                                                throw new RuntimeException(
+                                                        "USERNAME_TAKEN"
+                                                );
+                                            }
+
+                                            // ==================================
+                                            // RESERVE USER ID
+                                            // ==================================
+
+                                            Map<String, Object>
+                                                    usernameData =
+                                                    new HashMap<>();
+
+                                            usernameData.put(
+                                                    "uid",
+                                                    authUid
+                                            );
+
+                                            usernameData.put(
+                                                    "userId",
+                                                    userIdText
+                                            );
+
+                                            /*
+                                             * Email is kept only for
+                                             * Firebase authentication.
+                                             */
+
+                                            usernameData.put(
+                                                    "email",
+                                                    emailText
+                                            );
+
+                                            transaction.set(
+                                                    usernameRef,
+                                                    usernameData
+                                            );
+
+                                            // ==================================
+                                            // USER PROFILE
+                                            // ==================================
+
+                                            Map<String, Object>
+                                                    userData =
+                                                    new HashMap<>();
+
+                                            userData.put(
+                                                    "userId",
+                                                    userIdText
+                                            );
+
+                                            /*
+                                             * Name, bio and DP will be
+                                             * added later.
+                                             */
+
+                                            transaction.set(
+                                                    userRef,
+                                                    userData
+                                            );
+
+                                            return null;
+
+                                        }
+                                )
+                                .addOnSuccessListener(
+                                        unused -> {
+
+                                            // Stop loading
+                                            stopSignupLoading();
+
+                                            Intent intent =
+                                                    new Intent(
+                                                            signupactivity.this,
+                                                            homepage.class
+                                                    );
+
+                                            startActivity(intent);
+
+                                            finish();
+                                        }
+                                )
+                                .addOnFailureListener(
+                                        e -> {
+
+                                            // Stop loading
+                                            stopSignupLoading();
+
+                                            // ==================================
+                                            // USER ID ALREADY TAKEN
+                                            // ==================================
+
+                                            if ("USERNAME_TAKEN"
+                                                    .equals(
+                                                            e.getMessage()
+                                                    )) {
+
+                                                /*
+                                                 * Delete Auth account because
+                                                 * User ID is already taken.
+                                                 */
+
+                                                firebaseUser.delete()
+                                                        .addOnCompleteListener(
+                                                                deleteTask -> {
+
+                                                                    username.setError(
+                                                                            "User ID already taken"
+                                                                    );
+
+                                                                    username.requestFocus();
+                                                                }
+                                                        );
+
+                                            } else {
+
+                                                username.setError(
+                                                        "Could not save user data"
+                                                );
+
+                                                username.requestFocus();
+                                            }
+                                        }
+                                );
                     });
         });
 
+        // ==========================================
         // GO TO LOGIN
+        // ==========================================
+
         loginButton.setOnClickListener(v -> {
 
-            Intent intent = new Intent(
-                    signupactivity.this,
-                    login.class
-            );
+            hideKeyboard();
+
+            Intent intent =
+                    new Intent(
+                            signupactivity.this,
+                            login.class
+                    );
 
             startActivity(intent);
         });
 
-        // Edge-to-edge padding
+        // ==========================================
+        // EDGE TO EDGE
+        // ==========================================
+
         ViewCompat.setOnApplyWindowInsetsListener(
-                findViewById(R.id.newpassword),
+                findViewById(
+                        R.id.newpassword
+                ),
                 (v, insets) -> {
 
-                    Insets systemBars = insets.getInsets(
-                            WindowInsetsCompat.Type.systemBars()
-                    );
+                    Insets systemBars =
+                            insets.getInsets(
+                                    WindowInsetsCompat.Type
+                                            .systemBars()
+                            );
 
                     v.setPadding(
                             systemBars.left,
@@ -256,5 +496,126 @@ public class signupactivity extends AppCompatActivity {
                     return insets;
                 }
         );
+    }
+
+    // ==========================================
+    // START SIGNUP LOADING
+    // ==========================================
+
+    private void startSignupLoading() {
+
+        signupButton.setEnabled(false);
+
+        signupButton.setVisibility(
+                View.GONE
+        );
+
+        signupProgress.setVisibility(
+                View.VISIBLE
+        );
+
+        animateSignupDots();
+    }
+
+    // ==========================================
+    // STOP SIGNUP LOADING
+    // ==========================================
+
+    private void stopSignupLoading() {
+
+        signupButton.setEnabled(true);
+
+        signupButton.setVisibility(
+                View.VISIBLE
+        );
+
+        signupProgress.setVisibility(
+                View.GONE
+        );
+    }
+
+    // ==========================================
+    // THREE DOT ANIMATION
+    // ==========================================
+
+    private void animateSignupDots() {
+
+        signupDot1.animate()
+                .alpha(0.3f)
+                .setDuration(300)
+                .withEndAction(() -> {
+
+                    signupDot1.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+
+                })
+                .start();
+
+        signupDot2.animate()
+                .alpha(0.3f)
+                .setStartDelay(200)
+                .setDuration(300)
+                .withEndAction(() -> {
+
+                    signupDot2.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+
+                })
+                .start();
+
+        signupDot3.animate()
+                .alpha(0.3f)
+                .setStartDelay(400)
+                .setDuration(300)
+                .withEndAction(() -> {
+
+                    signupDot3.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+
+                })
+                .start();
+
+        // Repeat animation while loading
+        signupProgress.postDelayed(
+                () -> {
+
+                    if (signupProgress.getVisibility()
+                            == View.VISIBLE) {
+
+                        animateSignupDots();
+                    }
+
+                },
+                900
+        );
+    }
+
+    // ==========================================
+    // HIDE KEYBOARD
+    // ==========================================
+
+    private void hideKeyboard() {
+
+        InputMethodManager imm =
+                (InputMethodManager)
+                        getSystemService(
+                                Context.INPUT_METHOD_SERVICE
+                        );
+
+        if (imm != null &&
+                getCurrentFocus() != null) {
+
+            imm.hideSoftInputFromWindow(
+                    getCurrentFocus()
+                            .getWindowToken(),
+                    0
+            );
+        }
     }
 }

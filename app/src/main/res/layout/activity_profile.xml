@@ -4,26 +4,35 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
+    android:id="@+id/profileRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
+    android:fitsSystemWindows="true"
+
     tools:context=".profilepage">
 
-    <!-- Back Button -->
+
+    <!-- ================================================= -->
+    <!-- TOP BAR -->
+    <!-- ================================================= -->
+
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_arrow_back"
         android:contentDescription="Back"
         android:padding="12dp"
+        android:src="@drawable/ic_arrow_back"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/profileTitle" />
+        app:layout_constraintBottom_toBottomOf="@id/profileTitle"/>
 
-    <!-- Profile Title -->
+
     <TextView
         android:id="@+id/profileTitle"
         android:layout_width="wrap_content"
@@ -33,40 +42,51 @@
         android:textColor="#111111"
         android:textSize="20sp"
         android:textStyle="bold"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Settings Button -->
+
     <ImageButton
         android:id="@+id/btnSettings"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="4dp"
         android:background="@android:color/transparent"
-        android:src="@drawable/ic_settings"
-        android:padding="12dp"
         android:contentDescription="Settings"
+        android:padding="12dp"
+        android:src="@drawable/ic_settings"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/profileTitle" />
+        app:layout_constraintBottom_toBottomOf="@id/profileTitle"/>
 
-    <!-- profile Background -->
+
+    <!-- ================================================= -->
+    <!-- PROFILE PHOTO -->
+    <!-- ================================================= -->
+
     <ImageView
         android:id="@+id/imgProfile"
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/profile_circle"
+        android:contentDescription="Profile Picture"
         android:padding="3dp"
         android:scaleType="centerCrop"
         android:src="@android:drawable/ic_menu_gallery"
-        android:contentDescription="Profile Picture"
+
         app:layout_constraintTop_toBottomOf="@id/profileTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Name -->
+
+    <!-- ================================================= -->
+    <!-- NAME -->
+    <!-- ================================================= -->
+
     <TextView
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
@@ -76,24 +96,34 @@
         android:textColor="#111111"
         android:textSize="20sp"
         android:textStyle="bold"
+
         app:layout_constraintTop_toBottomOf="@id/imgProfile"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Username -->
+
+    <!-- ================================================= -->
+    <!-- USERNAME -->
+    <!-- ================================================= -->
+
     <TextView
         android:id="@+id/tvUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:text="@aayush"
+        android:text="aayush"
         android:textColor="#777777"
         android:textSize="14sp"
+
         app:layout_constraintTop_toBottomOf="@id/tvName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Bio -->
+
+    <!-- ================================================= -->
+    <!-- BIO -->
+    <!-- ================================================= -->
+
     <TextView
         android:id="@+id/tvBio"
         android:layout_width="0dp"
@@ -105,22 +135,33 @@
         android:text="Creating memories and sharing moments ✨"
         android:textColor="#555555"
         android:textSize="14sp"
+
         app:layout_constraintTop_toBottomOf="@id/tvUsername"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <!-- ================================================= -->
+    <!-- STATS -->
+    <!-- ================================================= -->
 
     <LinearLayout
         android:id="@+id/statsLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="22dp"
-        android:orientation="horizontal"
+        android:layout_marginEnd="12dp"
         android:gravity="center"
+        android:orientation="horizontal"
+
         app:layout_constraintTop_toBottomOf="@id/tvBio"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Posts -->
+
+        <!-- POSTS -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -129,6 +170,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvPostCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="24"
@@ -146,7 +188,9 @@
 
         </LinearLayout>
 
-        <!-- Followers -->
+
+        <!-- FOLLOWERS -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -155,6 +199,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvFollowerCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1.2K"
@@ -172,7 +217,9 @@
 
         </LinearLayout>
 
-        <!-- Following -->
+
+        <!-- FOLLOWING -->
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -181,6 +228,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tvFollowingCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="356"
@@ -200,87 +248,212 @@
 
     </LinearLayout>
 
+
+    <!-- ================================================= -->
+    <!-- EDIT PROFILE -->
+    <!-- ================================================= -->
+
     <Button
         android:id="@+id/btnEditProfile"
         android:layout_width="0dp"
-        android:layout_height="46dp"
+        android:layout_height="48dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="30dp"
         android:background="@drawable/edit_profile_bg"
+        android:elevation="0dp"
+        android:stateListAnimator="@null"
         android:text="Edit Profile"
         android:textAllCaps="false"
         android:textColor="#111111"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:stateListAnimator="@null"
-        android:elevation="0dp"
+
         app:layout_constraintTop_toBottomOf="@id/statsLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+
+    <!-- ================================================= -->
+    <!-- TABS -->
+    <!-- ================================================= -->
+
     <LinearLayout
         android:id="@+id/tabsLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="52dp"
         android:layout_marginTop="12dp"
-        android:orientation="horizontal"
         android:gravity="center"
+        android:orientation="horizontal"
+
         app:layout_constraintTop_toBottomOf="@id/btnEditProfile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Posts -->
+
         <TextView
             android:id="@+id/tabPosts"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center"
             android:text="Posts"
             android:textColor="#111111"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:clickable="true"
-            android:focusable="true"/>
+            android:textStyle="bold"/>
 
-        <!-- Reels -->
+
         <TextView
             android:id="@+id/tabReels"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center"
             android:text="Reels"
             android:textColor="#777777"
-            android:textSize="14sp"
-            android:clickable="true"
-            android:focusable="true"/>
+            android:textSize="14sp"/>
 
-        <!-- Tagged -->
+
         <TextView
             android:id="@+id/tabTagged"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center"
             android:text="Tagged"
             android:textColor="#777777"
-            android:textSize="14sp"
-            android:clickable="true"
-            android:focusable="true"/>
+            android:textSize="14sp"/>
 
     </LinearLayout>
 
+
+    <!-- ================================================= -->
+    <!-- POSTS GRID -->
+    <!-- ================================================= -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerPosts"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="2dp"
         android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="10dp"
+        android:scrollbars="none"
+
         app:layout_constraintTop_toBottomOf="@id/tabsLayout"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+
+    <!-- ================================================= -->
+    <!-- BOTTOM NAVIGATION -->
+    <!-- ================================================= -->
+
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="68dp"
+        android:background="#FFFFFF"
+        android:elevation="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <!-- HOME -->
+
+        <ImageButton
+            android:id="@+id/btnHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Home"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:scaleX="1.25"
+            android:scaleY="1.25"
+            android:src="@drawable/home"
+            app:tint="#111111"/>
+
+
+        <!-- CREATE -->
+
+        <ImageButton
+            android:id="@+id/btnCreate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Create"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:scaleX="1.25"
+            android:scaleY="1.25"
+            android:src="@drawable/play"
+            app:tint="#111111"/>
+
+
+        <!-- MESSAGE -->
+
+        <ImageButton
+            android:id="@+id/btnMessage"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Messages"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:scaleX="1.25"
+            android:scaleY="1.25"
+            android:src="@drawable/chat"
+            app:tint="#111111"/>
+
+
+        <!-- SEARCH -->
+
+        <ImageButton
+            android:id="@+id/btnSearch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Search"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:scaleX="1.25"
+            android:scaleY="1.25"
+            android:src="@drawable/search"
+            app:tint="#111111"/>
+
+
+        <!-- PROFILE -->
+
+        <ImageButton
+            android:id="@+id/btnProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="Profile"
+            android:padding="0dp"
+            android:scaleType="centerInside"
+            android:scaleX="1.25"
+            android:scaleY="1.25"
+            android:src="@drawable/account"
+            app:tint="#111111"/>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,31 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="30dp"
-    android:background="@drawable/whitebg">
 
-    <TextView
-        android:id="@+id/welcomeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login Successful!"
-        android:textColor="@color/black"
-        android:textSize="40sp"
-        android:textStyle="bold" />
+    android:background="@color/black"
 
-    <TextView
-        android:id="@+id/usernameText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Welcome!"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textColor="@color/black" />
+    tools:context=".homepage">
 
-</LinearLayout>
+
+    <!-- ================================================= -->
+    <!-- MAIN APP CONTAINER -->
+    <!-- ================================================= -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/appContainer"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="@color/black"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <!-- ================================================= -->
+        <!-- FRENZO -->
+        <!-- ================================================= -->
+
+        <TextView
+            android:id="@+id/tvLogo"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="12dp"
+
+            android:fontFamily="sans-serif"
+
+            android:text="Frenzo"
+
+            android:textColor="@color/white"
+            android:textSize="27sp"
+            android:textStyle="bold"
+
+            android:includeFontPadding="false"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <!-- ================================================= -->
+        <!-- HEADER LINE -->
+        <!-- ================================================= -->
+
+        <View
+            android:id="@+id/headerLine"
+
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+
+            android:layout_marginTop="9dp"
+
+            android:background="#E4E4E4"
+
+            app:layout_constraintTop_toBottomOf="@id/tvLogo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <!-- ================================================= -->
+        <!-- STORIES -->
+        <!-- ================================================= -->
+
+        <HorizontalScrollView
+            android:id="@+id/storyScroll"
+            android:layout_width="0dp"
+            android:layout_height="104dp"
+            android:contentDescription="Stories"
+            android:fillViewport="false"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerLine">
+
+
+            <!-- Dynamic stories will be added by Java -->
+
+            <LinearLayout
+                android:id="@+id/storyRow"
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+
+                android:gravity="center_vertical"
+
+                android:orientation="horizontal"
+
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp" />
+
+        </HorizontalScrollView>
+
+
+        <!-- ================================================= -->
+        <!-- POSTS -->
+        <!-- ================================================= -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/postRecyclerView"
+
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:clipToPadding="false"
+
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="14dp"
+
+            android:overScrollMode="never"
+
+            android:contentDescription="Posts"
+
+            app:layout_constraintTop_toBottomOf="@id/storyScroll"
+            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <!-- ================================================= -->
+        <!-- BOTTOM NAVIGATION -->
+        <!-- ================================================= -->
+
+        <LinearLayout
+            android:id="@+id/bottomNavigation"
+            android:layout_width="0dp"
+            android:layout_height="68dp"
+            android:background="#000000"
+            android:elevation="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/btnHome"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Home"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/home"
+                app:tint="#FFFFFF" />
+
+            <ImageButton
+                android:id="@+id/btnCreate"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Create"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/play"
+                app:tint="#FFFFFF" />
+
+            <ImageButton
+                android:id="@+id/btnMessage"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Messages"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/chat"
+                app:tint="#FFFFFF" />
+
+            <ImageButton
+                android:id="@+id/btnSearch"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Search"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/search"
+                app:tint="#FFFFFF" />
+
+            <ImageButton
+                android:id="@+id/btnProfile"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Profile"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/account"
+                app:tint="#FFFFFF" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,11 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-
             android:background="@color/white"
             android:orientation="vertical"
             android:padding="24dp">
-
 
             <TextView
                 android:id="@+id/LoginText"
@@ -59,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/custom_edit_text"
-                android:drawableLeft="@drawable/account"
+                android:drawableLeft="@drawable/password"
                 android:drawablePadding="16dp"
                 android:hint="Password"
                 android:inputType="textPassword"
@@ -67,6 +65,7 @@
                 android:minHeight="48dp"
                 android:padding="8dp" />
 
+            <!-- SIGN IN BUTTON -->
             <Button
                 android:id="@+id/loginButton"
                 android:layout_width="match_parent"
@@ -78,7 +77,43 @@
                 android:textSize="30dp"
                 android:textStyle="bold"
                 tools:text=" Sign in"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white" />
+
+            <!-- THREE DOT LOADER -->
+            <LinearLayout
+                android:id="@+id/loginProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/dot1"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/progress_dot"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/dot2"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/progress_dot"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/dot3"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/progress_dot"
+                    android:text="" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/forgetPassword"
@@ -89,13 +124,9 @@
                 android:text="Forget Password"
                 android:textColor="@color/black"
                 android:textSize="20dp"
-
                 android:textStyle="bold" />
 
-
         </LinearLayout>
-
-
 
     </androidx.cardview.widget.CardView>
 
@@ -103,14 +134,12 @@
         android:id="@+id/signupText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:text="Not Registered..?"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="23sp"
-
-        android:textStyle="bold"
-        android:layout_marginBottom="10dp"
-            />
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/createAccount"
@@ -120,4 +149,5 @@
         android:text="Create account"
         android:textColor="@color/white"
         android:textSize="23sp" />
+
 </LinearLayout>

@@ -1,24 +1,32 @@
 package com.example.login;
 
-import android.content.Intent;
+import android.content.*;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.view.*;
+import android.view.inputmethod.*;
+import android.widget.*;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.graphics.*;
+import androidx.core.view.*;
 
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.*;
 
 public class forgetPassword extends AppCompatActivity {
 
     EditText recoveryEmail;
+
     Button recoverButton;
     Button loginButton;
+
+    LinearLayout recoveryProgress;
+
+    TextView recoveryDot1;
+    TextView recoveryDot2;
+    TextView recoveryDot3;
+
+    TextView recoveryMessage;
 
     FirebaseAuth mAuth;
 
@@ -27,97 +35,200 @@ public class forgetPassword extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_forget_password);
 
-        // Firebase
+        setContentView(
+                R.layout.activity_forget_password
+        );
+
+        // ==========================================
+        // FIREBASE
+        // ==========================================
+
         mAuth = FirebaseAuth.getInstance();
 
-        // Connect XML views
-        recoveryEmail = findViewById(R.id.recoveryEmail);
-        recoverButton = findViewById(R.id.recover);
-        loginButton = findViewById(R.id.gotologin);
+        // ==========================================
+        // CONNECT XML
+        // ==========================================
+
+        recoveryEmail = findViewById(
+                R.id.recoveryEmail
+        );
+
+        recoverButton = findViewById(
+                R.id.recover
+        );
+
+        loginButton = findViewById(
+                R.id.gotologin
+        );
+
+        // ==========================================
+        // PROGRESS LOADER
+        // ==========================================
+
+        recoveryProgress = findViewById(
+                R.id.recoveryProgress
+        );
+
+        recoveryDot1 = findViewById(
+                R.id.recoveryDot1
+        );
+
+        recoveryDot2 = findViewById(
+                R.id.recoveryDot2
+        );
+
+        recoveryDot3 = findViewById(
+                R.id.recoveryDot3
+        );
+
+        // ==========================================
+        // MESSAGE
+        // ==========================================
+
+        recoveryMessage = findViewById(
+                R.id.recoveryMessage
+        );
 
 
-        // =========================
+        // ==========================================
         // RECOVER PASSWORD
-        // =========================
+        // ==========================================
 
         recoverButton.setOnClickListener(v -> {
 
-            String email = recoveryEmail.getText()
-                    .toString()
-                    .trim();
+            // Hide keyboard
+            hideKeyboard();
 
-            // Check empty email
+            // Clear old error/message
+            recoveryEmail.setError(null);
+
+            recoveryMessage.setText("");
+
+            recoveryMessage.setVisibility(
+                    View.GONE
+            );
+
+            String email =
+                    recoveryEmail
+                            .getText()
+                            .toString()
+                            .trim();
+
+
+            // ==========================================
+            // EMPTY EMAIL
+            // ==========================================
+
             if (email.isEmpty()) {
 
-                recoveryEmail.setError("Enter your registered email");
+                recoveryEmail.setError(
+                        "Enter your registered email"
+                );
+
                 recoveryEmail.requestFocus();
+
                 return;
             }
 
-            // Basic email validation
+
+            // ==========================================
+            // EMAIL VALIDATION
+            // ==========================================
+
             if (!android.util.Patterns.EMAIL_ADDRESS
                     .matcher(email)
                     .matches()) {
 
-                recoveryEmail.setError("Enter a valid email");
+                recoveryEmail.setError(
+                        "Enter a valid email"
+                );
+
                 recoveryEmail.requestFocus();
+
                 return;
             }
 
 
-            // Send password reset email
+            // ==========================================
+            // START LOADING
+            // ==========================================
+
+            startRecoveryLoading();
+
+
+            // ==========================================
+            // SEND PASSWORD RESET EMAIL
+            // ==========================================
+
             mAuth.sendPasswordResetEmail(email)
                     .addOnCompleteListener(task -> {
 
+                        // ==================================
+                        // SUCCESS
+                        // ==================================
+
                         if (task.isSuccessful()) {
 
-                            Toast.makeText(
-                                    forgetPassword.this,
-                                    "Password reset email sent. Check your email.",
-                                    Toast.LENGTH_LONG
-                            ).show();
+                            stopRecoveryLoading();
+
+                            showMessage(
+                                    "Password reset link has been sent to your email."
+                            );
 
                         } else {
+
+                            stopRecoveryLoading();
 
                             String errorMessage =
                                     "Unable to send reset email.";
 
                             if (task.getException() != null) {
-                                errorMessage =
-                                        task.getException().getMessage();
+
+                                String firebaseError =
+                                        task.getException()
+                                                .getMessage();
+
+                                if (firebaseError != null &&
+                                        !firebaseError.isEmpty()) {
+
+                                    errorMessage =
+                                            firebaseError;
+                                }
                             }
 
-                            Toast.makeText(
-                                    forgetPassword.this,
-                                    errorMessage,
-                                    Toast.LENGTH_LONG
-                            ).show();
+                            showMessage(
+                                    errorMessage
+                            );
                         }
                     });
         });
 
 
-        // =========================
+        // ==========================================
         // BACK TO LOGIN
-        // =========================
+        // ==========================================
 
         loginButton.setOnClickListener(v -> {
 
-            Intent loginIntent = new Intent(
-                    forgetPassword.this,
-                    login.class
-            );
+            // Hide keyboard
+            hideKeyboard();
+
+            Intent loginIntent =
+                    new Intent(
+                            forgetPassword.this,
+                            login.class
+                    );
 
             startActivity(loginIntent);
+
             finish();
         });
 
 
-        // =========================
+        // ==========================================
         // EDGE TO EDGE
-        // =========================
+        // ==========================================
 
         ViewCompat.setOnApplyWindowInsetsListener(
                 findViewById(R.id.main),
@@ -125,7 +236,8 @@ public class forgetPassword extends AppCompatActivity {
 
                     Insets systemBars =
                             insets.getInsets(
-                                    WindowInsetsCompat.Type.systemBars()
+                                    WindowInsetsCompat.Type
+                                            .systemBars()
                             );
 
                     v.setPadding(
@@ -138,5 +250,150 @@ public class forgetPassword extends AppCompatActivity {
                     return insets;
                 }
         );
+    }
+
+
+    // ==========================================
+    // START RECOVERY LOADING
+    // ==========================================
+
+    private void startRecoveryLoading() {
+
+        recoverButton.setEnabled(false);
+
+        recoverButton.setVisibility(
+                View.GONE
+        );
+
+        recoveryProgress.setVisibility(
+                View.VISIBLE
+        );
+
+        animateRecoveryDots();
+    }
+
+
+    // ==========================================
+    // STOP RECOVERY LOADING
+    // ==========================================
+
+    private void stopRecoveryLoading() {
+
+        recoverButton.setEnabled(true);
+
+        recoverButton.setVisibility(
+                View.VISIBLE
+        );
+
+        recoveryProgress.setVisibility(
+                View.GONE
+        );
+    }
+
+
+    // ==========================================
+    // THREE DOT ANIMATION
+    // ==========================================
+
+    private void animateRecoveryDots() {
+
+        recoveryDot1.animate()
+                .alpha(0.3f)
+                .setDuration(300)
+                .withEndAction(() -> {
+
+                    recoveryDot1.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+
+                })
+                .start();
+
+
+        recoveryDot2.animate()
+                .alpha(0.3f)
+                .setStartDelay(200)
+                .setDuration(300)
+                .withEndAction(() -> {
+
+                    recoveryDot2.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+
+                })
+                .start();
+
+
+        recoveryDot3.animate()
+                .alpha(0.3f)
+                .setStartDelay(400)
+                .setDuration(300)
+                .withEndAction(() -> {
+
+                    recoveryDot3.animate()
+                            .alpha(1f)
+                            .setDuration(300)
+                            .start();
+
+                })
+                .start();
+
+
+        // Repeat while loading
+        recoveryProgress.postDelayed(
+                () -> {
+
+                    if (recoveryProgress.getVisibility()
+                            == View.VISIBLE) {
+
+                        animateRecoveryDots();
+                    }
+
+                },
+                900
+        );
+    }
+
+
+    // ==========================================
+    // SHOW SCREEN MESSAGE
+    // ==========================================
+
+    private void showMessage(
+            String message) {
+
+        recoveryMessage.setText(
+                message
+        );
+
+        recoveryMessage.setVisibility(
+                View.VISIBLE
+        );
+    }
+
+
+    // ==========================================
+    // HIDE KEYBOARD
+    // ==========================================
+
+    private void hideKeyboard() {
+
+        InputMethodManager imm =
+                (InputMethodManager)
+                        getSystemService(
+                                Context.INPUT_METHOD_SERVICE
+                        );
+
+        if (imm != null &&
+                getCurrentFocus() != null) {
+
+            imm.hideSoftInputFromWindow(
+                    getCurrentFocus()
+                            .getWindowToken(),
+                    0
+            );
+        }
     }
 }

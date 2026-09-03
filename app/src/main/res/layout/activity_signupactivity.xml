@@ -23,7 +23,6 @@
             android:id="@+id/signin"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:layout_gravity="center_horizontal"
             android:background="@color/white"
             android:orientation="vertical"
@@ -53,7 +52,9 @@
                 android:minHeight="48dp"
                 android:padding="8dp"
                 android:textColor="@color/black"
-                tools:ignore="TouchTargetSizeCheck,TouchTargetSizeCheck" />
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <!-- PASSWORD -->
 
             <EditText
                 android:id="@+id/PASSWORD1"
@@ -61,13 +62,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/custom_edit_text"
-                android:drawableLeft="@drawable/account"
+                android:drawableLeft="@drawable/password"
                 android:drawablePadding="16dp"
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:minHeight="48dp"
                 android:textColor="@color/black"
                 android:padding="8dp" />
+
+            <!-- EMAIL -->
 
             <EditText
                 android:id="@+id/email"
@@ -78,10 +81,12 @@
                 android:drawableLeft="@drawable/account"
                 android:drawablePadding="16dp"
                 android:hint="Email"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:minHeight="48dp"
                 android:textColor="@color/black"
                 android:padding="8dp" />
+
+            <!-- SIGN UP BUTTON -->
 
             <Button
                 android:id="@+id/login"
@@ -95,6 +100,43 @@
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 tools:text=" Sign In" />
+
+            <!-- THREE DOT PROGRESS -->
+
+            <LinearLayout
+                android:id="@+id/signupProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/signupDot1"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/progress_dot"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/signupDot2"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/progress_dot"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/signupDot3"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/progress_dot"
+                    android:text="" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -119,8 +161,6 @@
         android:textSize="25sp"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:backgroundTint="#0E1E7C"
-
-        />
+        android:backgroundTint="#0E1E7C" />
 
 </LinearLayout>
