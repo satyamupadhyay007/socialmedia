@@ -4,432 +4,157 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#202124">
+
+    android:background="@color/black"
+
+    tools:context=".homepage">
 
 
-    <!-- ================================= -->
-    <!-- MAIN APP CONTAINER                -->
-    <!-- ================================= -->
+    <!-- ================================================= -->
+    <!-- MAIN APP CONTAINER -->
+    <!-- ================================================= -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/appContainer"
-        android:layout_width="376dp"
-        android:layout_height="686dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="8dp"
-        android:background="#F9F9FD"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="@color/black"
+
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
 
-        <!-- ================================= -->
-        <!-- HEADER                            -->
-        <!-- ================================= -->
+        <!-- ================================================= -->
+        <!-- FRENZO -->
+        <!-- ================================================= -->
 
         <TextView
             android:id="@+id/tvLogo"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_marginTop="10dp"
-            android:fontFamily="sans-serif-black"
+
+            android:layout_marginTop="12dp"
+
+            android:fontFamily="sans-serif"
+
             android:text="Frenzo"
-            android:textColor="#111111"
-            android:textSize="26sp"
-            android:textStyle="bold|italic"
+
+            android:textColor="@color/white"
+            android:textSize="27sp"
+            android:textStyle="bold"
+
+            android:includeFontPadding="false"
+
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
-        <!-- MESSAGE BUTTON -->
-
-        <ImageButton
-            android:id="@+id/btnMessage"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="7dp"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:contentDescription="@string/message"
-            android:focusable="true"
-            android:scaleType="center"
-            android:src="@drawable/ic_message"
-            app:layout_constraintBottom_toBottomOf="@id/tvLogo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvLogo" />
-
-
+        <!-- ================================================= -->
         <!-- HEADER LINE -->
+        <!-- ================================================= -->
 
         <View
             android:id="@+id/headerLine"
+
             android:layout_width="0dp"
             android:layout_height="1dp"
+
             android:layout_marginTop="9dp"
-            android:background="#DDDEE5"
-            app:layout_constraintEnd_toEndOf="parent"
+
+            android:background="#E4E4E4"
+
+            app:layout_constraintTop_toBottomOf="@id/tvLogo"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvLogo" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
-        <!-- ================================= -->
-        <!-- LEFT SIDEBAR                      -->
-        <!-- ================================= -->
+        <!-- ================================================= -->
+        <!-- STORIES -->
+        <!-- ================================================= -->
 
-        <LinearLayout
-            android:id="@+id/sidebar"
-            android:layout_width="67dp"
-            android:layout_height="0dp"
-            android:background="#F9F9FD"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:paddingTop="14dp"
-            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/headerLine">
-
-
-            <!-- ADD IMAGE BUTTON -->
-
-            <ImageButton
-                android:id="@+id/btnYourstory"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="#F9F9FD"
-                android:clickable="true"
-                android:contentDescription="@string/add_story"
-                android:focusable="true"
-                android:padding="8dp"
-                android:scaleType="center"
-                android:src="@android:drawable/ic_input_add" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Your story"
-                android:textColor="#333333"
-                android:textSize="10sp" />
-
-
-            <!-- Satyam -->
-
-            <ImageView
-                android:id="@+id/btnsatyam"
-                android:layout_width="55dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="15dp"
-                android:background="#DDDDDD"
-                android:clickable="true"
-                android:contentDescription="Satyam"
-                android:focusable="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/satyam" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Satyam7"
-                android:textColor="#222222"
-                android:textSize="10sp" />
-
-
-            <!-- ayush -->
-
-            <ImageView
-                android:id="@+id/btnDavid"
-                android:layout_width="55dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="15dp"
-                android:background="#DDDDDD"
-                android:clickable="true"
-                android:contentDescription="Ayush"
-                android:focusable="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ayush" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ayush_07"
-                android:textColor="#222222"
-                android:textSize="10sp" />
-
-
-        </LinearLayout>
-
-
-        <!-- ================================= -->
-        <!-- POST SCROLL AREA                  -->
-        <!-- ================================= -->
-
-        <ScrollView
-            android:id="@+id/postScroll"
+        <HorizontalScrollView
+            android:id="@+id/storyScroll"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:fillViewport="true"
+            android:layout_height="104dp"
+            android:contentDescription="Stories"
+            android:fillViewport="false"
+            android:overScrollMode="never"
             android:scrollbars="none"
-            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/sidebar"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/headerLine">
 
+
+            <!-- Dynamic stories will be added by Java -->
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="12dp"
-                android:paddingTop="14dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="20dp">
+                android:id="@+id/storyRow"
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+
+                android:gravity="center_vertical"
+
+                android:orientation="horizontal"
+
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp" />
+
+        </HorizontalScrollView>
 
 
-                <!-- ================================= -->
-                <!-- POST CARD                         -->
-                <!-- ================================= -->
+        <!-- ================================================= -->
+        <!-- POSTS -->
+        <!-- ================================================= -->
 
-                <LinearLayout
-                    android:id="@+id/postCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:orientation="vertical"
-                    android:paddingBottom="13dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/postRecyclerView"
 
+            android:layout_width="0dp"
+            android:layout_height="0dp"
 
-                    <!-- PROFILE ROW -->
+            android:clipToPadding="false"
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="58dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="14dp"
 
+            android:overScrollMode="never"
 
-                        <!-- PROFILE IMAGE -->
+            android:contentDescription="Posts"
 
-                        <ImageView
-                            android:id="@+id/profileImage"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="#DDDDDD"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ayush" />
-
-                        <!-- NAME + TIME -->
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="9dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+            app:layout_constraintTop_toBottomOf="@id/storyScroll"
+            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
-                            <TextView
-                                android:id="@+id/tvSarah"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Ayush_07"
-                                android:textColor="#111111"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
-
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="2 hours ago"
-                                android:textColor="#777777"
-                                android:textSize="9sp" />
-
-                        </LinearLayout>
-
-
-                        <!-- THREE DOT -->
-
-                        <TextView
-                            android:id="@+id/btnMore"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:text="•••"
-                            android:textColor="#555555"
-                            android:textSize="13sp" />
-
-                    </LinearLayout>
-
-
-                    <!-- POST IMAGE -->
-
-                    <ImageView
-                        android:id="@+id/postImage"
-                        android:layout_width="match_parent"
-                        android:layout_height="275dp"
-                        android:background="#E4E4E0"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_menu_gallery" />
-
-
-                    <!-- ACTION ROW -->
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageButton
-                            android:id="@+id/btnLike"
-                            android:layout_width="70dp"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:contentDescription="@string/like"
-                            android:focusable="true"
-                            android:padding="8dp"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_heart"
-                            app:tint="@color/like_tint" />
-
-                        <!-- COMMENT IMAGE BUTTON -->
-
-                        <ImageButton
-                            android:id="@+id/btnComment"
-                            android:layout_width="65dp"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:contentDescription="@string/comment"
-                            android:focusable="true"
-                            android:padding="8dp"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_comment" />
-
-                        <!-- SHARE BUTTON -->
-
-                        <!-- SHARE IMAGE BUTTON -->
-
-                        <ImageButton
-                            android:id="@+id/btnShare"
-                            android:layout_width="48dp"
-                            android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:contentDescription="@string/share"
-                            android:focusable="true"
-                            android:padding="8dp"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_share" />
-
-                        <!-- BOOKMARK -->
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_weight="1" />
-
-                        <ImageButton
-                            android:id="@+id/btnBookmark"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:contentDescription="@string/bookmark"
-                            android:focusable="true"
-                            android:padding="8dp"
-                            android:scaleType="center"
-                            android:src="@drawable/ic_bookmark"
-                            app:tint="#555555" />
-
-                    </LinearLayout>
-
-
-                    <!-- CAPTION -->
-
-                    <TextView
-                        android:id="@+id/tvCaption"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="13dp"
-                        android:layout_marginEnd="13dp"
-                        android:lineSpacingExtra="2dp"
-                        android:text=" Finding peace in minimalist spaces. The light today was absolutely perfect for capturing these clean lines. 🤍"
-                        android:textColor="#333333"
-                        android:textSize="12sp" />
-
-
-                    <!-- HASHTAGS -->
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="13dp"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="28dp"
-                            android:background="#F1F1F5"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:text="#architecture"
-                            android:textColor="#777777"
-                            android:textSize="9sp"
-                            tools:ignore="TextContrastCheck" />
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="28dp"
-                            android:layout_marginStart="6dp"
-                            android:background="#F1F1F5"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:text="#minimalism"
-                            android:textColor="#616161"
-                            android:textSize="9sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </ScrollView>
-
-
-        <!-- ================================= -->
-        <!-- BOTTOM NAVIGATION                 -->
-        <!-- ================================= -->
+        <!-- ================================================= -->
+        <!-- BOTTOM NAVIGATION -->
+        <!-- ================================================= -->
 
         <LinearLayout
             android:id="@+id/bottomNavigation"
             android:layout_width="0dp"
-            android:layout_height="58dp"
-            android:background="#FAFAFE"
+            android:layout_height="68dp"
+            android:background="#000000"
             android:elevation="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-
-            <!-- HOME -->
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <ImageButton
                 android:id="@+id/btnHome"
@@ -437,14 +162,41 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:clickable="true"
-                android:contentDescription="@string/home"
-                android:focusable="true"
-                android:scaleType="center"
-                android:src="@drawable/ic_home" />
+                android:contentDescription="Home"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/home"
+                app:tint="#FFFFFF" />
 
+            <ImageButton
+                android:id="@+id/btnCreate"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Create"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/play"
+                app:tint="#FFFFFF" />
 
-            <!-- SEARCH -->
+            <ImageButton
+                android:id="@+id/btnMessage"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Messages"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/chat"
+                app:tint="#FFFFFF" />
 
             <ImageButton
                 android:id="@+id/btnSearch"
@@ -452,38 +204,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:clickable="true"
-                android:contentDescription="@string/search"
-                android:focusable="true"
-                android:scaleType="center"
-                android:src="@drawable/ic_search" />
-
-
-            <!-- CENTER CREATE BUTTON -->
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center">
-
-
-                <ImageButton
-                    android:id="@+id/btnCreate"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:contentDescription="@string/create"
-                    android:focusable="true"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_play" />
-
-
-            </FrameLayout>
-
-
-            <!-- PROFILE -->
+                android:contentDescription="Search"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/search"
+                app:tint="#FFFFFF" />
 
             <ImageButton
                 android:id="@+id/btnProfile"
@@ -491,26 +218,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:clickable="true"
-                android:contentDescription="@string/profile"
-                android:focusable="true"
-                android:scaleType="center"
-                android:src="@drawable/ic_profile" />
-
-
-            <!-- SETTINGS -->
-
-            <ImageButton
-                android:id="@+id/btnSettings"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:clickable="true"
-                android:contentDescription="@string/settings"
-                android:focusable="true"
-                android:scaleType="center"
-                android:src="@drawable/ic_settings" />
+                android:contentDescription="Profile"
+                android:padding="0dp"
+                android:scaleType="centerInside"
+                android:scaleX="1.25"
+                android:scaleY="1.25"
+                android:src="@drawable/account"
+                app:tint="#FFFFFF" />
 
         </LinearLayout>
 

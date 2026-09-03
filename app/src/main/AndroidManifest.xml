@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+
     <application
+        android:name=".FrenzoApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,19 +14,112 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Login">
+
+
+        <!-- ========================================== -->
+        <!-- CHAT LIST -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".ChatListActivity"
+            android:exported="false" />
+
+
+        <!-- ========================================== -->
+        <!-- INDIVIDUAL CHAT -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+
+        <!-- ========================================== -->
+        <!-- SEARCH -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".Search"
+            android:exported="false" />
+
+
+        <!-- ========================================== -->
+        <!-- MAIN ACTIVITY -->
+        <!-- ========================================== -->
+
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+
+        <!-- ========================================== -->
+        <!-- FRONT PAGE -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".frontpage"
+            android:exported="false" />
+
+
+        <!-- ========================================== -->
+        <!-- FORGOT PASSWORD -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".forgetPassword"
+            android:exported="false" />
+
+
+        <!-- ========================================== -->
+        <!-- SIGNUP -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".signupactivity"
+            android:exported="false" />
+
+
+        <!-- ========================================== -->
+        <!-- LOGIN / LAUNCHER -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".login"
+            android:exported="true">
+
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.MAIN" />
+
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
+
+
+        <!-- ========================================== -->
+        <!-- HOMEPAGE -->
+        <!-- ========================================== -->
+
         <activity
             android:name=".homepage"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+
+        <!-- ========================================== -->
+        <!-- PROFILE PAGE -->
+        <!-- ========================================== -->
+
+        <activity
+            android:name=".profilepage"
+            android:exported="false" />
+
+
     </application>
 
 </manifest>
