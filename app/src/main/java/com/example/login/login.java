@@ -35,36 +35,106 @@ public class login extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseFirestore db;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_login);
+
 
         // ==========================================
         // FIREBASE
         // ==========================================
 
         mAuth = FirebaseAuth.getInstance();
+
         db = FirebaseFirestore.getInstance();
+
+
+        // ==========================================
+        // CHECK EXISTING LOGIN SESSION
+        // ==========================================
+        //
+        // Firebase automatically keeps the signed-in
+        // user's session. So if a user is already
+        // logged in, don't show login screen again.
+        //
+
+        if (mAuth.getCurrentUser() != null) {
+
+            Intent intent =
+                    new Intent(
+                            login.this,
+                            homepage.class
+                    );
+
+            // Remove login screen from back stack
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK
+            );
+
+            startActivity(intent);
+
+            finish();
+
+            return;
+        }
+
 
         // ==========================================
         // CONNECT XML
         // ==========================================
 
-        username = findViewById(R.id.newusername);
-        password = findViewById(R.id.password);
+        username =
+                findViewById(
+                        R.id.newusername
+                );
 
-        loginButton = findViewById(R.id.loginButton);
-        signupButton = findViewById(R.id.createAccount);
-        forgetPasswordButton = findViewById(R.id.forgetPassword);
+        password =
+                findViewById(
+                        R.id.password
+                );
 
-        loginProgress = findViewById(R.id.loginProgress);
+        loginButton =
+                findViewById(
+                        R.id.loginButton
+                );
 
-        dot1 = findViewById(R.id.dot1);
-        dot2 = findViewById(R.id.dot2);
-        dot3 = findViewById(R.id.dot3);
+        signupButton =
+                findViewById(
+                        R.id.createAccount
+                );
+
+        forgetPasswordButton =
+                findViewById(
+                        R.id.forgetPassword
+                );
+
+        loginProgress =
+                findViewById(
+                        R.id.loginProgress
+                );
+
+        dot1 =
+                findViewById(
+                        R.id.dot1
+                );
+
+        dot2 =
+                findViewById(
+                        R.id.dot2
+                );
+
+        dot3 =
+                findViewById(
+                        R.id.dot3
+                );
+
 
         // ==========================================
         // LOGIN BUTTON
@@ -75,15 +145,26 @@ public class login extends AppCompatActivity {
             // Hide keyboard
             hideKeyboard();
 
+
             // Clear old errors
             username.setError(null);
+
             password.setError(null);
 
+
             String userIdText =
-                    username.getText().toString().trim();
+                    username
+                            .getText()
+                            .toString()
+                            .trim();
+
 
             String userPassword =
-                    password.getText().toString().trim();
+                    password
+                            .getText()
+                            .toString()
+                            .trim();
+
 
             // ==========================================
             // USER ID VALIDATION
@@ -91,11 +172,15 @@ public class login extends AppCompatActivity {
 
             if (userIdText.isEmpty()) {
 
-                username.setError("Enter User ID");
+                username.setError(
+                        "Enter User ID"
+                );
+
                 username.requestFocus();
 
                 return;
             }
+
 
             // ==========================================
             // PASSWORD VALIDATION
@@ -103,17 +188,22 @@ public class login extends AppCompatActivity {
 
             if (userPassword.isEmpty()) {
 
-                password.setError("Enter password");
+                password.setError(
+                        "Enter password"
+                );
+
                 password.requestFocus();
 
                 return;
             }
+
 
             // ==========================================
             // START LOADING
             // ==========================================
 
             startLoginLoading();
+
 
             // ==========================================
             // USER ID CASE INSENSITIVE
@@ -122,6 +212,7 @@ public class login extends AppCompatActivity {
             String userIdKey =
                     userIdText.toLowerCase();
 
+
             // ==========================================
             // FIND USERNAME
             // ==========================================
@@ -129,142 +220,173 @@ public class login extends AppCompatActivity {
             db.collection("usernames")
                     .document(userIdKey)
                     .get()
-                    .addOnSuccessListener(usernameDocument -> {
+                    .addOnSuccessListener(
+                            usernameDocument -> {
 
-                        // ==================================
-                        // USER ID NOT FOUND
-                        // ==================================
 
-                        if (!usernameDocument.exists()) {
+                                // ==================================
+                                // USER ID NOT FOUND
+                                // ==================================
 
-                            stopLoginLoading();
-
-                            username.setError(
-                                    "User ID not found"
-                            );
-
-                            username.requestFocus();
-
-                            return;
-                        }
-
-                        // ==================================
-                        // FIREBASE UID
-                        // ==================================
-
-                        String authUid =
-                                usernameDocument
-                                        .getString("uid");
-
-                        if (authUid == null ||
-                                authUid.isEmpty()) {
-
-                            stopLoginLoading();
-
-                            username.setError(
-                                    "Account data is incomplete"
-                            );
-
-                            username.requestFocus();
-
-                            return;
-                        }
-
-                        // ==================================
-                        // NEW ACCOUNT
-                        //
-                        // usernames/{userId}/email
-                        // ==================================
-
-                        String email =
-                                usernameDocument
-                                        .getString("email");
-
-                        if (email != null &&
-                                !email.isEmpty()) {
-
-                            loginWithEmail(
-                                    email,
-                                    userPassword
-                            );
-
-                            return;
-                        }
-
-                        // ==================================
-                        // OLD ACCOUNT
-                        //
-                        // users/{uid}/email
-                        // ==================================
-
-                        db.collection("users")
-                                .document(authUid)
-                                .get()
-                                .addOnSuccessListener(
-                                        userDocument -> {
-
-                                            if (!userDocument.exists()) {
-
-                                                stopLoginLoading();
-
-                                                username.setError(
-                                                        "User profile not found"
-                                                );
-
-                                                username.requestFocus();
-
-                                                return;
-                                            }
-
-                                            String oldEmail =
-                                                    userDocument
-                                                            .getString(
-                                                                    "email"
-                                                            );
-
-                                            if (oldEmail == null ||
-                                                    oldEmail.isEmpty()) {
-
-                                                stopLoginLoading();
-
-                                                username.setError(
-                                                        "Account data is incomplete"
-                                                );
-
-                                                username.requestFocus();
-
-                                                return;
-                                            }
-
-                                            // Login old account
-                                            loginWithEmail(
-                                                    oldEmail,
-                                                    userPassword
-                                            );
-                                        }
-                                )
-                                .addOnFailureListener(e -> {
+                                if (
+                                        !usernameDocument.exists()
+                                ) {
 
                                     stopLoginLoading();
 
                                     username.setError(
-                                            "Could not get user data"
+                                            "User ID not found"
                                     );
 
                                     username.requestFocus();
-                                });
-                    })
-                    .addOnFailureListener(e -> {
 
-                        stopLoginLoading();
+                                    return;
+                                }
 
-                        username.setError(
-                                "Could not check User ID"
-                        );
 
-                        username.requestFocus();
-                    });
+                                // ==================================
+                                // FIREBASE UID
+                                // ==================================
+
+                                String authUid =
+                                        usernameDocument
+                                                .getString(
+                                                        "uid"
+                                                );
+
+
+                                if (
+                                        authUid == null ||
+                                                authUid.isEmpty()
+                                ) {
+
+                                    stopLoginLoading();
+
+                                    username.setError(
+                                            "Account data is incomplete"
+                                    );
+
+                                    username.requestFocus();
+
+                                    return;
+                                }
+
+
+                                // ==================================
+                                // NEW ACCOUNT
+                                //
+                                // usernames/{userId}/email
+                                // ==================================
+
+                                String email =
+                                        usernameDocument
+                                                .getString(
+                                                        "email"
+                                                );
+
+
+                                if (
+                                        email != null &&
+                                                !email.isEmpty()
+                                ) {
+
+                                    loginWithEmail(
+                                            email,
+                                            userPassword
+                                    );
+
+                                    return;
+                                }
+
+
+                                // ==================================
+                                // OLD ACCOUNT
+                                //
+                                // users/{uid}/email
+                                // ==================================
+
+                                db.collection("users")
+                                        .document(authUid)
+                                        .get()
+                                        .addOnSuccessListener(
+                                                userDocument -> {
+
+
+                                                    if (
+                                                            !userDocument.exists()
+                                                    ) {
+
+                                                        stopLoginLoading();
+
+                                                        username.setError(
+                                                                "User profile not found"
+                                                        );
+
+                                                        username.requestFocus();
+
+                                                        return;
+                                                    }
+
+
+                                                    String oldEmail =
+                                                            userDocument
+                                                                    .getString(
+                                                                            "email"
+                                                                    );
+
+
+                                                    if (
+                                                            oldEmail == null ||
+                                                                    oldEmail.isEmpty()
+                                                    ) {
+
+                                                        stopLoginLoading();
+
+                                                        username.setError(
+                                                                "Account data is incomplete"
+                                                        );
+
+                                                        username.requestFocus();
+
+                                                        return;
+                                                    }
+
+
+                                                    // Login old account
+                                                    loginWithEmail(
+                                                            oldEmail,
+                                                            userPassword
+                                                    );
+                                                }
+                                        )
+                                        .addOnFailureListener(
+                                                e -> {
+
+                                                    stopLoginLoading();
+
+                                                    username.setError(
+                                                            "Could not get user data"
+                                                    );
+
+                                                    username.requestFocus();
+                                                }
+                                        );
+                            }
+                    )
+                    .addOnFailureListener(
+                            e -> {
+
+                                stopLoginLoading();
+
+                                username.setError(
+                                        "Could not check User ID"
+                                );
+
+                                username.requestFocus();
+                            }
+                    );
         });
+
 
         // ==========================================
         // CREATE ACCOUNT
@@ -280,8 +402,11 @@ public class login extends AppCompatActivity {
                             signupactivity.class
                     );
 
-            startActivity(signup);
+            startActivity(
+                    signup
+            );
         });
+
 
         // ==========================================
         // FORGOT PASSWORD
@@ -297,9 +422,12 @@ public class login extends AppCompatActivity {
                             forgetPassword.class
                     );
 
-            startActivity(forgetPass);
+            startActivity(
+                    forgetPass
+            );
         });
     }
+
 
     // ==========================================
     // FIREBASE LOGIN
@@ -307,7 +435,8 @@ public class login extends AppCompatActivity {
 
     private void loginWithEmail(
             String email,
-            String userPassword) {
+            String userPassword
+    ) {
 
         mAuth.signInWithEmailAndPassword(
                         email,
@@ -321,11 +450,13 @@ public class login extends AppCompatActivity {
 
                                 stopLoginLoading();
 
+
                                 Toast.makeText(
                                         login.this,
                                         "Login successful!",
                                         Toast.LENGTH_SHORT
                                 ).show();
+
 
                                 // ==================================
                                 // HOMEPAGE
@@ -337,9 +468,21 @@ public class login extends AppCompatActivity {
                                                 homepage.class
                                         );
 
-                                startActivity(intent);
+
+                                // Remove login from back stack
+                                intent.addFlags(
+                                        Intent.FLAG_ACTIVITY_NEW_TASK |
+                                                Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                );
+
+
+                                startActivity(
+                                        intent
+                                );
+
 
                                 finish();
+
 
                             } else {
 
@@ -349,11 +492,13 @@ public class login extends AppCompatActivity {
 
                                 stopLoginLoading();
 
+
                                 password.setError(
                                         "Incorrect password"
                                 );
 
                                 password.requestFocus();
+
 
                                 // Show keyboard again
                                 password.postDelayed(
@@ -365,7 +510,10 @@ public class login extends AppCompatActivity {
                                                                     Context.INPUT_METHOD_SERVICE
                                                             );
 
-                                            if (imm != null) {
+
+                                            if (
+                                                    imm != null
+                                            ) {
 
                                                 imm.showSoftInput(
                                                         password,
@@ -382,6 +530,7 @@ public class login extends AppCompatActivity {
                 );
     }
 
+
     // ==========================================
     // START THREE DOT LOADING
     // ==========================================
@@ -390,12 +539,17 @@ public class login extends AppCompatActivity {
 
         loginButton.setEnabled(false);
 
-        loginButton.setVisibility(View.GONE);
+        loginButton.setVisibility(
+                View.GONE
+        );
 
-        loginProgress.setVisibility(View.VISIBLE);
+        loginProgress.setVisibility(
+                View.VISIBLE
+        );
 
         animateDots();
     }
+
 
     // ==========================================
     // STOP THREE DOT LOADING
@@ -405,10 +559,15 @@ public class login extends AppCompatActivity {
 
         loginButton.setEnabled(true);
 
-        loginButton.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(
+                View.VISIBLE
+        );
 
-        loginProgress.setVisibility(View.GONE);
+        loginProgress.setVisibility(
+                View.GONE
+        );
     }
+
 
     // ==========================================
     // THREE DOT ANIMATION
@@ -429,6 +588,7 @@ public class login extends AppCompatActivity {
                 })
                 .start();
 
+
         dot2.animate()
                 .alpha(0.3f)
                 .setStartDelay(200)
@@ -442,6 +602,7 @@ public class login extends AppCompatActivity {
 
                 })
                 .start();
+
 
         dot3.animate()
                 .alpha(0.3f)
@@ -457,12 +618,15 @@ public class login extends AppCompatActivity {
                 })
                 .start();
 
+
         // Repeat animation while login is running
         loginProgress.postDelayed(
                 () -> {
 
-                    if (loginProgress.getVisibility()
-                            == View.VISIBLE) {
+                    if (
+                            loginProgress.getVisibility()
+                                    == View.VISIBLE
+                    ) {
 
                         animateDots();
                     }
@@ -471,6 +635,7 @@ public class login extends AppCompatActivity {
                 900
         );
     }
+
 
     // ==========================================
     // HIDE KEYBOARD
@@ -484,8 +649,11 @@ public class login extends AppCompatActivity {
                                 Context.INPUT_METHOD_SERVICE
                         );
 
-        if (imm != null &&
-                getCurrentFocus() != null) {
+
+        if (
+                imm != null &&
+                        getCurrentFocus() != null
+        ) {
 
             imm.hideSoftInputFromWindow(
                     getCurrentFocus()
