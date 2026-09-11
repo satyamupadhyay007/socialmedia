@@ -99,6 +99,7 @@ public class Search extends AppCompatActivity {
                 savedInstanceState
         );
 
+
         // ==================================================
         // LAYOUT
         // ==================================================
@@ -226,6 +227,7 @@ public class Search extends AppCompatActivity {
                 )
         );
 
+
         postAdapter =
                 (PostAdapter)
                         postRecyclerView.getAdapter();
@@ -303,8 +305,7 @@ public class Search extends AppCompatActivity {
     // ==================================================
     // KEYBOARD HANDLING
     //
-    // Uses actual visible window height instead of
-    // relying only on IME WindowInsets.
+    // Hides bottom navigation when keyboard opens.
     // ==================================================
 
     private void setupKeyboardHandling() {
@@ -372,10 +373,6 @@ public class Search extends AppCompatActivity {
 
                                 // ==================================================
                                 // KEYBOARD THRESHOLD
-                                //
-                                // 15% of screen height.
-                                // This avoids false detection caused by
-                                // normal status/navigation bars.
                                 // ==================================================
 
                                 int keyboardThreshold =
@@ -409,6 +406,7 @@ public class Search extends AppCompatActivity {
                                     }
 
                                 }
+
 
                                 // ==================================================
                                 // KEYBOARD CLOSED
@@ -506,7 +504,6 @@ public class Search extends AppCompatActivity {
                     v -> {
 
                         // Already on Search.
-                        // No new activity.
                     }
             );
         }
@@ -546,14 +543,17 @@ public class Search extends AppCompatActivity {
                         targetActivity
                 );
 
+
         intent.addFlags(
                 Intent.FLAG_ACTIVITY_CLEAR_TOP |
                         Intent.FLAG_ACTIVITY_SINGLE_TOP
         );
 
+
         startActivity(
                 intent
         );
+
 
         overridePendingTransition(
                 0,
@@ -581,9 +581,17 @@ public class Search extends AppCompatActivity {
                                     queryDocumentSnapshots
                             ) {
 
+                                // ==================================================
+                                // UID
+                                // ==================================================
+
                                 String uid =
                                         document.getId();
 
+
+                                // ==================================================
+                                // OLD USERNAME FIELD
+                                // ==================================================
 
                                 String username =
                                         document.getString(
@@ -591,11 +599,19 @@ public class Search extends AppCompatActivity {
                                         );
 
 
+                                // ==================================================
+                                // USER ID
+                                // ==================================================
+
                                 String userId =
                                         document.getString(
                                                 "userId"
                                         );
 
+
+                                // ==================================================
+                                // UNIQUE USER ID
+                                // ==================================================
 
                                 String uniqueUserId =
                                         document.getString(
@@ -603,13 +619,38 @@ public class Search extends AppCompatActivity {
                                         );
 
 
+                                // ==================================================
+                                // DISPLAY NAME / REAL NAME
+                                // ==================================================
+
+                                String name =
+                                        document.getString(
+                                                "name"
+                                        );
+
+
+                                // ==================================================
+                                // PROFILE IMAGE
+                                // ==================================================
+
+                                String profileImage =
+                                        document.getString(
+                                                "profileImage"
+                                        );
+
+
+                                // ==================================================
+                                // DISPLAY USER ID
+                                //
+                                // Priority:
+                                // userId
+                                // uniqueUserId
+                                // username
+                                // ==================================================
+
                                 String displayName =
                                         null;
 
-
-                                // ==================================================
-                                // USER ID FIRST
-                                // ==================================================
 
                                 if (
                                         userId != null &&
@@ -637,6 +678,10 @@ public class Search extends AppCompatActivity {
                                 }
 
 
+                                // ==================================================
+                                // NO USER ID
+                                // ==================================================
+
                                 if (
                                         displayName == null ||
                                                 displayName.isEmpty()
@@ -646,14 +691,33 @@ public class Search extends AppCompatActivity {
                                 }
 
 
+                                // ==================================================
+                                // ADD USER
+                                //
+                                // UID
+                                // User ID
+                                // Name
+                                // Profile Photo
+                                // ==================================================
+
                                 allUsers.add(
                                         new User(
                                                 uid,
-                                                displayName
+                                                displayName,
+                                                name != null
+                                                        ? name
+                                                        : "",
+                                                profileImage != null
+                                                        ? profileImage
+                                                        : ""
                                         )
                                 );
                             }
 
+
+                            // ==================================================
+                            // REFRESH CURRENT SEARCH
+                            // ==================================================
 
                             if (
                                     searchEditText != null
@@ -760,6 +824,10 @@ public class Search extends AppCompatActivity {
                             .toLowerCase();
 
 
+            // ==================================================
+            // SEARCH BY USER ID
+            // ==================================================
+
             if (
                     username.contains(
                             searchText
@@ -772,6 +840,10 @@ public class Search extends AppCompatActivity {
             }
         }
 
+
+        // ==================================================
+        // UPDATE ADAPTER
+        // ==================================================
 
         searchAdapter.updateList(
                 filteredUsers

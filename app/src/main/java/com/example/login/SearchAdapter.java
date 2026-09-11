@@ -1,5 +1,7 @@
 package com.example.login;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class SearchAdapter
         extends RecyclerView.Adapter<SearchAdapter.UserViewHolder> {
 
     private List<User> userList;
+
 
     // ==================================================
     // CONSTRUCTOR
@@ -24,8 +29,10 @@ public class SearchAdapter
             List<User> userList
     ) {
 
-        this.userList = userList;
+        this.userList =
+                userList;
     }
+
 
     // ==================================================
     // CREATE VIEW
@@ -39,18 +46,19 @@ public class SearchAdapter
     ) {
 
         View view =
-                LayoutInflater.from(
-                        parent.getContext()
-                ).inflate(
-                        R.layout.item_user,
-                        parent,
-                        false
-                );
+                LayoutInflater
+                        .from(parent.getContext())
+                        .inflate(
+                                R.layout.item_user,
+                                parent,
+                                false
+                        );
 
         return new UserViewHolder(
                 view
         );
     }
+
 
     // ==================================================
     // BIND
@@ -63,29 +71,36 @@ public class SearchAdapter
     ) {
 
         User currentUser =
-                userList.get(
-                        position
-                );
+                userList.get(position);
+
+
+        if (currentUser == null) {
+            return;
+        }
+
 
         // ==================================================
-        // USERNAME
+        // USERNAME / USER ID
         // ==================================================
 
         String username =
                 currentUser.getUsername();
 
+
         if (
                 username == null ||
-                        username.isEmpty()
+                        username.trim().isEmpty()
         ) {
 
             username =
                     "Unknown User";
         }
 
+
         holder.userUsername.setText(
                 username
         );
+
 
         // ==================================================
         // NAME
@@ -94,19 +109,69 @@ public class SearchAdapter
         String name =
                 currentUser.getName();
 
+
         if (
                 name == null ||
                         name.trim().isEmpty()
         ) {
 
-            name =
-                    "Name not set";
+            holder.userName.setText(
+                    ""
+            );
+
+            holder.userName.setVisibility(
+                    View.GONE
+            );
+
+        } else {
+
+            holder.userName.setText(
+                    name
+            );
+
+            holder.userName.setVisibility(
+                    View.VISIBLE
+            );
         }
 
-        holder.userName.setText(
-                name
-        );
+
+        // ==================================================
+        // PROFILE IMAGE
+        // ==================================================
+
+        String profileImage =
+                currentUser.getProfileImage();
+
+
+        if (
+                profileImage != null &&
+                        !profileImage.trim().isEmpty()
+        ) {
+
+            Glide.with(
+                            holder.itemView.getContext()
+                    )
+                    .load(profileImage)
+                    .centerCrop()
+                    .placeholder(
+                            android.R.drawable.ic_menu_gallery
+                    )
+                    .error(
+                            android.R.drawable.ic_menu_gallery
+                    )
+                    .into(
+                            holder.userImage
+                    );
+
+        } else {
+
+            // Default image
+            holder.userImage.setImageResource(
+                    android.R.drawable.ic_menu_gallery
+            );
+        }
     }
+
 
     // ==================================================
     // COUNT
@@ -119,6 +184,7 @@ public class SearchAdapter
                 ? 0
                 : userList.size();
     }
+
 
     // ==================================================
     // UPDATE LIST
@@ -134,6 +200,7 @@ public class SearchAdapter
         notifyDataSetChanged();
     }
 
+
     // ==================================================
     // VIEW HOLDER
     // ==================================================
@@ -147,21 +214,25 @@ public class SearchAdapter
 
         TextView userName;
 
+
         public UserViewHolder(
                 @NonNull View itemView
         ) {
 
             super(itemView);
 
+
             userImage =
                     itemView.findViewById(
                             R.id.userImage
                     );
 
+
             userUsername =
                     itemView.findViewById(
                             R.id.userUsername
                     );
+
 
             userName =
                     itemView.findViewById(

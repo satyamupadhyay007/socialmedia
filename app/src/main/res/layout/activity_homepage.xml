@@ -83,19 +83,24 @@
 
         <HorizontalScrollView
             android:id="@+id/storyScroll"
+
             android:layout_width="0dp"
             android:layout_height="104dp"
+
             android:contentDescription="Stories"
+
             android:fillViewport="false"
             android:overScrollMode="never"
             android:scrollbars="none"
 
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerLine"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/headerLine">
+            app:layout_constraintEnd_toEndOf="parent">
 
 
-            <!-- Dynamic stories will be added by Java -->
+            <!-- ================================================= -->
+            <!-- DYNAMIC STORY ROW -->
+            <!-- ================================================= -->
 
             <LinearLayout
                 android:id="@+id/storyRow"
@@ -108,7 +113,68 @@
                 android:orientation="horizontal"
 
                 android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
+                android:paddingEnd="14dp">
+
+
+                <!-- ================================================= -->
+                <!-- YOUR STORY -->
+                <!-- ================================================= -->
+
+                <FrameLayout
+                    android:id="@+id/btnYourstory"
+
+                    android:layout_width="64dp"
+                    android:layout_height="82dp"
+
+                    android:layout_marginEnd="12dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <!--
+                        Java will replace this area with
+                        the real dynamic story UI.
+                    -->
+
+                    <ImageView
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+
+                        android:layout_gravity="top|center_horizontal"
+
+                        android:background="@drawable/profile_circle"
+
+                        android:contentDescription="Your story"
+
+                        android:padding="4dp"
+
+                        android:scaleType="centerCrop"
+
+                        android:src="@android:drawable/ic_menu_myplaces" />
+
+                    <TextView
+                        android:layout_width="64dp"
+                        android:layout_height="20dp"
+
+                        android:layout_gravity="bottom|center_horizontal"
+
+                        android:gravity="center"
+
+                        android:maxLines="1"
+
+                        android:ellipsize="end"
+
+                        android:text="Your story"
+
+                        android:textColor="@color/white"
+
+                        android:textSize="10sp" />
+
+                </FrameLayout>
+
+            </LinearLayout>
 
         </HorizontalScrollView>
 
@@ -146,84 +212,150 @@
 
         <LinearLayout
             android:id="@+id/bottomNavigation"
+
             android:layout_width="0dp"
             android:layout_height="68dp"
+
             android:background="#000000"
+
             android:elevation="10dp"
+
             android:gravity="center_vertical"
+
             android:orientation="horizontal"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+
+            <!-- HOME -->
+
             <ImageButton
                 android:id="@+id/btnHome"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Home"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/home"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- CREATE -->
 
             <ImageButton
                 android:id="@+id/btnCreate"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Create"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/play"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- MESSAGE -->
 
             <ImageButton
                 android:id="@+id/btnMessage"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Messages"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/chat"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- SEARCH -->
 
             <ImageButton
                 android:id="@+id/btnSearch"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Search"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/search"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- PROFILE -->
 
             <ImageButton
                 android:id="@+id/btnProfile"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Profile"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/account"
+
                 app:tint="#FFFFFF" />
 
         </LinearLayout>

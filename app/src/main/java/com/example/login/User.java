@@ -9,18 +9,19 @@ public class User {
     private String uid;
     private String username;
     private String name;
+    private String profileImage;
+
 
     // ==================================================
     // EMPTY CONSTRUCTOR
-    // Firestore / Firebase requires this
     // ==================================================
 
     public User() {
     }
 
+
     // ==================================================
     // OLD CONSTRUCTOR
-    // Keep for existing code compatibility
     // ==================================================
 
     public User(
@@ -31,10 +32,12 @@ public class User {
         this.uid = uid;
         this.username = username;
         this.name = "";
+        this.profileImage = "";
     }
 
+
     // ==================================================
-    // FULL CONSTRUCTOR
+    // NAME CONSTRUCTOR
     // ==================================================
 
     public User(
@@ -46,7 +49,27 @@ public class User {
         this.uid = uid;
         this.username = username;
         this.name = name;
+        this.profileImage = "";
     }
+
+
+    // ==================================================
+    // FULL CONSTRUCTOR
+    // ==================================================
+
+    public User(
+            String uid,
+            String username,
+            String name,
+            String profileImage
+    ) {
+
+        this.uid = uid;
+        this.username = username;
+        this.name = name;
+        this.profileImage = profileImage;
+    }
+
 
     // ==================================================
     // UID
@@ -63,8 +86,9 @@ public class User {
         this.uid = uid;
     }
 
+
     // ==================================================
-    // USERNAME
+    // USERNAME / USER ID
     // ==================================================
 
     public String getUsername() {
@@ -77,6 +101,7 @@ public class User {
 
         this.username = username;
     }
+
 
     // ==================================================
     // NAME
@@ -91,5 +116,21 @@ public class User {
     ) {
 
         this.name = name;
+    }
+
+
+    // ==================================================
+    // PROFILE IMAGE
+    // ==================================================
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(
+            String profileImage
+    ) {
+
+        this.profileImage = profileImage;
     }
 }
