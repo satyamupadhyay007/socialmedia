@@ -1,5 +1,4 @@
 package com.example.login;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -48,6 +47,14 @@ public class homepage extends AppCompatActivity {
     private ImageButton btnMessage;
     private ImageButton btnSearch;
     private ImageButton btnProfile;
+
+    // ==================================================
+    // NOTIFICATIONS
+    // ==================================================
+
+    private FrameLayout notificationContainer;
+    private ImageButton btnNotifications;
+    private TextView notificationBadge;
 
     // ==================================================
     // STORIES
@@ -140,6 +147,27 @@ public class homepage extends AppCompatActivity {
         currentUserId =
                 mAuth.getCurrentUser()
                         .getUid();
+
+        // ==================================================
+        // NOTIFICATIONS
+        // ==================================================
+
+        notificationContainer =
+                findViewById(
+                        R.id.notificationContainer
+                );
+
+        btnNotifications =
+                findViewById(
+                        R.id.btnNotifications
+                );
+
+        notificationBadge =
+                findViewById(
+                        R.id.notificationBadge
+                );
+
+        setupNotifications();
 
         // ==================================================
         // SAFE AREA
@@ -1835,6 +1863,178 @@ public class homepage extends AppCompatActivity {
                         : "Story failed",
                 Toast.LENGTH_LONG
         ).show();
+    }
+
+    // ==================================================
+    // NOTIFICATIONS
+    // ==================================================
+
+    private void setupNotifications() {
+
+        if (notificationContainer != null) {
+            notificationContainer.setOnClickListener(
+                    v -> openNotifications()
+            );
+        }
+
+        if (btnNotifications != null) {
+            btnNotifications.setOnClickListener(
+                    v -> openNotifications()
+            );
+        }
+
+        loadUnreadNotificationCount();
+    }
+
+    private void loadUnreadNotificationCount() {
+
+        if (db == null || currentUserId == null ||
+                currentUserId.isEmpty() || notificationBadge == null) {
+            return;
+        }
+
+        db.collection("notifications")
+                .whereEqualTo(
+                        "toUserId",
+                        currentUserId
+                )
+                .addSnapshotListener(
+                        (snapshot, error) -> {
+
+                            if (error != null || snapshot == null) {
+                                return;
+                            }
+
+                            int unreadCount = 0;
+
+                            for (DocumentSnapshot document :
+                                    snapshot.getDocuments()) {
+
+                                Boolean read =
+                                        document.getBoolean("read");
+
+                                if (read == null || !read) {
+                                    unreadCount++;
+                                }
+                            }
+
+                            updateNotificationBadge(
+                                    unreadCount
+                            );
+                        }
+                );
+    }
+
+    private void updateNotificationBadge(
+            int count
+    ) {
+
+        if (notificationBadge == null) {
+            return;
+        }
+
+        if (count <= 0) {
+            notificationBadge.setVisibility(
+                    View.GONE
+            );
+            return;
+        }
+
+        notificationBadge.setVisibility(
+                View.VISIBLE
+        );
+
+        notificationBadge.setText(
+                count > 99
+                        ? "99+"
+                        : String.valueOf(count)
+        );
+    }
+
+    private void openNotifications() {
+
+        if (db == null || currentUserId == null ||
+                currentUserId.isEmpty()) {
+            return;
+        }
+
+        db.collection("notifications")
+                .whereEqualTo(
+                        "toUserId",
+                        currentUserId
+                )
+                .get()
+                .addOnSuccessListener(
+                        snapshot -> {
+
+                            if (snapshot == null ||
+                                    snapshot.isEmpty()) {
+
+                                new AlertDialog.Builder(this)
+                                        .setTitle("Notifications")
+                                        .setMessage("No notifications yet.")
+                                        .setPositiveButton("OK", null)
+                                        .show();
+
+                                return;
+                            }
+
+                            StringBuilder message =
+                                    new StringBuilder();
+
+                            for (DocumentSnapshot document :
+                                    snapshot.getDocuments()) {
+
+                                String notificationText =
+                                        document.getString("message");
+
+                                if (notificationText == null ||
+                                        notificationText.trim().isEmpty()) {
+
+                                    String fromUsername =
+                                            document.getString("fromUsername");
+
+                                    String type =
+                                            document.getString("type");
+
+                                    if (fromUsername == null ||
+                                            fromUsername.trim().isEmpty()) {
+                                        fromUsername = "Someone";
+                                    }
+
+                                    if (type == null ||
+                                            type.trim().isEmpty()) {
+                                        type = "sent you a notification";
+                                    }
+
+                                    notificationText =
+                                            fromUsername + " " + type;
+                                }
+
+                                message.append("• ")
+                                        .append(notificationText)
+                                        .append("\n\n");
+
+                                document.getReference().update(
+                                        "read",
+                                        true
+                                );
+                            }
+
+                            new AlertDialog.Builder(this)
+                                    .setTitle("Notifications")
+                                    .setMessage(message.toString().trim())
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                        }
+                )
+                .addOnFailureListener(
+                        e -> Toast.makeText(
+                                homepage.this,
+                                "Could not load notifications",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
 
     // ==================================================
