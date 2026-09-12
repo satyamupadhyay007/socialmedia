@@ -131,6 +131,10 @@
             android:name=".StoryViewerActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".VideoPlayerActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

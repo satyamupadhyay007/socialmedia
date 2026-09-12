@@ -799,8 +799,8 @@ public class homepage extends AppCompatActivity {
         android.widget.LinearLayout.LayoutParams
                 frameParams =
                 new android.widget.LinearLayout.LayoutParams(
-                        dp(64),
-                        dp(64)
+                        dp(70),
+                        dp(70)
                 );
 
         frameParams.gravity =

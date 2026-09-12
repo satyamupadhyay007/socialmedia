@@ -3,6 +3,8 @@ package com.example.login;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -27,6 +29,7 @@ import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
@@ -110,6 +113,16 @@ public class ChatActivity extends AppCompatActivity {
 
 
     // ==================================================
+    // SEEN DELAY
+    // ==================================================
+
+    private final Handler seenHandler =
+            new Handler(
+                    Looper.getMainLooper()
+            );
+
+
+    // ==================================================
     // PHOTO PICKER
     // ==================================================
 
@@ -123,9 +136,11 @@ public class ChatActivity extends AppCompatActivity {
                             return;
                         }
 
-                        selectedMediaUri = uri;
+                        selectedMediaUri =
+                                uri;
 
-                        selectedMediaType = "image";
+                        selectedMediaType =
+                                "image";
 
                         messageEditText.setText("");
 
@@ -152,9 +167,11 @@ public class ChatActivity extends AppCompatActivity {
                             return;
                         }
 
-                        selectedMediaUri = uri;
+                        selectedMediaUri =
+                                uri;
 
-                        selectedMediaType = "video";
+                        selectedMediaType =
+                                "video";
 
                         messageEditText.setText("");
 
@@ -172,13 +189,21 @@ public class ChatActivity extends AppCompatActivity {
     // ==================================================
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
 
-        super.onCreate(savedInstanceState);
+        super.onCreate(
+                savedInstanceState
+        );
 
-        EdgeToEdge.enable(this);
+        EdgeToEdge.enable(
+                this
+        );
 
-        setContentView(R.layout.activity_chat);
+        setContentView(
+                R.layout.activity_chat
+        );
 
 
         // ==================================================
@@ -192,9 +217,12 @@ public class ChatActivity extends AppCompatActivity {
                 FirebaseFirestore.getInstance();
 
 
-        if (mAuth.getCurrentUser() == null) {
+        if (
+                mAuth.getCurrentUser() == null
+        ) {
 
             finish();
+
             return;
         }
 
@@ -231,6 +259,7 @@ public class ChatActivity extends AppCompatActivity {
             ).show();
 
             finish();
+
             return;
         }
 
@@ -254,6 +283,13 @@ public class ChatActivity extends AppCompatActivity {
                         currentUserId,
                         receiverId
                 );
+
+
+        // ==================================================
+        // RESET UNREAD
+        // ==================================================
+
+        resetUnreadCount();
 
 
         // ==================================================
@@ -333,6 +369,7 @@ public class ChatActivity extends AppCompatActivity {
                         this
                 );
 
+
         layoutManager.setStackFromEnd(
                 true
         );
@@ -403,7 +440,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
         // ==================================================
-        // MESSAGE LISTENER
+        // REALTIME MESSAGE LISTENER
         // ==================================================
 
         listenForMessages();
@@ -449,17 +486,20 @@ public class ChatActivity extends AppCompatActivity {
                                             .systemBars()
                             );
 
+
                     Insets cutout =
                             windowInsets.getInsets(
                                     WindowInsetsCompat.Type
                                             .displayCutout()
                             );
 
+
                     Insets ime =
                             windowInsets.getInsets(
                                     WindowInsetsCompat.Type
                                             .ime()
                             );
+
 
                     boolean keyboardVisible =
                             windowInsets.isVisible(
@@ -478,7 +518,9 @@ public class ChatActivity extends AppCompatActivity {
                     int safeBottom;
 
 
-                    if (keyboardVisible) {
+                    if (
+                            keyboardVisible
+                    ) {
 
                         safeBottom =
                                 Math.max(
@@ -508,12 +550,15 @@ public class ChatActivity extends AppCompatActivity {
                     if (
                             rawHeaderParams
                                     instanceof
-                                    ViewGroup.MarginLayoutParams
+                                    ViewGroup
+                                            .MarginLayoutParams
                     ) {
 
-                        ViewGroup.MarginLayoutParams
+                        ViewGroup
+                                .MarginLayoutParams
                                 headerParams =
-                                (ViewGroup.MarginLayoutParams)
+                                (ViewGroup
+                                        .MarginLayoutParams)
                                         rawHeaderParams;
 
 
@@ -533,18 +578,22 @@ public class ChatActivity extends AppCompatActivity {
 
                     ViewGroup.LayoutParams
                             rawInputParams =
-                            inputContainer.getLayoutParams();
+                            inputContainer
+                                    .getLayoutParams();
 
 
                     if (
                             rawInputParams
                                     instanceof
-                                    ViewGroup.MarginLayoutParams
+                                    ViewGroup
+                                            .MarginLayoutParams
                     ) {
 
-                        ViewGroup.MarginLayoutParams
+                        ViewGroup
+                                .MarginLayoutParams
                                 inputParams =
-                                (ViewGroup.MarginLayoutParams)
+                                (ViewGroup
+                                        .MarginLayoutParams)
                                         rawInputParams;
 
 
@@ -575,14 +624,18 @@ public class ChatActivity extends AppCompatActivity {
 
     private void initializeCloudinary() {
 
-        if (cloudinaryInitialized) {
+        if (
+                cloudinaryInitialized
+        ) {
+
             return;
         }
 
 
         try {
 
-            Map<String, Object> config =
+            Map<String, Object>
+                    config =
                     new HashMap<>();
 
 
@@ -609,6 +662,7 @@ public class ChatActivity extends AppCompatActivity {
 
         } catch (Exception e) {
 
+            // Already initialized
             cloudinaryInitialized =
                     true;
         }
@@ -621,23 +675,26 @@ public class ChatActivity extends AppCompatActivity {
 
     private void showMediaChooser() {
 
-        String[] options = {
-                "📷  Photo",
-                "🎥  Video"
-        };
+        String[] options =
+                {
+                        "📷  Photo",
+                        "🎥  Video"
+                };
 
 
-        new AlertDialog.Builder(this)
-
+        new AlertDialog.Builder(
+                this
+        )
                 .setTitle(
                         "Choose media"
                 )
-
                 .setItems(
                         options,
                         (dialog, which) -> {
 
-                            if (which == 0) {
+                            if (
+                                    which == 0
+                            ) {
 
                                 photoPicker.launch(
                                         "image/*"
@@ -651,23 +708,23 @@ public class ChatActivity extends AppCompatActivity {
                             }
                         }
                 )
-
                 .setNegativeButton(
                         "Cancel",
                         null
                 )
-
                 .show();
     }
 
 
     // ==================================================
-    // SEND CURRENT
+    // SEND CURRENT CONTENT
     // ==================================================
 
     private void sendCurrentContent() {
 
-        if (selectedMediaUri != null) {
+        if (
+                selectedMediaUri != null
+        ) {
 
             uploadMediaToCloudinary();
 
@@ -692,13 +749,27 @@ public class ChatActivity extends AppCompatActivity {
                         .trim();
 
 
-        if (text.isEmpty()) {
+        if (
+                text.isEmpty()
+        ) {
 
             messageEditText.setError(
                     "Write a message"
             );
 
             messageEditText.requestFocus();
+
+            return;
+        }
+
+
+        if (
+                mAuth.getCurrentUser() == null
+        ) {
+
+            messageEditText.setError(
+                    "Please login again"
+            );
 
             return;
         }
@@ -712,16 +783,24 @@ public class ChatActivity extends AppCompatActivity {
                         .getId();
 
 
+        long timestamp =
+                System.currentTimeMillis();
+
+
         Message message =
                 new Message(
                         messageId,
                         currentUserId,
                         receiverId,
                         text,
-                        System.currentTimeMillis(),
+                        timestamp,
                         "sent"
                 );
 
+
+        // ==================================================
+        // SAVE MESSAGE
+        // ==================================================
 
         db.collection("chats")
                 .document(chatId)
@@ -737,7 +816,9 @@ public class ChatActivity extends AppCompatActivity {
                             );
 
 
-                            messageEditText.setText("");
+                            messageEditText.setText(
+                                    ""
+                            );
 
 
                             messageEditText.setHint(
@@ -760,8 +841,9 @@ public class ChatActivity extends AppCompatActivity {
                                     error == null ||
                                             error.isEmpty()
                             ) {
+
                                 error =
-                                        "Unknown error";
+                                        "Unknown Firebase error";
                             }
 
 
@@ -777,7 +859,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
     // ==================================================
-    // SHOW TEMPORARY UPLOAD BUBBLE
+    // SHOW TEMP UPLOAD BUBBLE
     // ==================================================
 
     private void showUploadingBubble() {
@@ -824,9 +906,10 @@ public class ChatActivity extends AppCompatActivity {
 
         messageRecyclerView.post(
                 () ->
-                        messageRecyclerView.scrollToPosition(
-                                messageList.size() - 1
-                        )
+                        messageRecyclerView
+                                .scrollToPosition(
+                                        messageList.size() - 1
+                                )
         );
     }
 
@@ -839,7 +922,10 @@ public class ChatActivity extends AppCompatActivity {
             int progress
     ) {
 
-        if (uploadingMessage == null) {
+        if (
+                uploadingMessage == null
+        ) {
+
             return;
         }
 
@@ -855,7 +941,9 @@ public class ChatActivity extends AppCompatActivity {
                 );
 
 
-        if (index != -1) {
+        if (
+                index != -1
+        ) {
 
             messageAdapter.notifyItemChanged(
                     index
@@ -870,7 +958,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private void removeUploadingBubble() {
 
-        if (uploadingMessage == null) {
+        if (
+                uploadingMessage == null
+        ) {
+
             return;
         }
 
@@ -881,7 +972,9 @@ public class ChatActivity extends AppCompatActivity {
                 );
 
 
-        if (index != -1) {
+        if (
+                index != -1
+        ) {
 
             messageList.remove(
                     index
@@ -909,6 +1002,7 @@ public class ChatActivity extends AppCompatActivity {
                 selectedMediaUri == null ||
                         selectedMediaType.isEmpty()
         ) {
+
             return;
         }
 
@@ -928,16 +1022,13 @@ public class ChatActivity extends AppCompatActivity {
                 false
         );
 
-
         photoButton.setEnabled(
                 false
         );
 
-
         messageEditText.setEnabled(
                 false
         );
-
 
         messageEditText.setHint(
                 "Media uploading..."
@@ -945,13 +1036,24 @@ public class ChatActivity extends AppCompatActivity {
 
 
         MediaManager.get()
-
                 .upload(
                         uploadUri
                 )
-
                 .unsigned(
                         UPLOAD_PRESET
+                )
+
+                // ==================================================
+                // RESOURCE TYPE
+                // ==================================================
+
+                .option(
+                        "resource_type",
+                        "video".equalsIgnoreCase(
+                                uploadType
+                        )
+                                ? "video"
+                                : "image"
                 )
 
                 .callback(
@@ -971,7 +1073,10 @@ public class ChatActivity extends AppCompatActivity {
                                     long totalBytes
                             ) {
 
-                                if (totalBytes <= 0) {
+                                if (
+                                        totalBytes <= 0
+                                ) {
+
                                     return;
                                 }
 
@@ -979,8 +1084,10 @@ public class ChatActivity extends AppCompatActivity {
                                 int percent =
                                         (int)
                                                 (
-                                                        bytes * 100
-                                                                / totalBytes
+                                                        bytes *
+                                                                100
+                                                                /
+                                                                totalBytes
                                                 );
 
 
@@ -1003,7 +1110,9 @@ public class ChatActivity extends AppCompatActivity {
                                         "";
 
 
-                                if (resultData != null) {
+                                if (
+                                        resultData != null
+                                ) {
 
                                     Object secureUrl =
                                             resultData.get(
@@ -1097,7 +1206,6 @@ public class ChatActivity extends AppCompatActivity {
                             }
                         }
                 )
-
                 .dispatch();
     }
 
@@ -1190,7 +1298,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
     // ==================================================
-    // CHAT SUMMARY
+    // CHAT SUMMARY + UNREAD
     // ==================================================
 
     private void updateChatSummary(
@@ -1201,6 +1309,7 @@ public class ChatActivity extends AppCompatActivity {
                 message == null ||
                         message.isUnsent()
         ) {
+
             return;
         }
 
@@ -1208,6 +1317,10 @@ public class ChatActivity extends AppCompatActivity {
         Map<String, Object> data =
                 new HashMap<>();
 
+
+        // ==================================================
+        // PARTICIPANTS
+        // ==================================================
 
         data.put(
                 "senderId",
@@ -1221,11 +1334,35 @@ public class ChatActivity extends AppCompatActivity {
         );
 
 
+        // ==================================================
+        // RECEIVER UNREAD +1
+        // ==================================================
+
+        if (
+                receiverId != null &&
+                        !receiverId.isEmpty()
+        ) {
+
+            data.put(
+                    "unread_" + receiverId,
+                    FieldValue.increment(1)
+            );
+        }
+
+
+        // ==================================================
+        // LAST MESSAGE TIME
+        // ==================================================
+
         data.put(
                 "lastMessageTime",
                 message.getTimestamp()
         );
 
+
+        // ==================================================
+        // LAST MESSAGE
+        // ==================================================
 
         if (
                 "image".equalsIgnoreCase(
@@ -1275,7 +1412,10 @@ public class ChatActivity extends AppCompatActivity {
             Message message
     ) {
 
-        if (message == null) {
+        if (
+                message == null
+        ) {
+
             return;
         }
 
@@ -1315,21 +1455,19 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
-        new AlertDialog.Builder(this)
-
+        new AlertDialog.Builder(
+                this
+        )
                 .setTitle(
                         title
                 )
-
                 .setMessage(
                         "It will disappear from the chat for both users."
                 )
-
                 .setNegativeButton(
                         "Cancel",
                         null
                 )
-
                 .setPositiveButton(
                         "Unsend",
                         (dialog, which) ->
@@ -1337,7 +1475,6 @@ public class ChatActivity extends AppCompatActivity {
                                         message
                                 )
                 )
-
                 .show();
     }
 
@@ -1350,13 +1487,9 @@ public class ChatActivity extends AppCompatActivity {
             Message message
     ) {
 
-        if (message == null) {
-
-            Toast.makeText(
-                    this,
-                    "Message is null",
-                    Toast.LENGTH_SHORT
-            ).show();
+        if (
+                message == null
+        ) {
 
             return;
         }
@@ -1398,20 +1531,29 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
-        // ==================================================
-        // UPDATE FIRESTORE
-        //
-        // IMPORTANT:
-        // Field name is now "unsent"
-        // ==================================================
+        Map<String, Object> updates =
+                new HashMap<>();
+
+
+        updates.put(
+                "unsent",
+                true
+        );
+
+
+        // Old-data compatibility
+        updates.put(
+                "isUnsent",
+                true
+        );
+
 
         db.collection("chats")
                 .document(chatId)
                 .collection("messages")
                 .document(messageId)
                 .update(
-                        "unsent",
-                        true
+                        updates
                 )
 
                 .addOnSuccessListener(
@@ -1422,34 +1564,234 @@ public class ChatActivity extends AppCompatActivity {
                                     "Unsent successfully",
                                     Toast.LENGTH_SHORT
                             ).show();
+
+
+                            rebuildChatSummary();
                         }
                 )
 
                 .addOnFailureListener(
-                        e -> {
+                        e ->
+                                Toast.makeText(
+                                        this,
+                                        "Unsend failed: "
+                                                + e.getMessage(),
+                                        Toast.LENGTH_LONG
+                                ).show()
+                );
+    }
 
-                            String errorMessage =
-                                    e.getMessage();
+
+    // ==================================================
+    // REBUILD CHAT SUMMARY
+    // ==================================================
+
+    private void rebuildChatSummary() {
+
+        db.collection("chats")
+                .document(chatId)
+                .collection("messages")
+                .orderBy(
+                        "timestamp",
+                        Query.Direction.DESCENDING
+                )
+                .get()
+
+                .addOnSuccessListener(
+                        snapshot -> {
+
+                            DocumentSnapshot latestVisible =
+                                    null;
 
 
-                            if (
-                                    errorMessage == null ||
-                                            errorMessage.isEmpty()
+                            for (
+                                    DocumentSnapshot document :
+                                    snapshot.getDocuments()
                             ) {
 
-                                errorMessage =
-                                        "Unknown Firebase error";
+                                if (
+                                        isMessageUnsent(
+                                                document
+                                        )
+                                ) {
+
+                                    continue;
+                                }
+
+
+                                latestVisible =
+                                        document;
+
+                                break;
                             }
 
 
-                            Toast.makeText(
-                                    this,
-                                    "Unsend failed: "
-                                            + errorMessage,
-                                    Toast.LENGTH_LONG
-                            ).show();
+                            Map<String, Object> data =
+                                    new HashMap<>();
+
+
+                            data.put(
+                                    "senderId",
+                                    currentUserId
+                            );
+
+
+                            data.put(
+                                    "receiverId",
+                                    receiverId
+                            );
+
+
+                            if (
+                                    latestVisible == null
+                            ) {
+
+                                data.put(
+                                        "lastMessage",
+                                        "No messages yet"
+                                );
+
+                                data.put(
+                                        "lastMessageTime",
+                                        0L
+                                );
+
+                            } else {
+
+                                data.put(
+                                        "lastMessage",
+                                        getMessagePreview(
+                                                latestVisible
+                                        )
+                                );
+
+
+                                Long time =
+                                        latestVisible.getLong(
+                                                "timestamp"
+                                        );
+
+
+                                data.put(
+                                        "lastMessageTime",
+                                        time != null
+                                                ? time
+                                                : 0L
+                                );
+                            }
+
+
+                            db.collection("chats")
+                                    .document(chatId)
+                                    .set(
+                                            data,
+                                            SetOptions.merge()
+                                    );
                         }
                 );
+    }
+
+
+    // ==================================================
+    // MESSAGE PREVIEW
+    // ==================================================
+
+    private String getMessagePreview(
+            DocumentSnapshot document
+    ) {
+
+        if (
+                document == null
+        ) {
+
+            return "No messages yet";
+        }
+
+
+        String messageType =
+                document.getString(
+                        "messageType"
+                );
+
+
+        if (
+                "image".equalsIgnoreCase(
+                        messageType
+                )
+        ) {
+
+            return "📷 Photo";
+        }
+
+
+        if (
+                "video".equalsIgnoreCase(
+                        messageType
+                )
+        ) {
+
+            return "🎥 Video";
+        }
+
+
+        String text =
+                document.getString(
+                        "message"
+                );
+
+
+        if (
+                text == null ||
+                        text.trim().isEmpty()
+        ) {
+
+            return "Message";
+        }
+
+
+        return text;
+    }
+
+
+    // ==================================================
+    // CHECK UNSENT
+    // ==================================================
+
+    private boolean isMessageUnsent(
+            DocumentSnapshot document
+    ) {
+
+        if (
+                document == null
+        ) {
+
+            return false;
+        }
+
+
+        Boolean unsent =
+                document.getBoolean(
+                        "unsent"
+                );
+
+
+        if (
+                unsent != null &&
+                        unsent
+        ) {
+
+            return true;
+        }
+
+
+        Boolean oldUnsent =
+                document.getBoolean(
+                        "isUnsent"
+                );
+
+
+        return oldUnsent != null &&
+                oldUnsent;
     }
 
 
@@ -1470,7 +1812,9 @@ public class ChatActivity extends AppCompatActivity {
                 .addSnapshotListener(
                         (snapshot, error) -> {
 
-                            if (error != null) {
+                            if (
+                                    error != null
+                            ) {
 
                                 Toast.makeText(
                                         this,
@@ -1483,7 +1827,10 @@ public class ChatActivity extends AppCompatActivity {
                             }
 
 
-                            if (snapshot == null) {
+                            if (
+                                    snapshot == null
+                            ) {
+
                                 return;
                             }
 
@@ -1502,15 +1849,16 @@ public class ChatActivity extends AppCompatActivity {
                                         );
 
 
-                                if (message == null) {
+                                if (
+                                        message == null
+                                ) {
+
                                     continue;
                                 }
 
 
                                 // ==================================================
-                                // IMPORTANT FIX
-                                // Always use Firestore document ID
-                                // as message ID.
+                                // FIRESTORE DOCUMENT ID
                                 // ==================================================
 
                                 message.setMessageId(
@@ -1519,52 +1867,25 @@ public class ChatActivity extends AppCompatActivity {
 
 
                                 // ==================================================
-                                // CHECK NEW UNSENT FIELD
+                                // HIDE UNSENT
                                 // ==================================================
-
-                                boolean unsent =
-                                        message.isUnsent();
-
-
-                                // ==================================================
-                                // SUPPORT OLD DATA
-                                //
-                                // Previous version used "isUnsent".
-                                // So old messages are also hidden.
-                                // ==================================================
-
-                                Boolean oldUnsent =
-                                        document.getBoolean(
-                                                "isUnsent"
-                                        );
-
 
                                 if (
-                                        oldUnsent != null &&
-                                                oldUnsent
+                                        isMessageUnsent(
+                                                document
+                                        )
                                 ) {
-
-                                    unsent = true;
-                                }
-
-
-                                // ==================================================
-                                // HIDE UNSENT MESSAGE
-                                // ==================================================
-
-                                if (unsent) {
 
                                     continue;
                                 }
 
 
                                 // ==================================================
-                                // MESSAGE RECEIVED FROM OTHER USER
+                                // RECEIVED MESSAGE
                                 // ==================================================
 
                                 if (
-                                        currentUserId != null &&
-                                                receiverId != null &&
+                                        receiverId != null &&
                                                 receiverId.equals(
                                                         message.getSenderId()
                                                 )
@@ -1574,19 +1895,52 @@ public class ChatActivity extends AppCompatActivity {
                                             message.getStatus();
 
 
+                                    // ==========================================
+                                    // DELIVERED
+                                    // ==========================================
+
+                                    if (
+                                            !"delivered".equalsIgnoreCase(
+                                                    status
+                                            ) &&
+                                                    !"seen".equalsIgnoreCase(
+                                                            status
+                                                    )
+                                    ) {
+
+                                        markAsDelivered(
+                                                document.getId()
+                                        );
+
+
+                                        // Local UI immediately becomes delivered
+                                        message.setStatus(
+                                                "delivered"
+                                        );
+                                    }
+
+
+                                    // ==========================================
+                                    // SEEN
+                                    // ==========================================
+
                                     if (
                                             !"seen".equalsIgnoreCase(
                                                     status
                                             )
                                     ) {
 
-                                        markAsSeen(
-                                                document.getId()
-                                        );
+                                        final String
+                                                visibleMessageId =
+                                                document.getId();
 
 
-                                        message.setStatus(
-                                                "seen"
+                                        seenHandler.postDelayed(
+                                                () ->
+                                                        markAsSeen(
+                                                                visibleMessageId
+                                                        ),
+                                                500
                                         );
                                     }
                                 }
@@ -1602,7 +1956,9 @@ public class ChatActivity extends AppCompatActivity {
                             // KEEP UPLOAD BUBBLE
                             // ==================================================
 
-                            if (uploadingMessage != null) {
+                            if (
+                                    uploadingMessage != null
+                            ) {
 
                                 messageList.add(
                                         uploadingMessage
@@ -1620,10 +1976,10 @@ public class ChatActivity extends AppCompatActivity {
 
 
     // ==================================================
-    // MARK AS SEEN
+    // MARK DELIVERED
     // ==================================================
 
-    private void markAsSeen(
+    private void markAsDelivered(
             String messageId
     ) {
 
@@ -1642,7 +1998,80 @@ public class ChatActivity extends AppCompatActivity {
                 .document(messageId)
                 .update(
                         "status",
+                        "delivered"
+                );
+    }
+
+
+    // ==================================================
+    // MARK SEEN
+    // ==================================================
+
+    private void markAsSeen(
+            String messageId
+    ) {
+
+        if (
+                messageId == null ||
+                        messageId.isEmpty()
+        ) {
+
+            return;
+        }
+
+
+        if (
+                isFinishing() ||
+                        isDestroyed()
+        ) {
+
+            return;
+        }
+
+
+        db.collection("chats")
+                .document(chatId)
+                .collection("messages")
+                .document(messageId)
+                .update(
+                        "status",
                         "seen"
+                );
+    }
+
+
+    // ==================================================
+    // RESET UNREAD
+    // ==================================================
+
+    private void resetUnreadCount() {
+
+        if (
+                chatId == null ||
+                        chatId.isEmpty() ||
+                        currentUserId == null ||
+                        currentUserId.isEmpty()
+        ) {
+
+            return;
+        }
+
+
+        Map<String, Object> data =
+                new HashMap<>();
+
+
+        data.put(
+                "unread_" + currentUserId,
+                0
+        );
+
+
+        db.collection("chats")
+                .document(chatId)
+                .set(
+                        data,
+                        SetOptions.merge()
                 );
     }
 
@@ -1665,9 +2094,10 @@ public class ChatActivity extends AppCompatActivity {
 
         messageRecyclerView.post(
                 () ->
-                        messageRecyclerView.scrollToPosition(
-                                messageList.size() - 1
-                        )
+                        messageRecyclerView
+                                .scrollToPosition(
+                                        messageList.size() - 1
+                                )
         );
     }
 
@@ -1678,7 +2108,9 @@ public class ChatActivity extends AppCompatActivity {
 
     private void resetMediaControls() {
 
-        if (sendButton != null) {
+        if (
+                sendButton != null
+        ) {
 
             sendButton.setEnabled(
                     true
@@ -1686,7 +2118,9 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
-        if (photoButton != null) {
+        if (
+                photoButton != null
+        ) {
 
             photoButton.setEnabled(
                     true
@@ -1694,7 +2128,9 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
-        if (messageEditText != null) {
+        if (
+                messageEditText != null
+        ) {
 
             messageEditText.setEnabled(
                     true
@@ -1799,11 +2235,29 @@ public class ChatActivity extends AppCompatActivity {
 
 
     // ==================================================
-    // DESTROY
+    // ON RESUME
+    // ==================================================
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        resetUnreadCount();
+    }
+
+
+    // ==================================================
+    // ON DESTROY
     // ==================================================
 
     @Override
     protected void onDestroy() {
+
+        seenHandler.removeCallbacksAndMessages(
+                null
+        );
+
 
         selectedMediaUri =
                 null;
