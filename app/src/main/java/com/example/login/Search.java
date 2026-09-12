@@ -1,12 +1,14 @@
 package com.example.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ImageButton;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,8 +16,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,9 @@ public class Search extends AppCompatActivity {
     // ==================================================
 
     private EditText searchEditText;
+
     private RecyclerView searchRecyclerView;
+
     private RecyclerView postRecyclerView;
 
 
@@ -36,6 +40,7 @@ public class Search extends AppCompatActivity {
     // ==================================================
 
     private SearchAdapter searchAdapter;
+
     private PostAdapter postAdapter;
 
 
@@ -62,10 +67,23 @@ public class Search extends AppCompatActivity {
     // ==================================================
 
     private ImageButton btnHome;
+
     private ImageButton btnCreate;
+
     private ImageButton btnMessage;
+
     private ImageButton btnSearch;
+
     private ImageButton btnProfile;
+
+
+    // ==================================================
+    // ROOT / NAVIGATION
+    // ==================================================
+
+    private View searchRoot;
+
+    private View bottomNavigation;
 
 
     // ==================================================
@@ -74,12 +92,17 @@ public class Search extends AppCompatActivity {
 
     @Override
     protected void onCreate(
-            Bundle savedInstanceState) {
+            Bundle savedInstanceState
+    ) {
 
         super.onCreate(
                 savedInstanceState
         );
 
+
+        // ==================================================
+        // LAYOUT
+        // ==================================================
 
         setContentView(
                 R.layout.activity_search
@@ -95,12 +118,10 @@ public class Search extends AppCompatActivity {
                         R.id.searchEditText
                 );
 
-
         searchRecyclerView =
                 findViewById(
                         R.id.searchRecyclerView
                 );
-
 
         postRecyclerView =
                 findViewById(
@@ -117,28 +138,39 @@ public class Search extends AppCompatActivity {
                         R.id.btnHome
                 );
 
-
         btnCreate =
                 findViewById(
                         R.id.btnCreate
                 );
-
 
         btnMessage =
                 findViewById(
                         R.id.btnMessage
                 );
 
-
         btnSearch =
                 findViewById(
                         R.id.btnSearch
                 );
 
-
         btnProfile =
                 findViewById(
                         R.id.btnProfile
+                );
+
+
+        // ==================================================
+        // ROOT / BOTTOM NAV
+        // ==================================================
+
+        searchRoot =
+                findViewById(
+                        R.id.searchRoot
+                );
+
+        bottomNavigation =
+                findViewById(
+                        R.id.bottomNavigation
                 );
 
 
@@ -189,15 +221,16 @@ public class Search extends AppCompatActivity {
         );
 
 
-        postAdapter =
+        postRecyclerView.setAdapter(
                 new PostAdapter(
                         postList
-                );
-
-
-        postRecyclerView.setAdapter(
-                postAdapter
+                )
         );
+
+
+        postAdapter =
+                (PostAdapter)
+                        postRecyclerView.getAdapter();
 
 
         // ==================================================
@@ -219,14 +252,15 @@ public class Search extends AppCompatActivity {
         // ==================================================
 
         searchEditText.addTextChangedListener(
-                new TextWatcher() {
+                new android.text.TextWatcher() {
 
                     @Override
                     public void beforeTextChanged(
                             CharSequence s,
                             int start,
                             int count,
-                            int after) {
+                            int after
+                    ) {
                     }
 
 
@@ -235,7 +269,8 @@ public class Search extends AppCompatActivity {
                             CharSequence s,
                             int start,
                             int before,
-                            int count) {
+                            int count
+                    ) {
 
                         filterUsers(
                                 s.toString()
@@ -245,7 +280,8 @@ public class Search extends AppCompatActivity {
 
                     @Override
                     public void afterTextChanged(
-                            Editable s) {
+                            android.text.Editable s
+                    ) {
                     }
                 }
         );
@@ -256,6 +292,142 @@ public class Search extends AppCompatActivity {
         // ==================================================
 
         setupBottomNavigation();
+
+
+        // ==================================================
+        // KEYBOARD HANDLING
+        // ==================================================
+
+        setupKeyboardHandling();
+    }
+
+
+    // ==================================================
+    // KEYBOARD HANDLING
+    //
+    // Hides bottom navigation when keyboard opens.
+    // ==================================================
+
+    private void setupKeyboardHandling() {
+
+        if (
+                searchRoot == null ||
+                        bottomNavigation == null
+        ) {
+
+            return;
+        }
+
+
+        final Rect visibleFrame =
+                new Rect();
+
+
+        searchRoot
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                            @Override
+                            public void onGlobalLayout() {
+
+                                if (
+                                        searchRoot
+                                                .getWindowToken()
+                                                == null
+                                ) {
+
+                                    return;
+                                }
+
+
+                                searchRoot
+                                        .getWindowVisibleDisplayFrame(
+                                                visibleFrame
+                                        );
+
+
+                                int rootHeight =
+                                        searchRoot
+                                                .getRootView()
+                                                .getHeight();
+
+
+                                int visibleHeight =
+                                        visibleFrame.height();
+
+
+                                if (
+                                        rootHeight <= 0 ||
+                                                visibleHeight <= 0
+                                ) {
+
+                                    return;
+                                }
+
+
+                                int heightDifference =
+                                        rootHeight -
+                                                visibleHeight;
+
+
+                                // ==================================================
+                                // KEYBOARD THRESHOLD
+                                // ==================================================
+
+                                int keyboardThreshold =
+                                        (int)
+                                                (
+                                                        rootHeight *
+                                                                0.15f
+                                                );
+
+
+                                boolean keyboardOpen =
+                                        heightDifference >
+                                                keyboardThreshold;
+
+
+                                // ==================================================
+                                // KEYBOARD OPEN
+                                // ==================================================
+
+                                if (keyboardOpen) {
+
+                                    if (
+                                            bottomNavigation
+                                                    .getVisibility()
+                                                    != View.GONE
+                                    ) {
+
+                                        bottomNavigation.setVisibility(
+                                                View.GONE
+                                        );
+                                    }
+
+                                }
+
+
+                                // ==================================================
+                                // KEYBOARD CLOSED
+                                // ==================================================
+
+                                else {
+
+                                    if (
+                                            bottomNavigation
+                                                    .getVisibility()
+                                                    != View.VISIBLE
+                                    ) {
+
+                                        bottomNavigation.setVisibility(
+                                                View.VISIBLE
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                );
     }
 
 
@@ -265,31 +437,20 @@ public class Search extends AppCompatActivity {
 
     private void setupBottomNavigation() {
 
-
         // ==================================================
         // HOME
         // ==================================================
 
-        if (
-                btnHome != null
-        ) {
+        if (btnHome != null) {
 
             btnHome.setOnClickListener(
                     v -> {
 
-                        Intent intent =
-                                new Intent(
-                                        Search.this,
-                                        homepage.class
-                                );
+                        hideKeyboard();
 
-
-                        startActivity(
-                                intent
+                        openActivity(
+                                homepage.class
                         );
-
-
-                        finish();
                     }
             );
         }
@@ -299,18 +460,16 @@ public class Search extends AppCompatActivity {
         // CREATE
         // ==================================================
 
-        if (
-                btnCreate != null
-        ) {
+        if (btnCreate != null) {
 
             btnCreate.setOnClickListener(
                     v -> {
 
-                        Toast.makeText(
-                                Search.this,
-                                "Create screen coming soon",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                        hideKeyboard();
+
+                        openActivity(
+                                frontpage.class
+                        );
                     }
             );
         }
@@ -320,26 +479,16 @@ public class Search extends AppCompatActivity {
         // MESSAGE
         // ==================================================
 
-        if (
-                btnMessage != null
-        ) {
+        if (btnMessage != null) {
 
             btnMessage.setOnClickListener(
                     v -> {
 
-                        Intent intent =
-                                new Intent(
-                                        Search.this,
-                                        ChatListActivity.class
-                                );
+                        hideKeyboard();
 
-
-                        startActivity(
-                                intent
+                        openActivity(
+                                ChatListActivity.class
                         );
-
-
-                        finish();
                     }
             );
         }
@@ -349,13 +498,12 @@ public class Search extends AppCompatActivity {
         // SEARCH
         // ==================================================
 
-        if (
-                btnSearch != null
-        ) {
+        if (btnSearch != null) {
 
             btnSearch.setOnClickListener(
                     v -> {
-                        // Already on Search
+
+                        // Already on Search.
                     }
             );
         }
@@ -365,29 +513,52 @@ public class Search extends AppCompatActivity {
         // PROFILE
         // ==================================================
 
-        if (
-                btnProfile != null
-        ) {
+        if (btnProfile != null) {
 
             btnProfile.setOnClickListener(
                     v -> {
 
-                        Intent intent =
-                                new Intent(
-                                        Search.this,
-                                        profilepage.class
-                                );
+                        hideKeyboard();
 
-
-                        startActivity(
-                                intent
+                        openActivity(
+                                profilepage.class
                         );
-
-
-                        finish();
                     }
             );
         }
+    }
+
+
+    // ==================================================
+    // OPEN ACTIVITY
+    // ==================================================
+
+    private void openActivity(
+            Class<?> targetActivity
+    ) {
+
+        Intent intent =
+                new Intent(
+                        Search.this,
+                        targetActivity
+                );
+
+
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+        );
+
+
+        startActivity(
+                intent
+        );
+
+
+        overridePendingTransition(
+                0,
+                0
+        );
     }
 
 
@@ -410,9 +581,17 @@ public class Search extends AppCompatActivity {
                                     queryDocumentSnapshots
                             ) {
 
+                                // ==================================================
+                                // UID
+                                // ==================================================
+
                                 String uid =
                                         document.getId();
 
+
+                                // ==================================================
+                                // OLD USERNAME FIELD
+                                // ==================================================
 
                                 String username =
                                         document.getString(
@@ -420,11 +599,19 @@ public class Search extends AppCompatActivity {
                                         );
 
 
+                                // ==================================================
+                                // USER ID
+                                // ==================================================
+
                                 String userId =
                                         document.getString(
                                                 "userId"
                                         );
 
+
+                                // ==================================================
+                                // UNIQUE USER ID
+                                // ==================================================
 
                                 String uniqueUserId =
                                         document.getString(
@@ -432,13 +619,38 @@ public class Search extends AppCompatActivity {
                                         );
 
 
+                                // ==================================================
+                                // DISPLAY NAME / REAL NAME
+                                // ==================================================
+
+                                String name =
+                                        document.getString(
+                                                "name"
+                                        );
+
+
+                                // ==================================================
+                                // PROFILE IMAGE
+                                // ==================================================
+
+                                String profileImage =
+                                        document.getString(
+                                                "profileImage"
+                                        );
+
+
+                                // ==================================================
+                                // DISPLAY USER ID
+                                //
+                                // Priority:
+                                // userId
+                                // uniqueUserId
+                                // username
+                                // ==================================================
+
                                 String displayName =
                                         null;
 
-
-                                // ==================================================
-                                // USER ID FIRST
-                                // ==================================================
 
                                 if (
                                         userId != null &&
@@ -466,6 +678,10 @@ public class Search extends AppCompatActivity {
                                 }
 
 
+                                // ==================================================
+                                // NO USER ID
+                                // ==================================================
+
                                 if (
                                         displayName == null ||
                                                 displayName.isEmpty()
@@ -475,14 +691,33 @@ public class Search extends AppCompatActivity {
                                 }
 
 
+                                // ==================================================
+                                // ADD USER
+                                //
+                                // UID
+                                // User ID
+                                // Name
+                                // Profile Photo
+                                // ==================================================
+
                                 allUsers.add(
                                         new User(
                                                 uid,
-                                                displayName
+                                                displayName,
+                                                name != null
+                                                        ? name
+                                                        : "",
+                                                profileImage != null
+                                                        ? profileImage
+                                                        : ""
                                         )
                                 );
                             }
 
+
+                            // ==================================================
+                            // REFRESH CURRENT SEARCH
+                            // ==================================================
 
                             if (
                                     searchEditText != null
@@ -497,15 +732,13 @@ public class Search extends AppCompatActivity {
                         }
                 )
                 .addOnFailureListener(
-                        e -> {
-
-                            Toast.makeText(
-                                    Search.this,
-                                    "Firebase Error: "
-                                            + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
+                        e ->
+                                Toast.makeText(
+                                        Search.this,
+                                        "Firebase Error: "
+                                                + e.getMessage(),
+                                        Toast.LENGTH_LONG
+                                ).show()
                 );
     }
 
@@ -515,8 +748,8 @@ public class Search extends AppCompatActivity {
     // ==================================================
 
     private void filterUsers(
-            String text) {
-
+            String text
+    ) {
 
         if (
                 searchRecyclerView == null ||
@@ -591,6 +824,10 @@ public class Search extends AppCompatActivity {
                             .toLowerCase();
 
 
+            // ==================================================
+            // SEARCH BY USER ID
+            // ==================================================
+
             if (
                     username.contains(
                             searchText
@@ -604,13 +841,17 @@ public class Search extends AppCompatActivity {
         }
 
 
+        // ==================================================
+        // UPDATE ADAPTER
+        // ==================================================
+
         searchAdapter.updateList(
                 filteredUsers
         );
 
 
         // ==================================================
-        // SHOW / HIDE RESULT
+        // SHOW / HIDE RESULTS
         // ==================================================
 
         if (
@@ -621,6 +862,7 @@ public class Search extends AppCompatActivity {
                     View.GONE
             );
 
+
             postRecyclerView.setVisibility(
                     View.VISIBLE
             );
@@ -630,6 +872,7 @@ public class Search extends AppCompatActivity {
             searchRecyclerView.setVisibility(
                     View.VISIBLE
             );
+
 
             postRecyclerView.setVisibility(
                     View.GONE
@@ -658,7 +901,6 @@ public class Search extends AppCompatActivity {
                                                 + error.getMessage(),
                                         Toast.LENGTH_LONG
                                 ).show();
-
 
                                 return;
                             }
@@ -695,7 +937,7 @@ public class Search extends AppCompatActivity {
 
 
                                 // ==================================================
-                                // SAVE DOCUMENT ID
+                                // DOCUMENT ID
                                 // ==================================================
 
                                 post.setPostId(
@@ -725,7 +967,7 @@ public class Search extends AppCompatActivity {
 
 
     // ==================================================
-    // ON RESUME
+    // RESUME
     // ==================================================
 
     @Override
@@ -742,6 +984,36 @@ public class Search extends AppCompatActivity {
                     searchEditText
                             .getText()
                             .toString()
+            );
+        }
+    }
+
+
+    // ==================================================
+    // HIDE KEYBOARD
+    // ==================================================
+
+    private void hideKeyboard() {
+
+        InputMethodManager imm =
+                (InputMethodManager)
+                        getSystemService(
+                                Context.INPUT_METHOD_SERVICE
+                        );
+
+
+        View currentFocus =
+                getCurrentFocus();
+
+
+        if (
+                imm != null &&
+                        currentFocus != null
+        ) {
+
+            imm.hideSoftInputFromWindow(
+                    currentFocus.getWindowToken(),
+                    0
             );
         }
     }

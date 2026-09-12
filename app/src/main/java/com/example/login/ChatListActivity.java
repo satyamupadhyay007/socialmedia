@@ -1,16 +1,19 @@
 package com.example.login;
-import android.view.ViewGroup;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,40 +36,15 @@ import java.util.Map;
 public class ChatListActivity extends AppCompatActivity {
 
     // ==================================================
-    // SEARCH
+    // UI
     // ==================================================
 
     private EditText searchUserEditText;
-
     private ImageButton searchUserButton;
 
-    // ==================================================
-    // CHAT LIST
-    // ==================================================
+    private TextView currentUserIdText;
 
     private RecyclerView chatListRecyclerView;
-
-    private List<ChatItem> chatList;
-
-    private ChatListAdapter chatListAdapter;
-
-    // ==================================================
-    // FIREBASE
-    // ==================================================
-
-    private FirebaseFirestore db;
-
-    private FirebaseAuth mAuth;
-
-    // ==================================================
-    // CHAT LOAD GENERATION
-    // ==================================================
-
-    private int chatLoadGeneration = 0;
-
-    // ==================================================
-    // BOTTOM NAVIGATION
-    // ==================================================
 
     private ImageButton btnHome;
     private ImageButton btnCreate;
@@ -74,15 +53,36 @@ public class ChatListActivity extends AppCompatActivity {
     private ImageButton btnProfile;
 
     // ==================================================
-    // ROOT / CONTENT
+    // FIREBASE
     // ==================================================
 
-    private View chatListRoot;
-    private View mainContent;
-    private View bottomNavigation;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     // ==================================================
-    // ON CREATE
+    // DATA
+    // ==================================================
+
+    private final List<ChatItem> chatList =
+            new ArrayList<>();
+
+    private ChatListAdapter chatListAdapter;
+
+    // ==================================================
+    // LISTENER
+    // ==================================================
+
+    private ListenerRegistration chatsListener;
+
+    // ==================================================
+    // CACHE
+    // ==================================================
+
+    private final Map<String, UserCache> userCache =
+            new HashMap<>();
+
+    // ==================================================
+    // CREATE
     // ==================================================
 
     @Override
@@ -94,22 +94,45 @@ public class ChatListActivity extends AppCompatActivity {
                 savedInstanceState
         );
 
-        // ==================================================
-        // KEYBOARD BEHAVIOUR
-        // ==================================================
-
-        getWindow().setSoftInputMode(
-                WindowManager.LayoutParams
-                        .SOFT_INPUT_ADJUST_RESIZE
+        EdgeToEdge.enable(
+                this
         );
-
-        // ==================================================
-        // LAYOUT
-        // ==================================================
 
         setContentView(
                 R.layout.activity_chat_list
         );
+
+        // ==================================================
+        // ROOT INSETS
+        // ==================================================
+
+        View root =
+                findViewById(
+                        R.id.chatListRoot
+                );
+
+        if (root != null) {
+
+            ViewCompat.setOnApplyWindowInsetsListener(
+                    root,
+                    (view, windowInsets) -> {
+
+                        Insets systemBars =
+                                windowInsets.getInsets(
+                                        WindowInsetsCompat.Type.systemBars()
+                                );
+
+                        view.setPadding(
+                                0,
+                                systemBars.top,
+                                0,
+                                systemBars.bottom
+                        );
+
+                        return windowInsets;
+                    }
+            );
+        }
 
         // ==================================================
         // FIREBASE
@@ -122,7 +145,7 @@ public class ChatListActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance();
 
         // ==================================================
-        // FIND VIEWS
+        // VIEWS
         // ==================================================
 
         searchUserEditText =
@@ -135,14 +158,15 @@ public class ChatListActivity extends AppCompatActivity {
                         R.id.searchUserButton
                 );
 
+        currentUserIdText =
+                findViewById(
+                        R.id.currentUserIdText
+                );
+
         chatListRecyclerView =
                 findViewById(
                         R.id.chatListRecyclerView
                 );
-
-        // ==================================================
-        // BOTTOM NAVIGATION VIEWS
-        // ==================================================
 
         btnHome =
                 findViewById(
@@ -170,38 +194,13 @@ public class ChatListActivity extends AppCompatActivity {
                 );
 
         // ==================================================
-        // ROOT / CONTENT
+        // ADAPTER
         // ==================================================
-
-        chatListRoot =
-                findViewById(
-                        R.id.chatListRoot
-                );
-
-        mainContent =
-                findViewById(
-                        R.id.mainContent
-                );
-
-        bottomNavigation =
-                findViewById(
-                        R.id.bottomNavigation
-                );
-
-        // ==================================================
-        // CHAT LIST
-        // ==================================================
-
-        chatList =
-                new ArrayList<>();
 
         chatListAdapter =
                 new ChatListAdapter(
                         chatList,
-                        chatItem ->
-                                openChat(
-                                        chatItem
-                                )
+                        this::openChat
                 );
 
         chatListRecyclerView.setLayoutManager(
@@ -214,15 +213,13 @@ public class ChatListActivity extends AppCompatActivity {
                 chatListAdapter
         );
 
-        chatListRecyclerView.setClipToPadding(
-                false
+        chatListRecyclerView.setHasFixedSize(
+                true
         );
 
-        // ==================================================
-        // LOAD CURRENT USER
-        // ==================================================
-
-        loadCurrentUserId();
+        chatListRecyclerView.setItemViewCacheSize(
+                10
+        );
 
         // ==================================================
         // SEARCH
@@ -231,336 +228,33 @@ public class ChatListActivity extends AppCompatActivity {
         setupSearch();
 
         // ==================================================
-        // BOTTOM NAVIGATION
+        // NAVIGATION
         // ==================================================
 
         setupBottomNavigation();
 
         // ==================================================
-        // SAFE AREA
-        // CAMERA / NOTCH / NAVIGATION BAR
+        // CURRENT USER
         // ==================================================
 
-        setupWindowInsets();
+        loadCurrentUser();
 
         // ==================================================
-        // LOAD CHATS
+        // CHATS
         // ==================================================
 
-        loadChats();
+        startChatsListener();
     }
 
     // ==================================================
-    // BOTTOM NAVIGATION
+    // CURRENT USER
     // ==================================================
 
-    private void setupBottomNavigation() {
-
-        // ==================================================
-        // HOME
-        // ==================================================
-
-        btnHome.setOnClickListener(
-                v -> {
-
-                    hideKeyboard();
-
-                    Intent intent =
-                            new Intent(
-                                    ChatListActivity.this,
-                                    homepage.class
-                            );
-
-                    intent.addFlags(
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    );
-
-                    startActivity(
-                            intent
-                    );
-
-                    overridePendingTransition(
-                            0,
-                            0
-                    );
-                }
-        );
-
-        // ==================================================
-        // CREATE
-        // ==================================================
-
-        btnCreate.setOnClickListener(
-                v -> {
-
-                    hideKeyboard();
-
-                    Intent intent =
-                            new Intent(
-                                    ChatListActivity.this,
-                                    frontpage.class
-                            );
-
-                    intent.addFlags(
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    );
-
-                    startActivity(
-                            intent
-                    );
-
-                    overridePendingTransition(
-                            0,
-                            0
-                    );
-                }
-        );
-
-        // ==================================================
-        // MESSAGE
-        // ==================================================
-
-        btnMessage.setOnClickListener(
-                v -> {
-
-                    hideKeyboard();
-
-                    // Already inside ChatListActivity.
-                    // Do not create another ChatListActivity.
-                    chatListRecyclerView.smoothScrollToPosition(
-                            0
-                    );
-                }
-        );
-
-        // ==================================================
-        // SEARCH
-        // IMPORTANT:
-        // Bottom Search opens Search Activity.
-        // ==================================================
-
-        btnSearch.setOnClickListener(
-                v -> {
-
-                    hideKeyboard();
-
-                    Intent intent =
-                            new Intent(
-                                    ChatListActivity.this,
-                                    Search.class
-                            );
-
-                    intent.addFlags(
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    );
-
-                    startActivity(
-                            intent
-                    );
-
-                    overridePendingTransition(
-                            0,
-                            0
-                    );
-                }
-        );
-
-        // ==================================================
-        // PROFILE
-        // ==================================================
-
-        btnProfile.setOnClickListener(
-                v -> {
-
-                    hideKeyboard();
-
-                    Intent intent =
-                            new Intent(
-                                    ChatListActivity.this,
-                                    profilepage.class
-                            );
-
-                    intent.addFlags(
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    );
-
-                    startActivity(
-                            intent
-                    );
-
-                    overridePendingTransition(
-                            0,
-                            0
-                    );
-                }
-        );
-    }
-
-    // ==================================================
-    // WINDOW INSETS
-    // ==================================================
-
-    private void setupWindowInsets() {
-
-        if (
-                chatListRoot == null ||
-                        mainContent == null ||
-                        bottomNavigation == null
-        ) {
-
-            return;
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(
-                chatListRoot,
-                (view, windowInsets) -> {
-
-                    // ==================================================
-                    // SYSTEM BARS
-                    // ==================================================
-
-                    Insets systemBars =
-                            windowInsets.getInsets(
-                                    WindowInsetsCompat.Type
-                                            .systemBars()
-                            );
-
-                    // ==================================================
-                    // DISPLAY CUTOUT
-                    // ==================================================
-
-                    Insets cutout =
-                            windowInsets.getInsets(
-                                    WindowInsetsCompat.Type
-                                            .displayCutout()
-                            );
-
-                    // ==================================================
-                    // KEYBOARD
-                    // ==================================================
-
-                    Insets ime =
-                            windowInsets.getInsets(
-                                    WindowInsetsCompat.Type
-                                            .ime()
-                            );
-
-                    boolean keyboardVisible =
-                            windowInsets.isVisible(
-                                    WindowInsetsCompat.Type
-                                            .ime()
-                            );
-
-                    // ==================================================
-                    // TOP SAFE AREA
-                    // ==================================================
-
-                    int safeTop =
-                            Math.max(
-                                    systemBars.top,
-                                    cutout.top
-                            );
-
-                    // ==================================================
-                    // BOTTOM SAFE AREA
-                    // ==================================================
-
-                    int safeBottom;
-
-                    if (keyboardVisible) {
-
-                        safeBottom =
-                                Math.max(
-                                        ime.bottom,
-                                        systemBars.bottom
-                                );
-
-                    } else {
-
-                        safeBottom =
-                                Math.max(
-                                        systemBars.bottom,
-                                        cutout.bottom
-                                );
-                    }
-
-                    // ==================================================
-                    // MAIN CONTENT
-                    // ==================================================
-
-                    ViewGroup.MarginLayoutParams
-                            contentParams =
-                            (ViewGroup.MarginLayoutParams)
-                                    mainContent.getLayoutParams();
-
-                    contentParams.topMargin =
-                            safeTop;
-
-                    mainContent.setLayoutParams(
-                            contentParams
-                    );
-
-                    // ==================================================
-                    // BOTTOM NAVIGATION
-                    // ==================================================
-
-                    ViewGroup.MarginLayoutParams
-                            bottomParams =
-                            (ViewGroup.MarginLayoutParams)
-                                    bottomNavigation.getLayoutParams();
-
-                    bottomParams.bottomMargin =
-                            safeBottom;
-
-                    bottomNavigation.setLayoutParams(
-                            bottomParams
-                    );
-
-                    // ==================================================
-                    // CHAT LIST PADDING
-                    // ==================================================
-
-                    int listBottomPadding =
-                            Math.max(
-                                    safeBottom,
-                                    dp(16)
-                            );
-
-                    chatListRecyclerView.setPadding(
-                            dp(8),
-                            dp(5),
-                            dp(8),
-                            listBottomPadding
-                    );
-
-                    return windowInsets;
-                }
-        );
-
-        ViewCompat.requestApplyInsets(
-                chatListRoot
-        );
-    }
-
-    // ==================================================
-    // CURRENT USER ID
-    // ==================================================
-
-    private void loadCurrentUserId() {
-
-        TextView currentUserIdText =
-                findViewById(
-                        R.id.currentUserIdText
-                );
+    private void loadCurrentUser() {
 
         if (
                 currentUserIdText == null
         ) {
-
             return;
         }
 
@@ -585,271 +279,546 @@ public class ChatListActivity extends AppCompatActivity {
                 .addOnSuccessListener(
                         document -> {
 
+                            if (
+                                    !document.exists()
+                            ) {
+
+                                currentUserIdText.setText(
+                                        "User"
+                                );
+
+                                return;
+                            }
+
+                            String name =
+                                    firstNonEmpty(
+                                            document.getString("name"),
+                                            document.getString("fullName"),
+                                            document.getString("displayName")
+                                    );
+
                             String userId =
-                                    document.getString(
-                                            "userId"
+                                    firstNonEmpty(
+                                            document.getString("userId"),
+                                            document.getString("username"),
+                                            document.getString("uniqueUserId")
                                     );
 
                             if (
-                                    userId == null ||
-                                            userId.isEmpty()
+                                    name != null
                             ) {
 
-                                userId =
-                                        document.getString(
-                                                "username"
-                                        );
-                            }
+                                currentUserIdText.setText(
+                                        name
+                                );
 
-                            if (
-                                    userId == null ||
-                                            userId.isEmpty()
+                            } else if (
+                                    userId != null
                             ) {
 
-                                userId =
-                                        "User";
-                            }
+                                currentUserIdText.setText(
+                                        userId
+                                );
 
-                            currentUserIdText.setText(
-                                    userId
-                            );
+                            } else {
+
+                                currentUserIdText.setText(
+                                        "User"
+                                );
+                            }
                         }
                 )
                 .addOnFailureListener(
-                        e ->
-                                currentUserIdText.setText(
-                                        "User"
-                                )
+                        e -> {
+
+                            currentUserIdText.setText(
+                                    "User"
+                            );
+                        }
                 );
     }
 
     // ==================================================
-    // SEARCH SETUP
+    // CHAT LISTENER
     // ==================================================
 
-    private void setupSearch() {
-
-        searchUserButton.setOnClickListener(
-                v -> {
-
-                    hideKeyboard();
-
-                    searchUser();
-                }
-        );
-
-        searchUserEditText.setOnEditorActionListener(
-                (v, actionId, event) -> {
-
-                    hideKeyboard();
-
-                    searchUser();
-
-                    return true;
-                }
-        );
-    }
-
-    // ==================================================
-    // LOAD CHATS
-    // ==================================================
-
-    private void loadChats() {
+    private void startChatsListener() {
 
         if (
                 mAuth.getCurrentUser() == null
         ) {
-
             return;
         }
+
+        // Prevent duplicate listener
+        stopChatsListener();
 
         final String currentUid =
                 mAuth.getCurrentUser()
                         .getUid();
 
-        db.collection("chats")
-                .addSnapshotListener(
-                        (snapshot, error) -> {
+        chatsListener =
+                db.collection("chats")
+                        .addSnapshotListener(
+                                (snapshot, error) -> {
 
-                            // ==========================================
-                            // FIREBASE ERROR
-                            // ==========================================
+                                    if (
+                                            isFinishing() ||
+                                                    isDestroyed()
+                                    ) {
+                                        return;
+                                    }
+
+                                    if (
+                                            error != null
+                                    ) {
+
+                                        Toast.makeText(
+                                                ChatListActivity.this,
+                                                "Could not load chats",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+
+                                        return;
+                                    }
+
+                                    if (
+                                            snapshot == null
+                                    ) {
+                                        return;
+                                    }
+
+                                    processChatSnapshot(
+                                            snapshot.getDocuments(),
+                                            currentUid
+                                    );
+                                }
+                        );
+    }
+
+    // ==================================================
+    // STOP LISTENER
+    // ==================================================
+
+    private void stopChatsListener() {
+
+        if (
+                chatsListener != null
+        ) {
+
+            chatsListener.remove();
+
+            chatsListener =
+                    null;
+        }
+    }
+
+    // ==================================================
+    // PROCESS CHATS
+    // ==================================================
+
+    private void processChatSnapshot(
+            List<DocumentSnapshot> documents,
+            String currentUid
+    ) {
+
+        final Map<String, ChatItem> uniqueChats =
+                new HashMap<>();
+
+        final List<String> userIdsToLoad =
+                new ArrayList<>();
+
+        // ==================================================
+        // READ ONLY CHAT SUMMARY
+        // ==================================================
+
+        for (
+                DocumentSnapshot document :
+                documents
+        ) {
+
+            String chatId =
+                    document.getId();
+
+            String otherUserId =
+                    getOtherUserId(
+                            document,
+                            currentUid,
+                            chatId
+                    );
+
+            if (
+                    otherUserId == null ||
+                            otherUserId.isEmpty()
+            ) {
+                continue;
+            }
+
+            // ------------------------------------------
+            // SUMMARY
+            // ------------------------------------------
+
+            String lastMessage =
+                    document.getString(
+                            "lastMessage"
+                    );
+
+            if (
+                    lastMessage == null ||
+                            lastMessage.trim().isEmpty()
+            ) {
+
+                lastMessage =
+                        "No messages yet";
+            }
+
+            Long timeValue =
+                    document.getLong(
+                            "lastMessageTime"
+                    );
+
+            long lastMessageTime =
+                    timeValue != null
+                            ? timeValue
+                            : 0L;
+
+            int unreadCount =
+                    getUnreadCount(
+                            document,
+                            currentUid
+                    );
+
+            // ------------------------------------------
+            // CREATE TEMP ITEM
+            // ------------------------------------------
+
+            ChatItem item =
+                    new ChatItem(
+                            otherUserId,
+                            "",
+                            "",
+                            "",
+                            lastMessage,
+                            lastMessageTime,
+                            unreadCount
+                    );
+
+            uniqueChats.put(
+                    otherUserId,
+                    item
+            );
+
+            if (
+                    !userIdsToLoad.contains(
+                            otherUserId
+                    )
+            ) {
+
+                userIdsToLoad.add(
+                        otherUserId
+                );
+            }
+        }
+
+        // ==================================================
+        // NO CHATS
+        // ==================================================
+
+        if (
+                userIdsToLoad.isEmpty()
+        ) {
+
+            chatList.clear();
+
+            chatListAdapter.updateList(
+                    new ArrayList<>()
+            );
+
+            return;
+        }
+
+        // ==================================================
+        // LOAD USER DATA
+        // ==================================================
+
+        final int[] remaining =
+                {
+                        userIdsToLoad.size()
+                };
+
+        for (
+                String userId :
+                userIdsToLoad
+        ) {
+
+            loadUserData(
+                    userId,
+                    uniqueChats,
+                    remaining
+            );
+        }
+    }
+
+    // ==================================================
+    // LOAD USER DATA
+    // ==================================================
+
+    private void loadUserData(
+            String userId,
+            Map<String, ChatItem> uniqueChats,
+            int[] remaining
+    ) {
+
+        // ==================================================
+        // CACHE
+        // ==================================================
+
+        UserCache cached =
+                userCache.get(
+                        userId
+                );
+
+        if (
+                cached != null
+        ) {
+
+            applyUserCache(
+                    userId,
+                    cached,
+                    uniqueChats
+            );
+
+            finishUserLoad(
+                    remaining,
+                    uniqueChats
+            );
+
+            return;
+        }
+
+        // ==================================================
+        // FIRESTORE
+        // ==================================================
+
+        db.collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(
+                        document -> {
 
                             if (
-                                    error != null
+                                    document.exists()
                             ) {
 
-                                Toast.makeText(
-                                        ChatListActivity.this,
-                                        "Could not load chats",
-                                        Toast.LENGTH_SHORT
-                                ).show();
+                                String username =
+                                        firstNonEmpty(
+                                                document.getString("userId"),
+                                                document.getString("username"),
+                                                document.getString("uniqueUserId")
+                                        );
 
-                                return;
-                            }
+                                String name =
+                                        firstNonEmpty(
+                                                document.getString("name"),
+                                                document.getString("fullName"),
+                                                document.getString("displayName")
+                                        );
 
-                            if (
-                                    snapshot == null
-                            ) {
-
-                                return;
-                            }
-
-                            // ==========================================
-                            // NEW GENERATION
-                            // ==========================================
-
-                            chatLoadGeneration++;
-
-                            final int thisGeneration =
-                                    chatLoadGeneration;
-
-                            // ==========================================
-                            // UNIQUE CHAT MAP
-                            // ==========================================
-
-                            Map<String, ChatItem> uniqueChats =
-                                    new HashMap<>();
-
-                            // ==========================================
-                            // COUNT VALID CHATS
-                            // ==========================================
-
-                            int validChatCount =
-                                    0;
-
-                            for (
-                                    DocumentSnapshot document :
-                                    snapshot.getDocuments()
-                            ) {
-
-                                String chatId =
-                                        document.getId();
-
-                                String otherUserId =
-                                        getOtherUserId(
-                                                document,
-                                                currentUid,
-                                                chatId
+                                String profileImage =
+                                        firstNonEmpty(
+                                                document.getString("profileImage"),
+                                                document.getString("profileImageUrl"),
+                                                document.getString("photoURL"),
+                                                document.getString("photoUrl")
                                         );
 
                                 if (
-                                        otherUserId == null ||
-                                                otherUserId.isEmpty()
+                                        username == null
                                 ) {
-
-                                    continue;
+                                    username =
+                                            "Unknown User";
                                 }
-
-                                validChatCount++;
-                            }
-
-                            // ==========================================
-                            // NO CHATS
-                            // ==========================================
-
-                            if (
-                                    validChatCount == 0
-                            ) {
-
-                                chatList.clear();
-
-                                chatListAdapter.updateList(
-                                        chatList
-                                );
-
-                                return;
-                            }
-
-                            // ==========================================
-                            // ASYNC COUNTER
-                            // ==========================================
-
-                            final int[] remaining =
-                                    {
-                                            validChatCount
-                                    };
-
-                            // ==========================================
-                            // READ CHATS
-                            // ==========================================
-
-                            for (
-                                    DocumentSnapshot document :
-                                    snapshot.getDocuments()
-                            ) {
-
-                                String chatId =
-                                        document.getId();
-
-                                String otherUserId =
-                                        getOtherUserId(
-                                                document,
-                                                currentUid,
-                                                chatId
-                                        );
 
                                 if (
-                                        otherUserId == null ||
-                                                otherUserId.isEmpty()
+                                        name == null
                                 ) {
-
-                                    continue;
+                                    name =
+                                            username;
                                 }
 
-                                // ==========================================
-                                // LAST MESSAGE
-                                // ==========================================
+                                if (
+                                        profileImage == null
+                                ) {
+                                    profileImage =
+                                            "";
+                                }
 
-                                String lastMessage =
-                                        document.getString(
-                                                "lastMessage"
+                                UserCache cache =
+                                        new UserCache(
+                                                username,
+                                                name,
+                                                profileImage
                                         );
 
-                                // ==========================================
-                                // LAST MESSAGE TIME
-                                // ==========================================
+                                userCache.put(
+                                        userId,
+                                        cache
+                                );
 
-                                Long timeValue =
-                                        document.getLong(
-                                                "lastMessageTime"
-                                        );
+                                applyUserCache(
+                                        userId,
+                                        cache,
+                                        uniqueChats
+                                );
 
-                                long lastMessageTime =
-                                        timeValue != null
-                                                ? timeValue
-                                                : 0;
+                            } else {
 
-                                // ==========================================
-                                // UNREAD COUNT
-                                // ==========================================
-
-                                int unreadCount =
-                                        getUnreadCount(
-                                                document,
-                                                currentUid
-                                        );
-
-                                // ==========================================
-                                // LOAD USER
-                                // ==========================================
-
-                                loadChatUser(
-                                        otherUserId,
-                                        lastMessage,
-                                        lastMessageTime,
-                                        unreadCount,
-                                        uniqueChats,
-                                        thisGeneration,
-                                        remaining
+                                applyDefaultUser(
+                                        userId,
+                                        uniqueChats
                                 );
                             }
+
+                            finishUserLoad(
+                                    remaining,
+                                    uniqueChats
+                            );
+                        }
+                )
+                .addOnFailureListener(
+                        e -> {
+
+                            applyDefaultUser(
+                                    userId,
+                                    uniqueChats
+                            );
+
+                            finishUserLoad(
+                                    remaining,
+                                    uniqueChats
+                            );
                         }
                 );
     }
 
     // ==================================================
-    // FIND OTHER USER
+    // APPLY CACHE
+    // ==================================================
+
+    private void applyUserCache(
+            String userId,
+            UserCache cache,
+            Map<String, ChatItem> uniqueChats
+    ) {
+
+        ChatItem item =
+                uniqueChats.get(
+                        userId
+                );
+
+        if (
+                item == null ||
+                        cache == null
+        ) {
+            return;
+        }
+
+        item.setUsername(
+                cache.username
+        );
+
+        item.setName(
+                cache.name
+        );
+
+        item.setProfileImage(
+                cache.profileImage
+        );
+    }
+
+    // ==================================================
+    // DEFAULT USER
+    // ==================================================
+
+    private void applyDefaultUser(
+            String userId,
+            Map<String, ChatItem> uniqueChats
+    ) {
+
+        ChatItem item =
+                uniqueChats.get(
+                        userId
+                );
+
+        if (
+                item == null
+        ) {
+            return;
+        }
+
+        item.setUsername(
+                "Unknown User"
+        );
+
+        item.setName(
+                "Unknown User"
+        );
+
+        item.setProfileImage(
+                ""
+        );
+    }
+
+    // ==================================================
+    // FINISH USER LOAD
+    // ==================================================
+
+    private void finishUserLoad(
+            int[] remaining,
+            Map<String, ChatItem> uniqueChats
+    ) {
+
+        remaining[0]--;
+
+        if (
+                remaining[0] > 0
+        ) {
+            return;
+        }
+
+        chatList.clear();
+
+        chatList.addAll(
+                uniqueChats.values()
+        );
+
+        Collections.sort(
+                chatList,
+                new Comparator<ChatItem>() {
+
+                    @Override
+                    public int compare(
+                            ChatItem first,
+                            ChatItem second
+                    ) {
+
+                        return Long.compare(
+                                second.getLastMessageTime(),
+                                first.getLastMessageTime()
+                        );
+                    }
+                }
+        );
+
+        chatListAdapter.updateList(
+                new ArrayList<>(
+                        chatList
+                )
+        );
+    }
+
+    // ==================================================
+    // OTHER USER
     // ==================================================
 
     private String getOtherUserId(
@@ -869,7 +838,7 @@ public class ChatListActivity extends AppCompatActivity {
                 );
 
         // ==================================================
-        // NORMAL CASE
+        // NORMAL
         // ==================================================
 
         if (
@@ -897,7 +866,7 @@ public class ChatListActivity extends AppCompatActivity {
         }
 
         // ==================================================
-        // FALLBACK CHAT ID
+        // FALLBACK
         // ==================================================
 
         if (
@@ -906,7 +875,9 @@ public class ChatListActivity extends AppCompatActivity {
         ) {
 
             String[] parts =
-                    chatId.split("_");
+                    chatId.split(
+                            "_"
+                    );
 
             if (
                     parts.length == 2
@@ -936,7 +907,7 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // UNREAD COUNT
+    // UNREAD
     // ==================================================
 
     private int getUnreadCount(
@@ -956,231 +927,50 @@ public class ChatListActivity extends AppCompatActivity {
         if (
                 unread == null
         ) {
-
             return 0;
         }
 
-        return unread.intValue();
-    }
-
-    // ==================================================
-    // LOAD USER
-    // ==================================================
-
-    private void loadChatUser(
-            String userId,
-            String lastMessage,
-            long lastMessageTime,
-            int unreadCount,
-            Map<String, ChatItem> uniqueChats,
-            int thisGeneration,
-            int[] remaining
-    ) {
-
-        db.collection("users")
-                .document(userId)
-                .get()
-                .addOnSuccessListener(
-                        document -> {
-
-                            // ==========================================
-                            // IGNORE OLD REQUEST
-                            // ==========================================
-
-                            if (
-                                    thisGeneration !=
-                                            chatLoadGeneration
-                            ) {
-
-                                return;
-                            }
-
-                            // ==========================================
-                            // USER MISSING
-                            // ==========================================
-
-                            if (
-                                    !document.exists()
-                            ) {
-
-                                finishUserLoad(
-                                        uniqueChats,
-                                        thisGeneration,
-                                        remaining
-                                );
-
-                                return;
-                            }
-
-                            // ==========================================
-                            // USERNAME
-                            // ==========================================
-
-                            String username =
-                                    document.getString(
-                                            "userId"
-                                    );
-
-                            if (
-                                    username == null ||
-                                            username.isEmpty()
-                            ) {
-
-                                username =
-                                        document.getString(
-                                                "username"
-                                        );
-                            }
-
-                            if (
-                                    username == null ||
-                                            username.isEmpty()
-                            ) {
-
-                                username =
-                                        "Unknown User";
-                            }
-
-                            // ==========================================
-                            // CHAT ITEM
-                            // ==========================================
-
-                            ChatItem newChat =
-                                    new ChatItem(
-                                            userId,
-                                            username,
-                                            lastMessage,
-                                            lastMessageTime,
-                                            unreadCount
-                                    );
-
-                            // ==========================================
-                            // DUPLICATE CHECK
-                            // ==========================================
-
-                            ChatItem existingChat =
-                                    uniqueChats.get(
-                                            userId
-                                    );
-
-                            if (
-                                    existingChat == null
-                            ) {
-
-                                uniqueChats.put(
-                                        userId,
-                                        newChat
-                                );
-
-                            } else if (
-                                    newChat.getLastMessageTime()
-                                            >
-                                            existingChat
-                                                    .getLastMessageTime()
-                            ) {
-
-                                uniqueChats.put(
-                                        userId,
-                                        newChat
-                                );
-                            }
-
-                            // ==========================================
-                            // FINISH
-                            // ==========================================
-
-                            finishUserLoad(
-                                    uniqueChats,
-                                    thisGeneration,
-                                    remaining
-                            );
-                        }
-                )
-                .addOnFailureListener(
-                        e ->
-                                finishUserLoad(
-                                        uniqueChats,
-                                        thisGeneration,
-                                        remaining
-                                )
-                );
-    }
-
-    // ==================================================
-    // FINISH USER LOAD
-    // ==================================================
-
-    private void finishUserLoad(
-            Map<String, ChatItem> uniqueChats,
-            int thisGeneration,
-            int[] remaining
-    ) {
-
-        remaining[0]--;
-
-        if (
-                remaining[0] > 0
-        ) {
-
-            return;
-        }
-
-        if (
-                thisGeneration !=
-                        chatLoadGeneration
-        ) {
-
-            return;
-        }
-
-        // ==================================================
-        // REBUILD LIST
-        // ==================================================
-
-        chatList.clear();
-
-        chatList.addAll(
-                uniqueChats.values()
-        );
-
-        // ==================================================
-        // SORT
-        // ==================================================
-
-        sortChats();
-
-        // ==================================================
-        // UPDATE ADAPTER
-        // ==================================================
-
-        chatListAdapter.updateList(
-                chatList
+        return Math.max(
+                unread.intValue(),
+                0
         );
     }
 
     // ==================================================
-    // SORT CHATS
+    // SEARCH
     // ==================================================
 
-    private void sortChats() {
+    private void setupSearch() {
 
-        Collections.sort(
-                chatList,
-                new Comparator<ChatItem>() {
+        if (
+                searchUserButton != null
+        ) {
 
-                    @Override
-                    public int compare(
-                            ChatItem first,
-                            ChatItem second
-                    ) {
+            searchUserButton.setOnClickListener(
+                    v -> {
 
-                        return Long.compare(
-                                second.getLastMessageTime(),
-                                first.getLastMessageTime()
-                        );
+                        hideKeyboard();
+
+                        searchUser();
                     }
-                }
-        );
+            );
+        }
+
+        if (
+                searchUserEditText != null
+        ) {
+
+            searchUserEditText.setOnEditorActionListener(
+                    (v, actionId, event) -> {
+
+                        hideKeyboard();
+
+                        searchUser();
+
+                        return true;
+                    }
+            );
+        }
     }
 
     // ==================================================
@@ -1189,15 +979,22 @@ public class ChatListActivity extends AppCompatActivity {
 
     private void searchUser() {
 
+        if (
+                mAuth.getCurrentUser() == null
+        ) {
+
+            searchUserEditText.setError(
+                    "Please login first"
+            );
+
+            return;
+        }
+
         String searchText =
                 searchUserEditText
                         .getText()
                         .toString()
                         .trim();
-
-        // ==================================================
-        // EMPTY SEARCH
-        // ==================================================
 
         if (
                 searchText.isEmpty()
@@ -1212,37 +1009,16 @@ public class ChatListActivity extends AppCompatActivity {
             return;
         }
 
-        // ==================================================
-        // LOGIN CHECK
-        // ==================================================
-
-        if (
-                mAuth.getCurrentUser() == null
-        ) {
-
-            searchUserEditText.setError(
-                    "Please login first"
-            );
-
-            return;
-        }
-
         String searchKey =
-                searchText.toLowerCase();
-
-        // ==================================================
-        // FIND USERNAME
-        // ==================================================
+                searchText.toLowerCase(
+                        java.util.Locale.getDefault()
+                );
 
         db.collection("usernames")
                 .document(searchKey)
                 .get()
                 .addOnSuccessListener(
                         document -> {
-
-                            // ==================================================
-                            // NOT FOUND
-                            // ==================================================
 
                             if (
                                     !document.exists()
@@ -1256,10 +1032,6 @@ public class ChatListActivity extends AppCompatActivity {
 
                                 return;
                             }
-
-                            // ==================================================
-                            // UID
-                            // ==================================================
 
                             String uid =
                                     document.getString(
@@ -1278,10 +1050,6 @@ public class ChatListActivity extends AppCompatActivity {
                                 return;
                             }
 
-                            // ==================================================
-                            // USERNAME
-                            // ==================================================
-
                             String username =
                                     document.getString(
                                             "username"
@@ -1295,10 +1063,6 @@ public class ChatListActivity extends AppCompatActivity {
                                 username =
                                         searchText;
                             }
-
-                            // ==================================================
-                            // SELF CHECK
-                            // ==================================================
 
                             String currentUid =
                                     mAuth.getCurrentUser()
@@ -1318,10 +1082,6 @@ public class ChatListActivity extends AppCompatActivity {
 
                                 return;
                             }
-
-                            // ==================================================
-                            // OPEN CHAT
-                            // ==================================================
 
                             User user =
                                     new User(
@@ -1347,7 +1107,7 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // OPEN EXISTING CHAT
+    // OPEN CHAT
     // ==================================================
 
     private void openChat(
@@ -1357,7 +1117,6 @@ public class ChatListActivity extends AppCompatActivity {
         if (
                 chatItem == null
         ) {
-
             return;
         }
 
@@ -1395,7 +1154,6 @@ public class ChatListActivity extends AppCompatActivity {
         if (
                 user == null
         ) {
-
             return;
         }
 
@@ -1420,6 +1178,131 @@ public class ChatListActivity extends AppCompatActivity {
         startActivity(
                 intent
         );
+    }
+
+    // ==================================================
+    // BOTTOM NAVIGATION
+    // ==================================================
+
+    private void setupBottomNavigation() {
+
+        if (btnHome != null) {
+
+            btnHome.setOnClickListener(
+                    v -> openActivity(
+                            homepage.class
+                    )
+            );
+        }
+
+        if (btnCreate != null) {
+
+            btnCreate.setOnClickListener(
+                    v -> openActivity(
+                            frontpage.class
+                    )
+            );
+        }
+
+        if (btnMessage != null) {
+
+            btnMessage.setOnClickListener(
+                    v -> {
+                        // Already here.
+                    }
+            );
+        }
+
+        if (btnSearch != null) {
+
+            btnSearch.setOnClickListener(
+                    v -> openActivity(
+                            Search.class
+                    )
+            );
+        }
+
+        if (btnProfile != null) {
+
+            btnProfile.setOnClickListener(
+                    v -> openActivity(
+                            profilepage.class
+                    )
+            );
+        }
+    }
+
+    // ==================================================
+    // OPEN ACTIVITY
+    // ==================================================
+
+    private void openActivity(
+            Class<?> target
+    ) {
+
+        Intent intent =
+                new Intent(
+                        ChatListActivity.this,
+                        target
+                );
+
+        intent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
+        );
+
+        startActivity(
+                intent
+        );
+
+        overridePendingTransition(
+                0,
+                0
+        );
+    }
+
+    // ==================================================
+    // RESUME
+    // ==================================================
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        loadCurrentUser();
+
+        // Do NOT attach another listener here.
+        // Existing listener remains active.
+        if (
+                chatsListener == null
+        ) {
+            startChatsListener();
+        }
+    }
+
+    // ==================================================
+    // STOP
+    // ==================================================
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+
+        stopChatsListener();
+    }
+
+    // ==================================================
+    // DESTROY
+    // ==================================================
+
+    @Override
+    protected void onDestroy() {
+
+        stopChatsListener();
+
+        super.onDestroy();
     }
 
     // ==================================================
@@ -1450,19 +1333,60 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // DP
+    // FIRST NON-EMPTY
     // ==================================================
 
-    private int dp(
-            int value
+    private String firstNonEmpty(
+            String... values
     ) {
 
-        return (int)
-                (
-                        value *
-                                getResources()
-                                        .getDisplayMetrics()
-                                        .density
-                );
+        if (
+                values == null
+        ) {
+            return null;
+        }
+
+        for (
+                String value :
+                values
+        ) {
+
+            if (
+                    value != null &&
+                            !value.trim().isEmpty()
+            ) {
+
+                return value.trim();
+            }
+        }
+
+        return null;
+    }
+
+    // ==================================================
+    // USER CACHE
+    // ==================================================
+
+    private static class UserCache {
+
+        String username;
+        String name;
+        String profileImage;
+
+        UserCache(
+                String username,
+                String name,
+                String profileImage
+        ) {
+
+            this.username =
+                    username;
+
+            this.name =
+                    name;
+
+            this.profileImage =
+                    profileImage;
+        }
     }
 }

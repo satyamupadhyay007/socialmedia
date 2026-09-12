@@ -32,7 +32,7 @@
 
 
         <!-- ================================================= -->
-        <!-- FRENZO -->
+        <!-- FRENZO LOGO -->
         <!-- ================================================= -->
 
         <TextView
@@ -56,6 +56,83 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+
+        <!-- ================================================= -->
+        <!-- NOTIFICATION BUTTON -->
+        <!-- ================================================= -->
+
+        <FrameLayout
+            android:id="@+id/notificationContainer"
+
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+
+            android:layout_marginEnd="8dp"
+
+            android:clickable="true"
+            android:focusable="true"
+
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/tvLogo"
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+            <!-- Notification Bell -->
+
+            <ImageButton
+                android:id="@+id/btnNotifications"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:background="@android:color/transparent"
+
+                android:contentDescription="Notifications"
+
+                android:padding="13dp"
+
+                android:scaleType="centerInside"
+
+                android:src="@android:drawable/ic_popup_reminder"
+
+                app:tint="#FFFFFF" />
+
+
+            <!-- ================================================= -->
+            <!-- UNREAD NOTIFICATION BADGE -->
+            <!-- ================================================= -->
+
+            <TextView
+                android:id="@+id/notificationBadge"
+
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+
+                android:layout_gravity="top|end"
+
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="2dp"
+
+                android:background="@drawable/notification_badge"
+
+                android:gravity="center"
+
+                android:maxLines="1"
+
+                android:text="0"
+
+                android:textColor="@color/white"
+
+                android:textSize="10sp"
+
+                android:textStyle="bold"
+
+                android:visibility="gone" />
+
+        </FrameLayout>
 
 
         <!-- ================================================= -->
@@ -83,19 +160,24 @@
 
         <HorizontalScrollView
             android:id="@+id/storyScroll"
+
             android:layout_width="0dp"
             android:layout_height="104dp"
+
             android:contentDescription="Stories"
+
             android:fillViewport="false"
             android:overScrollMode="never"
             android:scrollbars="none"
 
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerLine"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/headerLine">
+            app:layout_constraintEnd_toEndOf="parent">
 
 
-            <!-- Dynamic stories will be added by Java -->
+            <!-- ================================================= -->
+            <!-- DYNAMIC STORY ROW -->
+            <!-- ================================================= -->
 
             <LinearLayout
                 android:id="@+id/storyRow"
@@ -108,7 +190,70 @@
                 android:orientation="horizontal"
 
                 android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
+                android:paddingEnd="14dp">
+
+
+                <!-- ================================================= -->
+                <!-- YOUR STORY -->
+                <!-- ================================================= -->
+
+                <FrameLayout
+                    android:id="@+id/btnYourstory"
+
+                    android:layout_width="64dp"
+                    android:layout_height="82dp"
+
+                    android:layout_marginEnd="12dp"
+
+                    android:clickable="true"
+                    android:focusable="true"
+
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+
+                    <!--
+                        Java will replace this area with
+                        the real dynamic story UI.
+                    -->
+
+                    <ImageView
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+
+                        android:layout_gravity="top|center_horizontal"
+
+                        android:background="@drawable/profile_circle"
+
+                        android:contentDescription="Your story"
+
+                        android:padding="4dp"
+
+                        android:scaleType="centerCrop"
+
+                        android:src="@android:drawable/ic_menu_myplaces" />
+
+
+                    <TextView
+                        android:layout_width="64dp"
+                        android:layout_height="20dp"
+
+                        android:layout_gravity="bottom|center_horizontal"
+
+                        android:gravity="center"
+
+                        android:maxLines="1"
+
+                        android:ellipsize="end"
+
+                        android:text="Your story"
+
+                        android:textColor="@color/white"
+
+                        android:textSize="10sp" />
+
+                </FrameLayout>
+
+            </LinearLayout>
 
         </HorizontalScrollView>
 
@@ -146,84 +291,150 @@
 
         <LinearLayout
             android:id="@+id/bottomNavigation"
+
             android:layout_width="0dp"
             android:layout_height="68dp"
+
             android:background="#000000"
+
             android:elevation="10dp"
+
             android:gravity="center_vertical"
+
             android:orientation="horizontal"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+
+            <!-- HOME -->
+
             <ImageButton
                 android:id="@+id/btnHome"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Home"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/home"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- CREATE -->
 
             <ImageButton
                 android:id="@+id/btnCreate"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Create"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/play"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- MESSAGE -->
 
             <ImageButton
                 android:id="@+id/btnMessage"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Messages"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/chat"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- SEARCH -->
 
             <ImageButton
                 android:id="@+id/btnSearch"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Search"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/search"
+
                 app:tint="#FFFFFF" />
+
+
+            <!-- PROFILE -->
 
             <ImageButton
                 android:id="@+id/btnProfile"
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+
                 android:layout_weight="1"
+
                 android:background="@android:color/transparent"
+
                 android:contentDescription="Profile"
+
                 android:padding="0dp"
+
                 android:scaleType="centerInside"
+
                 android:scaleX="1.25"
                 android:scaleY="1.25"
+
                 android:src="@drawable/account"
+
                 app:tint="#FFFFFF" />
 
         </LinearLayout>

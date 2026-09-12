@@ -8,11 +8,14 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,105 +26,61 @@ import java.util.Locale;
 public class ChatListAdapter
         extends RecyclerView.Adapter<ChatListAdapter.ChatViewHolder> {
 
-
     private List<ChatItem> chatList;
-
     private final OnChatClickListener listener;
 
-
-    // ==================================================
-    // CLICK LISTENER
-    // ==================================================
-
     public interface OnChatClickListener {
-
-        void onChatClick(
-                ChatItem chatItem
-        );
+        void onChatClick(ChatItem chatItem);
     }
-
-
-    // ==================================================
-    // CONSTRUCTOR
-    // ==================================================
 
     public ChatListAdapter(
             List<ChatItem> chatList,
-            OnChatClickListener listener) {
-
+            OnChatClickListener listener
+    ) {
         this.chatList =
                 chatList != null
                         ? chatList
                         : new ArrayList<>();
 
-        this.listener =
-                listener;
+        this.listener = listener;
     }
 
-
-    // ==================================================
-    // UPDATE
-    // ==================================================
-
-    public void updateList(
-            List<ChatItem> newList) {
+    public void updateList(List<ChatItem> newList) {
 
         if (newList == null) {
-
-            chatList =
-                    new ArrayList<>();
-
+            chatList = new ArrayList<>();
         } else {
-
-            chatList =
-                    newList;
+            chatList = newList;
         }
 
         notifyDataSetChanged();
     }
 
-
-    // ==================================================
-    // DP CONVERSION
-    // ==================================================
-
-    private int dp(
-            Context context,
-            int value) {
-
-        float density =
-                context.getResources()
-                        .getDisplayMetrics()
-                        .density;
+    private int dp(Context context, int value) {
 
         return Math.round(
-                value * density
+                value *
+                        context.getResources()
+                                .getDisplayMetrics()
+                                .density
         );
     }
-
-
-    // ==================================================
-    // CREATE ROW
-    // ==================================================
 
     @NonNull
     @Override
     public ChatViewHolder onCreateViewHolder(
             @NonNull ViewGroup parent,
-            int viewType) {
+            int viewType
+    ) {
 
-        Context context =
-                parent.getContext();
-
+        Context context = parent.getContext();
 
         // ==================================================
         // ROW
         // ==================================================
 
         LinearLayout row =
-                new LinearLayout(
-                        context
-                );
+                new LinearLayout(context);
 
         row.setOrientation(
                 LinearLayout.HORIZONTAL
@@ -137,104 +96,125 @@ public class ChatListAdapter
 
         row.setPadding(
                 dp(context, 14),
-                dp(context, 8),
+                dp(context, 7),
                 dp(context, 12),
-                dp(context, 8)
+                dp(context, 7)
         );
 
         row.setMinimumHeight(
-                dp(context, 76)
+                dp(context, 82)
         );
 
-
         // ==================================================
-        // AVATAR
+        // PROFILE IMAGE CONTAINER
         // ==================================================
 
-        TextView avatar =
-                new TextView(
-                        context
+        FrameLayoutFix avatarContainer =
+                new FrameLayoutFix(context);
+
+        LinearLayout.LayoutParams avatarContainerParams =
+                new LinearLayout.LayoutParams(
+                        dp(context, 54),
+                        dp(context, 54)
                 );
 
-        avatar.setGravity(
+        avatarContainerParams.setMargins(
+                0,
+                0,
+                dp(context, 14),
+                0
+        );
+
+        row.addView(
+                avatarContainer,
+                avatarContainerParams
+        );
+
+        // ==================================================
+        // PROFILE IMAGE
+        // ==================================================
+
+        ImageView profileImage =
+                new ImageView(context);
+
+        profileImage.setScaleType(
+                ImageView.ScaleType.CENTER_CROP
+        );
+
+        GradientDrawable imageBackground =
+                new GradientDrawable();
+
+        imageBackground.setShape(
+                GradientDrawable.OVAL
+        );
+
+        imageBackground.setColor(
+                Color.rgb(32, 32, 32)
+        );
+
+        imageBackground.setStroke(
+                dp(context, 1),
+                Color.rgb(75, 75, 75)
+        );
+
+        profileImage.setBackground(
+                imageBackground
+        );
+
+        profileImage.setClipToOutline(true);
+
+        avatarContainer.addView(
+                profileImage,
+                new FrameLayoutFix.LayoutParams(
+                        dp(context, 54),
+                        dp(context, 54),
+                        Gravity.CENTER
+                )
+        );
+
+        // ==================================================
+        // INITIAL
+        // ==================================================
+
+        TextView avatarInitial =
+                new TextView(context);
+
+        avatarInitial.setGravity(
                 Gravity.CENTER
         );
 
-        avatar.setTextColor(
+        avatarInitial.setTextColor(
                 Color.WHITE
         );
 
-        avatar.setTextSize(
+        avatarInitial.setTextSize(
                 17
         );
 
-        avatar.setTypeface(
+        avatarInitial.setTypeface(
                 null,
                 Typeface.BOLD
         );
 
-        avatar.setIncludeFontPadding(
-                false
+        avatarInitial.setVisibility(
+                View.VISIBLE
         );
 
-
-        GradientDrawable avatarDrawable =
-                new GradientDrawable();
-
-        avatarDrawable.setShape(
-                GradientDrawable.OVAL
-        );
-
-        avatarDrawable.setColor(
-                Color.rgb(
-                        32,
-                        32,
-                        32
+        avatarContainer.addView(
+                avatarInitial,
+                new FrameLayoutFix.LayoutParams(
+                        dp(context, 54),
+                        dp(context, 54),
+                        Gravity.CENTER
                 )
         );
-
-        avatarDrawable.setStroke(
-                dp(context, 1),
-                Color.rgb(
-                        68,
-                        68,
-                        68
-                )
-        );
-
-        avatar.setBackground(
-                avatarDrawable
-        );
-
-
-        LinearLayout.LayoutParams avatarParams =
-                new LinearLayout.LayoutParams(
-                        dp(context, 52),
-                        dp(context, 52)
-                );
-
-        avatarParams.setMargins(
-                0,
-                0,
-                dp(context, 16),
-                0
-        );
-
-
-        row.addView(
-                avatar,
-                avatarParams
-        );
-
 
         // ==================================================
         // CENTER
         // ==================================================
 
         LinearLayout center =
-                new LinearLayout(
-                        context
-                );
+                new LinearLayout(context);
 
         center.setOrientation(
                 LinearLayout.VERTICAL
@@ -244,7 +224,6 @@ public class ChatListAdapter
                 Gravity.CENTER_VERTICAL
         );
 
-
         LinearLayout.LayoutParams centerParams =
                 new LinearLayout.LayoutParams(
                         0,
@@ -252,33 +231,64 @@ public class ChatListAdapter
                         1
                 );
 
-
         row.addView(
                 center,
                 centerParams
         );
 
+        // ==================================================
+        // NAME
+        // ==================================================
+
+        TextView name =
+                new TextView(context);
+
+        name.setTextColor(
+                Color.WHITE
+        );
+
+        name.setTextSize(
+                16
+        );
+
+        name.setTypeface(
+                null,
+                Typeface.BOLD
+        );
+
+        name.setIncludeFontPadding(
+                false
+        );
+
+        name.setMaxLines(
+                1
+        );
+
+        name.setEllipsize(
+                TextUtils.TruncateAt.END
+        );
+
+        center.addView(
+                name,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
 
         // ==================================================
         // USERNAME
         // ==================================================
 
         TextView username =
-                new TextView(
-                        context
-                );
+                new TextView(context);
 
         username.setTextColor(
-                Color.WHITE
+                Color.rgb(175, 175, 175)
         );
 
         username.setTextSize(
-                17
-        );
-
-        username.setTypeface(
-                null,
-                Typeface.BOLD
+                12
         );
 
         username.setIncludeFontPadding(
@@ -293,31 +303,33 @@ public class ChatListAdapter
                 TextUtils.TruncateAt.END
         );
 
-
-        center.addView(
-                username,
+        LinearLayout.LayoutParams usernameParams =
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+                );
+
+        usernameParams.setMargins(
+                0,
+                dp(context, 2),
+                0,
+                0
         );
 
+        center.addView(
+                username,
+                usernameParams
+        );
 
         // ==================================================
         // LAST MESSAGE
         // ==================================================
 
         TextView lastMessage =
-                new TextView(
-                        context
-                );
+                new TextView(context);
 
         lastMessage.setTextColor(
-                Color.rgb(
-                        165,
-                        165,
-                        165
-                )
+                Color.rgb(150, 150, 150)
         );
 
         lastMessage.setTextSize(
@@ -336,7 +348,6 @@ public class ChatListAdapter
                 TextUtils.TruncateAt.END
         );
 
-
         LinearLayout.LayoutParams messageParams =
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -345,33 +356,58 @@ public class ChatListAdapter
 
         messageParams.setMargins(
                 0,
-                dp(context, 5),
+                dp(context, 4),
                 0,
                 0
         );
-
 
         center.addView(
                 lastMessage,
                 messageParams
         );
 
+        // ==================================================
+        // RIGHT SIDE
+        // ==================================================
+
+        LinearLayout right =
+                new LinearLayout(context);
+
+        right.setOrientation(
+                LinearLayout.VERTICAL
+        );
+
+        right.setGravity(
+                Gravity.CENTER_HORIZONTAL
+        );
+
+        LinearLayout.LayoutParams rightParams =
+                new LinearLayout.LayoutParams(
+                        dp(context, 48),
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+
+        rightParams.setMargins(
+                dp(context, 8),
+                0,
+                0,
+                0
+        );
+
+        row.addView(
+                right,
+                rightParams
+        );
 
         // ==================================================
         // TIME
         // ==================================================
 
         TextView time =
-                new TextView(
-                        context
-                );
+                new TextView(context);
 
         time.setTextColor(
-                Color.rgb(
-                        145,
-                        145,
-                        145
-                )
+                Color.rgb(145, 145, 145)
         );
 
         time.setTextSize(
@@ -386,135 +422,240 @@ public class ChatListAdapter
                 true
         );
 
-
-        LinearLayout.LayoutParams timeParams =
+        right.addView(
+                time,
                 new LinearLayout.LayoutParams(
-                        dp(context, 56),
-                        dp(context, 52)
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+        // ==================================================
+        // UNREAD BADGE
+        // ==================================================
+
+        TextView unreadBadge =
+                new TextView(context);
+
+        unreadBadge.setGravity(
+                Gravity.CENTER
+        );
+
+        unreadBadge.setTextColor(
+                Color.WHITE
+        );
+
+        unreadBadge.setTextSize(
+                10
+        );
+
+        unreadBadge.setTypeface(
+                null,
+                Typeface.BOLD
+        );
+
+        unreadBadge.setPadding(
+                dp(context, 5),
+                0,
+                dp(context, 5),
+                0
+        );
+
+        unreadBadge.setMinWidth(
+                dp(context, 20)
+        );
+
+        unreadBadge.setMinHeight(
+                dp(context, 20)
+        );
+
+        GradientDrawable badgeBackground =
+                new GradientDrawable();
+
+        badgeBackground.setShape(
+                GradientDrawable.OVAL
+        );
+
+        badgeBackground.setColor(
+                Color.rgb(255, 45, 85)
+        );
+
+        unreadBadge.setBackground(
+                badgeBackground
+        );
+
+        LinearLayout.LayoutParams badgeParams =
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        dp(context, 20)
                 );
 
-        timeParams.setMargins(
-                dp(context, 10),
+        badgeParams.setMargins(
                 0,
+                dp(context, 6),
                 0,
                 0
         );
 
-
-        row.addView(
-                time,
-                timeParams
+        right.addView(
+                unreadBadge,
+                badgeParams
         );
-
 
         return new ChatViewHolder(
                 row,
-                avatar,
+                profileImage,
+                avatarInitial,
+                name,
                 username,
                 lastMessage,
-                time
+                time,
+                unreadBadge
         );
     }
-
-
-    // ==================================================
-    // BIND
-    // ==================================================
 
     @Override
     public void onBindViewHolder(
             @NonNull ChatViewHolder holder,
-            int position) {
+            int position
+    ) {
 
         if (
                 chatList == null ||
                         position < 0 ||
                         position >= chatList.size()
         ) {
-
             return;
         }
-
 
         ChatItem item =
-                chatList.get(
-                        position
-                );
+                chatList.get(position);
 
-
-        if (
-                item == null
-        ) {
-
+        if (item == null) {
             return;
         }
 
+        // ==================================================
+        // SAFE USERNAME
+        // ==================================================
+
+        String username =
+                safe(
+                        item.getUsername()
+                );
+
+        if (username.isEmpty()) {
+            username = "Unknown User";
+        }
+
+        // ==================================================
+        // SAFE NAME
+        // ==================================================
+
+        String name =
+                safe(
+                        item.getName()
+                );
+
+        if (name.isEmpty()) {
+            name = username;
+        }
 
         // ==================================================
         // NAME
         // ==================================================
 
-        String username =
-                item.getUsername();
+        holder.name.setText(
+                name
+        );
 
+        // ==================================================
+        // USERNAME
+        // ==================================================
 
         if (
-                username == null ||
-                        username.trim().isEmpty()
+                username.equalsIgnoreCase(name)
         ) {
+            holder.username.setVisibility(
+                    View.GONE
+            );
+        } else {
+            holder.username.setVisibility(
+                    View.VISIBLE
+            );
 
-            username =
-                    "Unknown User";
+            holder.username.setText(
+                    "@" + username
+            );
         }
-
-
-        username =
-                username.trim();
-
-
-        holder.username.setText(
-                username
-        );
-
-
-        // ==================================================
-        // AVATAR
-        // ==================================================
-
-        holder.avatar.setText(
-                username
-                        .substring(
-                                0,
-                                1
-                        )
-                        .toUpperCase(
-                                Locale.getDefault()
-                        )
-        );
-
 
         // ==================================================
         // MESSAGE
         // ==================================================
 
         String message =
-                item.getLastMessage();
+                safe(
+                        item.getLastMessage()
+                );
 
-
-        if (
-                message == null ||
-                        message.trim().isEmpty()
-        ) {
-
-            message =
-                    "No messages yet";
+        if (message.isEmpty()) {
+            message = "No messages yet";
         }
-
 
         holder.lastMessage.setText(
                 message
         );
 
+        // ==================================================
+        // UNREAD
+        // ==================================================
+
+        int unread =
+                Math.max(
+                        item.getUnreadCount(),
+                        0
+                );
+
+        if (unread > 0) {
+
+            holder.unreadBadge.setVisibility(
+                    View.VISIBLE
+            );
+
+            if (unread > 9) {
+                holder.unreadBadge.setText(
+                        "9+"
+                );
+            } else {
+                holder.unreadBadge.setText(
+                        String.valueOf(unread)
+                );
+            }
+
+            holder.lastMessage.setTextColor(
+                    Color.WHITE
+            );
+
+            holder.lastMessage.setTypeface(
+                    null,
+                    Typeface.BOLD
+            );
+
+        } else {
+
+            holder.unreadBadge.setVisibility(
+                    View.GONE
+            );
+
+            holder.lastMessage.setTextColor(
+                    Color.rgb(150, 150, 150)
+            );
+
+            holder.lastMessage.setTypeface(
+                    null,
+                    Typeface.NORMAL
+            );
+        }
 
         // ==================================================
         // TIME
@@ -523,67 +664,143 @@ public class ChatListAdapter
         long timestamp =
                 item.getLastMessageTime();
 
-
-        if (
-                timestamp > 0
-        ) {
-
+        if (timestamp > 0) {
             holder.time.setText(
-                    formatTime(
-                            timestamp
-                    )
+                    formatTime(timestamp)
             );
-
         } else {
-
-            holder.time.setText(
-                    ""
-            );
+            holder.time.setText("");
         }
 
+        // ==================================================
+        // PROFILE PHOTO
+        // ==================================================
+
+        String imageUrl =
+                safe(
+                        item.getProfileImage()
+                );
+
+        holder.avatarInitial.setText(
+                getInitial(
+                        name
+                )
+        );
+
+        holder.avatarInitial.setVisibility(
+                View.VISIBLE
+        );
+
+        holder.profileImage.setImageDrawable(
+                null
+        );
+
+        if (!imageUrl.isEmpty()) {
+
+            Glide.with(
+                            holder.itemView.getContext()
+                    )
+                    .load(imageUrl)
+                    .circleCrop()
+                    .placeholder(
+                            holder.profileImage.getBackground()
+                    )
+                    .error(
+                            holder.profileImage.getBackground()
+                    )
+                    .listener(
+                            new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
+
+                                @Override
+                                public boolean onLoadFailed(
+                                        com.bumptech.glide.load.engine.GlideException e,
+                                        Object model,
+                                        com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
+                                        boolean isFirstResource
+                                ) {
+                                    holder.avatarInitial.setVisibility(
+                                            View.VISIBLE
+                                    );
+
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(
+                                        android.graphics.drawable.Drawable resource,
+                                        Object model,
+                                        com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
+                                        com.bumptech.glide.load.DataSource dataSource,
+                                        boolean isFirstResource
+                                ) {
+                                    holder.avatarInitial.setVisibility(
+                                            View.GONE
+                                    );
+
+                                    return false;
+                                }
+                            }
+                    )
+                    .into(
+                            holder.profileImage
+                    );
+        }
 
         // ==================================================
         // CLICK
         // ==================================================
 
+        ChatItem finalItem = item;
+
         holder.itemView.setOnClickListener(
                 v -> {
-
-                    if (
-                            listener != null
-                    ) {
-
+                    if (listener != null) {
                         listener.onChatClick(
-                                item
+                                finalItem
                         );
                     }
                 }
         );
     }
 
+    private String safe(String value) {
 
-    // ==================================================
-    // FORMAT TIME
-    // ==================================================
+        if (value == null) {
+            return "";
+        }
 
-    private String formatTime(
-            long timestamp) {
+        return value.trim();
+    }
+
+    private String getInitial(String text) {
+
+        String safeText =
+                safe(text);
+
+        if (safeText.isEmpty()) {
+            return "?";
+        }
+
+        return safeText
+                .substring(0, 1)
+                .toUpperCase(
+                        Locale.getDefault()
+                );
+    }
+
+    private String formatTime(long timestamp) {
 
         Date date =
-                new Date(
-                        timestamp
-                );
+                new Date(timestamp);
 
         Date now =
                 new Date();
-
 
         SimpleDateFormat dayFormat =
                 new SimpleDateFormat(
                         "yyyyMMdd",
                         Locale.getDefault()
                 );
-
 
         if (
                 dayFormat.format(date)
@@ -595,24 +812,14 @@ public class ChatListAdapter
             return new SimpleDateFormat(
                     "HH:mm",
                     Locale.getDefault()
-            ).format(
-                    date
-            );
+            ).format(date);
         }
-
 
         return new SimpleDateFormat(
                 "dd/MM",
                 Locale.getDefault()
-        ).format(
-                date
-        );
+        ).format(date);
     }
-
-
-    // ==================================================
-    // COUNT
-    // ==================================================
 
     @Override
     public int getItemCount() {
@@ -622,33 +829,38 @@ public class ChatListAdapter
                 : chatList.size();
     }
 
-
-    // ==================================================
-    // VIEW HOLDER
-    // ==================================================
-
     static class ChatViewHolder
             extends RecyclerView.ViewHolder {
 
-        TextView avatar;
+        ImageView profileImage;
+        TextView avatarInitial;
+        TextView name;
         TextView username;
         TextView lastMessage;
         TextView time;
-
+        TextView unreadBadge;
 
         ChatViewHolder(
                 @NonNull View itemView,
-                TextView avatar,
+                ImageView profileImage,
+                TextView avatarInitial,
+                TextView name,
                 TextView username,
                 TextView lastMessage,
-                TextView time) {
+                TextView time,
+                TextView unreadBadge
+        ) {
 
-            super(
-                    itemView
-            );
+            super(itemView);
 
-            this.avatar =
-                    avatar;
+            this.profileImage =
+                    profileImage;
+
+            this.avatarInitial =
+                    avatarInitial;
+
+            this.name =
+                    name;
 
             this.username =
                     username;
@@ -658,6 +870,39 @@ public class ChatListAdapter
 
             this.time =
                     time;
+
+            this.unreadBadge =
+                    unreadBadge;
+        }
+    }
+
+    // ==================================================
+    // SIMPLE FRAME LAYOUT
+    // ==================================================
+
+    private static class FrameLayoutFix
+            extends android.widget.FrameLayout {
+
+        public FrameLayoutFix(Context context) {
+            super(context);
+        }
+
+        static class LayoutParams
+                extends android.widget.FrameLayout.LayoutParams {
+
+            LayoutParams(
+                    int width,
+                    int height,
+                    int gravity
+            ) {
+                super(
+                        width,
+                        height
+                );
+
+                this.gravity =
+                        gravity;
+            }
         }
     }
 }

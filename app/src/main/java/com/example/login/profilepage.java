@@ -1,16 +1,16 @@
 package com.example.login;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -18,41 +18,32 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Arrays;
-import java.util.List;
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Collections;
 
 public class profilepage extends AppCompatActivity {
 
     // ==================================================
-    // PROFILE
-    // ==================================================
-
-    private ImageButton btnBack;
-    private ImageButton btnSettings;
-
-    private TextView tvName;
-    private TextView tvUsername;
-    private TextView tvBio;
-
-    private Button btnEditProfile;
-
-    // ==================================================
-    // TABS
-    // ==================================================
-
-    private TextView tabPosts;
-    private TextView tabReels;
-    private TextView tabTagged;
-
-    // ==================================================
-    // POSTS
+    // UI
     // ==================================================
 
     private RecyclerView recyclerPosts;
 
-    // ==================================================
-    // BOTTOM NAVIGATION
-    // ==================================================
+    private View topBar;
+    private View bottomNavigation;
+
+    private ImageButton btnBack;
+    private ImageButton btnSettings;
+
+    private Button btnEditProfile;
+    private Button btnUploadPost;
+
+    private Button btnPosts;
+    private Button btnReels;
+    private Button btnTagged;
 
     private ImageButton btnHome;
     private ImageButton btnCreate;
@@ -60,12 +51,31 @@ public class profilepage extends AppCompatActivity {
     private ImageButton btnSearch;
     private ImageButton btnProfile;
 
+    private ImageView imgProfile;
+
+    private TextView tvName;
+    private TextView tvUsername;
+    private TextView tvBio;
+
+    private TextView tvPostCount;
+    private TextView tvFollowerCount;
+    private TextView tvFollowingCount;
+
+
     // ==================================================
-    // ROOT
+    // FIREBASE
     // ==================================================
 
-    private View profileRoot;
-    private View bottomNavigation;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
+
+    // ==================================================
+    // CURRENT USER
+    // ==================================================
+
+    private String currentUserId;
+
 
     // ==================================================
     // ON CREATE
@@ -76,17 +86,59 @@ public class profilepage extends AppCompatActivity {
             Bundle savedInstanceState
     ) {
 
-        super.onCreate(
-                savedInstanceState
-        );
+        super.onCreate(savedInstanceState);
+
+        EdgeToEdge.enable(this);
 
         setContentView(
                 R.layout.activity_profile
         );
 
+
         // ==================================================
-        // FIND PROFILE VIEWS
+        // FIREBASE
         // ==================================================
+
+        mAuth =
+                FirebaseAuth.getInstance();
+
+        db =
+                FirebaseFirestore.getInstance();
+
+
+        if (
+                mAuth.getCurrentUser() == null
+        ) {
+
+            finish();
+            return;
+        }
+
+
+        currentUserId =
+                mAuth.getCurrentUser()
+                        .getUid();
+
+
+        // ==================================================
+        // FIND VIEWS
+        // ==================================================
+
+        topBar =
+                findViewById(
+                        R.id.topBar
+                );
+
+        bottomNavigation =
+                findViewById(
+                        R.id.bottomNavigation
+                );
+
+        recyclerPosts =
+                findViewById(
+                        R.id.recyclerPosts
+                );
+
 
         btnBack =
                 findViewById(
@@ -98,57 +150,33 @@ public class profilepage extends AppCompatActivity {
                         R.id.btnSettings
                 );
 
-        tvName =
-                findViewById(
-                        R.id.tvName
-                );
-
-        tvUsername =
-                findViewById(
-                        R.id.tvUsername
-                );
-
-        tvBio =
-                findViewById(
-                        R.id.tvBio
-                );
 
         btnEditProfile =
                 findViewById(
                         R.id.btnEditProfile
                 );
 
-        // ==================================================
-        // TABS
-        // ==================================================
-
-        tabPosts =
+        btnUploadPost =
                 findViewById(
-                        R.id.tabPosts
+                        R.id.btnUploadPost
                 );
 
-        tabReels =
+
+        btnPosts =
                 findViewById(
-                        R.id.tabReels
+                        R.id.btnPosts
                 );
 
-        tabTagged =
+        btnReels =
                 findViewById(
-                        R.id.tabTagged
+                        R.id.btnReels
                 );
 
-        // ==================================================
-        // POSTS
-        // ==================================================
-
-        recyclerPosts =
+        btnTagged =
                 findViewById(
-                        R.id.recyclerPosts
+                        R.id.btnTagged
                 );
 
-        // ==================================================
-        // BOTTOM NAVIGATION
-        // ==================================================
 
         btnHome =
                 findViewById(
@@ -175,18 +203,46 @@ public class profilepage extends AppCompatActivity {
                         R.id.btnProfile
                 );
 
-        profileRoot =
+
+        imgProfile =
                 findViewById(
-                        R.id.profileRoot
+                        R.id.imgProfile
                 );
 
-        bottomNavigation =
+        tvName =
                 findViewById(
-                        R.id.bottomNavigation
+                        R.id.tvName
                 );
+
+        tvUsername =
+                findViewById(
+                        R.id.tvUsername
+                );
+
+        tvBio =
+                findViewById(
+                        R.id.tvBio
+                );
+
+
+        tvPostCount =
+                findViewById(
+                        R.id.tvPostCount
+                );
+
+        tvFollowerCount =
+                findViewById(
+                        R.id.tvFollowerCount
+                );
+
+        tvFollowingCount =
+                findViewById(
+                        R.id.tvFollowingCount
+                );
+
 
         // ==================================================
-        // POST GRID
+        // POSTS
         // ==================================================
 
         recyclerPosts.setLayoutManager(
@@ -196,280 +252,472 @@ public class profilepage extends AppCompatActivity {
                 )
         );
 
-        recyclerPosts.setHasFixedSize(
-                true
-        );
-
-        // ==================================================
-        // CURRENT STATIC POSTS
-        // ==================================================
-
-        List<Integer> images =
-                Arrays.asList(
-                        R.drawable.post_1,
-                        R.drawable.post_2,
-                        R.drawable.post_3,
-                        R.drawable.post_4,
-                        R.drawable.post_5,
-                        R.drawable.post_6,
-                        R.drawable.post_7,
-                        R.drawable.post_8,
-                        R.drawable.post_9
-                );
 
         ProfilePostAdapter adapter =
                 new ProfilePostAdapter(
-                        images
+                        Collections.emptyList()
                 );
+
 
         recyclerPosts.setAdapter(
                 adapter
         );
+
+
+        // ==================================================
+        // SYSTEM BARS
+        // ==================================================
+
+        View root =
+                findViewById(
+                        R.id.profileRoot
+                );
+
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                root,
+                (view, windowInsets) -> {
+
+                    Insets systemBars =
+                            windowInsets.getInsets(
+                                    WindowInsetsCompat.Type.systemBars()
+                            );
+
+
+                    if (topBar != null) {
+
+                        ViewGroup.LayoutParams
+                                params =
+                                topBar.getLayoutParams();
+
+
+                        if (
+                                params instanceof
+                                        ViewGroup.MarginLayoutParams
+                        ) {
+
+                            ViewGroup.MarginLayoutParams
+                                    marginParams =
+                                    (ViewGroup.MarginLayoutParams)
+                                            params;
+
+
+                            marginParams.topMargin =
+                                    systemBars.top;
+
+
+                            topBar.setLayoutParams(
+                                    marginParams
+                            );
+                        }
+                    }
+
+
+                    if (bottomNavigation != null) {
+
+                        ViewGroup.LayoutParams
+                                params =
+                                bottomNavigation.getLayoutParams();
+
+
+                        if (
+                                params instanceof
+                                        ViewGroup.MarginLayoutParams
+                        ) {
+
+                            ViewGroup.MarginLayoutParams
+                                    marginParams =
+                                    (ViewGroup.MarginLayoutParams)
+                                            params;
+
+
+                            marginParams.bottomMargin =
+                                    systemBars.bottom;
+
+
+                            bottomNavigation.setLayoutParams(
+                                    marginParams
+                            );
+                        }
+                    }
+
+
+                    return windowInsets;
+                }
+        );
+
+
+        // ==================================================
+        // LOAD PROFILE
+        // ==================================================
+
+        loadProfile();
+
 
         // ==================================================
         // BACK
         // ==================================================
 
         btnBack.setOnClickListener(
-                v -> {
-
-                    hideKeyboard();
-
-                    finish();
-                }
+                v -> finish()
         );
+
 
         // ==================================================
         // SETTINGS
         // ==================================================
 
         btnSettings.setOnClickListener(
-                v -> showSettings()
+                v -> {
+
+                    Intent intent =
+                            new Intent(
+                                    profilepage.this,
+                                    SettingsActivity.class
+                            );
+
+                    startActivity(
+                            intent
+                    );
+                }
         );
+
 
         // ==================================================
         // EDIT PROFILE
         // ==================================================
 
         btnEditProfile.setOnClickListener(
-                v -> showEditProfile()
+                v -> {
+
+                    Intent intent =
+                            new Intent(
+                                    profilepage.this,
+                                    EditProfileActivity.class
+                            );
+
+                    startActivity(
+                            intent
+                    );
+                }
         );
 
+
         // ==================================================
-        // TABS
+        // UPLOAD POST
         // ==================================================
 
-        setupTabs();
+        btnUploadPost.setOnClickListener(
+                v -> {
+
+                    Toast.makeText(
+                            profilepage.this,
+                            "Post upload will be added next",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+        );
+
+
+        // ==================================================
+        // POSTS TAB
+        // ==================================================
+
+        btnPosts.setOnClickListener(
+                v -> {
+
+                    recyclerPosts.setVisibility(
+                            View.VISIBLE
+                    );
+
+                    Toast.makeText(
+                            profilepage.this,
+                            "Posts",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+        );
+
+
+        // ==================================================
+        // REELS TAB
+        // ==================================================
+
+        btnReels.setOnClickListener(
+                v -> {
+
+                    recyclerPosts.setVisibility(
+                            View.GONE
+                    );
+
+                    Toast.makeText(
+                            profilepage.this,
+                            "Reels",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+        );
+
+
+        // ==================================================
+        // TAGGED TAB
+        // ==================================================
+
+        btnTagged.setOnClickListener(
+                v -> {
+
+                    recyclerPosts.setVisibility(
+                            View.GONE
+                    );
+
+                    Toast.makeText(
+                            profilepage.this,
+                            "Tagged",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+        );
+
 
         // ==================================================
         // BOTTOM NAVIGATION
         // ==================================================
 
         setupBottomNavigation();
-
-        // ==================================================
-        // SAFE AREA
-        // ==================================================
-
-        setupWindowInsets();
     }
 
-    // ==================================================
-    // TABS
-    // ==================================================
-
-    private void setupTabs() {
-
-        tabPosts.setOnClickListener(
-                v -> {
-
-                    selectTab(
-                            tabPosts,
-                            tabReels,
-                            tabTagged
-                    );
-
-                    recyclerPosts.setVisibility(
-                            View.VISIBLE
-                    );
-                }
-        );
-
-        tabReels.setOnClickListener(
-                v -> {
-
-                    selectTab(
-                            tabReels,
-                            tabPosts,
-                            tabTagged
-                    );
-
-                    Toast.makeText(
-                            this,
-                            "Reels section coming soon",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
-        );
-
-        tabTagged.setOnClickListener(
-                v -> {
-
-                    selectTab(
-                            tabTagged,
-                            tabPosts,
-                            tabReels
-                    );
-
-                    Toast.makeText(
-                            this,
-                            "Tagged section coming soon",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
-        );
-
-        selectTab(
-                tabPosts,
-                tabReels,
-                tabTagged
-        );
-    }
 
     // ==================================================
-    // TAB SELECT
+    // LOAD PROFILE
     // ==================================================
 
-    private void selectTab(
-            TextView selected,
-            TextView otherOne,
-            TextView otherTwo
-    ) {
+    private void loadProfile() {
 
-        selected.setTextColor(
-                0xFF111111
-        );
+        if (
+                currentUserId == null ||
+                        currentUserId.isEmpty()
+        ) {
+            return;
+        }
 
-        selected.setTypeface(
-                null,
-                android.graphics.Typeface.BOLD
-        );
 
-        otherOne.setTextColor(
-                0xFF777777
-        );
+        db.collection("users")
+                .document(currentUserId)
+                .get()
+                .addOnSuccessListener(
+                        document -> {
 
-        otherOne.setTypeface(
-                null,
-                android.graphics.Typeface.NORMAL
-        );
-
-        otherTwo.setTextColor(
-                0xFF777777
-        );
-
-        otherTwo.setTypeface(
-                null,
-                android.graphics.Typeface.NORMAL
-        );
-    }
-
-    // ==================================================
-    // SETTINGS
-    // ==================================================
-
-    private void showSettings() {
-
-        String[] items =
-                {
-                        "Account Settings",
-                        "Privacy",
-                        "Notifications",
-                        "Cancel"
-                };
-
-        new AlertDialog.Builder(
-                this
-        )
-                .setTitle(
-                        "Settings"
-                )
-                .setItems(
-                        items,
-                        (dialog, which) -> {
-
-                            if (which == 0) {
-
-                                Toast.makeText(
-                                        this,
-                                        "Account Settings coming soon",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            } else if (which == 1) {
-
-                                Toast.makeText(
-                                        this,
-                                        "Privacy settings coming soon",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            } else if (which == 2) {
-
-                                Toast.makeText(
-                                        this,
-                                        "Notification settings coming soon",
-                                        Toast.LENGTH_SHORT
-                                ).show();
+                            if (
+                                    !document.exists()
+                            ) {
+                                return;
                             }
+
+
+                            // ==================================================
+                            // USER ID
+                            // ==================================================
+
+                            String userId =
+                                    document.getString(
+                                            "userId"
+                                    );
+
+
+                            if (
+                                    userId != null &&
+                                            !userId.isEmpty()
+                            ) {
+
+                                tvUsername.setText(
+                                        "@" + userId
+                                );
+                            } else {
+
+                                tvUsername.setText(
+                                        ""
+                                );
+                            }
+
+
+                            // ==================================================
+                            // NAME
+                            // ==================================================
+
+                            String name =
+                                    document.getString(
+                                            "name"
+                                    );
+
+
+                            if (
+                                    name != null &&
+                                            !name.trim().isEmpty()
+                            ) {
+
+                                tvName.setText(
+                                        name
+                                );
+
+                                tvName.setVisibility(
+                                        View.VISIBLE
+                                );
+
+                            } else {
+
+                                tvName.setText(
+                                        ""
+                                );
+
+                                tvName.setVisibility(
+                                        View.GONE
+                                );
+                            }
+
+
+                            // ==================================================
+                            // BIO
+                            // ==================================================
+
+                            String bio =
+                                    document.getString(
+                                            "bio"
+                                    );
+
+
+                            if (
+                                    bio != null &&
+                                            !bio.trim().isEmpty()
+                            ) {
+
+                                tvBio.setText(
+                                        bio
+                                );
+
+                                tvBio.setVisibility(
+                                        View.VISIBLE
+                                );
+
+                            } else {
+
+                                tvBio.setText(
+                                        ""
+                                );
+
+                                tvBio.setVisibility(
+                                        View.GONE
+                                );
+                            }
+
+
+                            // ==================================================
+                            // PROFILE PHOTO
+                            // ==================================================
+
+                            String profileImage =
+                                    document.getString(
+                                            "profileImage"
+                                    );
+
+
+                            if (
+                                    profileImage != null &&
+                                            !profileImage.isEmpty()
+                            ) {
+
+                                Glide.with(
+                                                profilepage.this
+                                        )
+                                        .load(
+                                                profileImage
+                                        )
+                                        .centerCrop()
+                                        .into(
+                                                imgProfile
+                                        );
+                            }
+
+
+                            // ==================================================
+                            // COUNTS
+                            // ==================================================
+
+                            Long postCount =
+                                    document.getLong(
+                                            "postCount"
+                                    );
+
+                            Long followerCount =
+                                    document.getLong(
+                                            "followerCount"
+                                    );
+
+                            Long followingCount =
+                                    document.getLong(
+                                            "followingCount"
+                                    );
+
+
+                            tvPostCount.setText(
+                                    String.valueOf(
+                                            postCount != null
+                                                    ? postCount
+                                                    : 0
+                                    )
+                            );
+
+
+                            tvFollowerCount.setText(
+                                    String.valueOf(
+                                            followerCount != null
+                                                    ? followerCount
+                                                    : 0
+                                    )
+                            );
+
+
+                            tvFollowingCount.setText(
+                                    String.valueOf(
+                                            followingCount != null
+                                                    ? followingCount
+                                                    : 0
+                                    )
+                            );
                         }
                 )
-                .show();
+                .addOnFailureListener(
+                        e ->
+                                Toast.makeText(
+                                        profilepage.this,
+                                        "Could not load profile",
+                                        Toast.LENGTH_SHORT
+                                ).show()
+                );
     }
 
+
     // ==================================================
-    // EDIT PROFILE
+    // REFRESH PROFILE
     // ==================================================
 
-    private void showEditProfile() {
+    @Override
+    protected void onResume() {
 
-        TextView message =
-                new TextView(this);
+        super.onResume();
 
-        message.setText(
-                "Edit Profile functionality can be connected to Firebase here."
-        );
+        if (
+                mAuth != null &&
+                        mAuth.getCurrentUser() != null
+        ) {
 
-        message.setTextColor(
-                0xFF111111
-        );
+            currentUserId =
+                    mAuth.getCurrentUser()
+                            .getUid();
 
-        message.setTextSize(
-                15
-        );
-
-        message.setPadding(
-                dp(24),
-                dp(20),
-                dp(24),
-                dp(10)
-        );
-
-        new AlertDialog.Builder(
-                this
-        )
-                .setTitle(
-                        "Edit Profile"
-                )
-                .setView(
-                        message
-                )
-                .setPositiveButton(
-                        "OK",
-                        null
-                )
-                .show();
+            loadProfile();
+        }
     }
+
 
     // ==================================================
     // BOTTOM NAVIGATION
@@ -482,40 +730,86 @@ public class profilepage extends AppCompatActivity {
         // ==================================================
 
         btnHome.setOnClickListener(
-                v -> openActivity(
-                        homepage.class
-                )
+                v -> {
+
+                    Intent intent =
+                            new Intent(
+                                    profilepage.this,
+                                    homepage.class
+                            );
+
+                    startActivity(
+                            intent
+                    );
+
+                    finish();
+                }
         );
+
 
         // ==================================================
         // CREATE
         // ==================================================
 
         btnCreate.setOnClickListener(
-                v -> openActivity(
-                        frontpage.class
-                )
+                v -> {
+
+                    Intent intent =
+                            new Intent(
+                                    profilepage.this,
+                                    frontpage.class
+                            );
+
+                    startActivity(
+                            intent
+                    );
+                }
         );
+
 
         // ==================================================
         // MESSAGE
         // ==================================================
 
         btnMessage.setOnClickListener(
-                v -> openActivity(
-                        ChatListActivity.class
-                )
+                v -> {
+
+                    Intent intent =
+                            new Intent(
+                                    profilepage.this,
+                                    ChatListActivity.class
+                            );
+
+                    startActivity(
+                            intent
+                    );
+
+                    finish();
+                }
         );
+
 
         // ==================================================
         // SEARCH
         // ==================================================
 
         btnSearch.setOnClickListener(
-                v -> openActivity(
-                        Search.class
-                )
+                v -> {
+
+                    Intent intent =
+                            new Intent(
+                                    profilepage.this,
+                                    Search.class
+                            );
+
+                    startActivity(
+                            intent
+                    );
+
+                    finish();
+                }
         );
+
 
         // ==================================================
         // PROFILE
@@ -523,163 +817,8 @@ public class profilepage extends AppCompatActivity {
 
         btnProfile.setOnClickListener(
                 v -> {
-
-                    // Already on profile.
-                    // Do nothing.
+                    // Already on Profile
                 }
         );
-    }
-
-    // ==================================================
-    // OPEN ACTIVITY
-    // ==================================================
-
-    private void openActivity(
-            Class<?> targetActivity
-    ) {
-
-        hideKeyboard();
-
-        Intent intent =
-                new Intent(
-                        profilepage.this,
-                        targetActivity
-                );
-
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-        );
-
-        startActivity(
-                intent
-        );
-
-        overridePendingTransition(
-                0,
-                0
-        );
-    }
-
-    // ==================================================
-    // WINDOW INSETS
-    // ==================================================
-
-    private void setupWindowInsets() {
-
-        if (
-                profileRoot == null ||
-                        bottomNavigation == null
-        ) {
-            return;
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(
-                profileRoot,
-                (view, insets) -> {
-
-                    Insets systemBars =
-                            insets.getInsets(
-                                    WindowInsetsCompat.Type
-                                            .systemBars()
-                            );
-
-                    Insets cutout =
-                            insets.getInsets(
-                                    WindowInsetsCompat.Type
-                                            .displayCutout()
-                            );
-
-                    int safeTop =
-                            Math.max(
-                                    systemBars.top,
-                                    cutout.top
-                            );
-
-                    int safeBottom =
-                            Math.max(
-                                    systemBars.bottom,
-                                    cutout.bottom
-                            );
-
-                    // ==================================================
-                    // TOP SAFE AREA
-                    // ==================================================
-
-                    view.setPadding(
-                            0,
-                            safeTop,
-                            0,
-                            0
-                    );
-
-                    // ==================================================
-                    // BOTTOM SAFE AREA
-                    // ==================================================
-
-                    ViewGroup.MarginLayoutParams
-                            navParams =
-                            (ViewGroup.MarginLayoutParams)
-                                    bottomNavigation
-                                            .getLayoutParams();
-
-                    navParams.bottomMargin =
-                            safeBottom;
-
-                    bottomNavigation.setLayoutParams(
-                            navParams
-                    );
-
-                    return insets;
-                }
-        );
-
-        ViewCompat.requestApplyInsets(
-                profileRoot
-        );
-    }
-
-    // ==================================================
-    // HIDE KEYBOARD
-    // ==================================================
-
-    private void hideKeyboard() {
-
-        InputMethodManager imm =
-                (InputMethodManager)
-                        getSystemService(
-                                Context.INPUT_METHOD_SERVICE
-                        );
-
-        View currentFocus =
-                getCurrentFocus();
-
-        if (
-                imm != null &&
-                        currentFocus != null
-        ) {
-
-            imm.hideSoftInputFromWindow(
-                    currentFocus.getWindowToken(),
-                    0
-            );
-        }
-    }
-
-    // ==================================================
-    // DP
-    // ==================================================
-
-    private int dp(
-            int value
-    ) {
-
-        return (int)
-                (
-                        value *
-                                getResources()
-                                        .getDisplayMetrics()
-                                        .density
-                );
     }
 }

@@ -119,6 +119,21 @@
             android:name=".profilepage"
             android:exported="false" />
 
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".StoryViewerActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".VideoPlayerActivity"
+            android:exported="false" />
 
     </application>
 

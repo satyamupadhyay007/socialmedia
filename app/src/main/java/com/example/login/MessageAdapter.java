@@ -1,5 +1,6 @@
 package com.example.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -18,10 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
@@ -33,8 +30,11 @@ public class MessageAdapter
     // ==================================================
 
     private final List<Message> messageList;
+
     private final String currentUserId;
+
     private final OnUnsendListener onUnsendListener;
+
 
     // ==================================================
     // CONSTRUCTOR
@@ -46,10 +46,16 @@ public class MessageAdapter
             OnUnsendListener onUnsendListener
     ) {
 
-        this.messageList = messageList;
-        this.currentUserId = currentUserId;
-        this.onUnsendListener = onUnsendListener;
+        this.messageList =
+                messageList;
+
+        this.currentUserId =
+                currentUserId;
+
+        this.onUnsendListener =
+                onUnsendListener;
     }
+
 
     // ==================================================
     // UNSEND LISTENER
@@ -59,6 +65,7 @@ public class MessageAdapter
 
         void onUnsend(Message message);
     }
+
 
     // ==================================================
     // VIEW HOLDER
@@ -72,6 +79,7 @@ public class MessageAdapter
         FrameLayout contentFrame;
 
         TextView textMessage;
+
         TextView statusText;
 
         ImageView mediaImage;
@@ -82,6 +90,7 @@ public class MessageAdapter
 
         TextView uploadProgressText;
 
+
         public MessageViewHolder(
                 @NonNull View itemView
         ) {
@@ -91,35 +100,42 @@ public class MessageAdapter
             rowContainer =
                     (LinearLayout) itemView;
 
+
             contentFrame =
                     itemView.findViewWithTag(
                             "contentFrame"
                     );
+
 
             textMessage =
                     itemView.findViewWithTag(
                             "textMessage"
                     );
 
+
             statusText =
                     itemView.findViewWithTag(
                             "statusText"
                     );
+
 
             mediaImage =
                     itemView.findViewWithTag(
                             "mediaImage"
                     );
 
+
             videoPlay =
                     itemView.findViewWithTag(
                             "videoPlay"
                     );
 
+
             uploadProgressBar =
                     itemView.findViewWithTag(
                             "uploadProgressBar"
                     );
+
 
             uploadProgressText =
                     itemView.findViewWithTag(
@@ -127,6 +143,7 @@ public class MessageAdapter
                     );
         }
     }
+
 
     // ==================================================
     // CREATE VIEW
@@ -140,7 +157,7 @@ public class MessageAdapter
     ) {
 
         // ==================================================
-        // ROOT
+        // ROOT ROW
         // ==================================================
 
         LinearLayout row =
@@ -163,6 +180,7 @@ public class MessageAdapter
                 dp(parent, 4)
         );
 
+
         RecyclerView.LayoutParams rowParams =
                 new RecyclerView.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -172,6 +190,7 @@ public class MessageAdapter
         row.setLayoutParams(
                 rowParams
         );
+
 
         // ==================================================
         // CONTENT FRAME
@@ -186,19 +205,26 @@ public class MessageAdapter
                 "contentFrame"
         );
 
+
         LinearLayout.LayoutParams contentParams =
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
 
-        row.addView(
-                contentFrame,
+
+        contentFrame.setLayoutParams(
                 contentParams
         );
 
+
+        row.addView(
+                contentFrame
+        );
+
+
         // ==================================================
-        // TEXT
+        // TEXT MESSAGE
         // ==================================================
 
         TextView textMessage =
@@ -210,43 +236,44 @@ public class MessageAdapter
                 "textMessage"
         );
 
+
+        textMessage.setTextSize(
+                16
+        );
+
+
         textMessage.setTextColor(
                 Color.WHITE
         );
 
-        textMessage.setTextSize(
-                15
-        );
 
         textMessage.setGravity(
                 Gravity.CENTER_VERTICAL
         );
 
+
         textMessage.setPadding(
-                dp(parent, 14),
-                dp(parent, 9),
-                dp(parent, 14),
-                dp(parent, 9)
+                dp(parent, 18),
+                dp(parent, 12),
+                dp(parent, 18),
+                dp(parent, 12)
         );
+
 
         textMessage.setMaxWidth(
-                dp(parent, 280)
+                (int) (
+                        parent.getResources()
+                                .getDisplayMetrics()
+                                .widthPixels
+                                * 0.75f
+                )
         );
 
-        textMessage.setVisibility(
-                View.GONE
-        );
-
-        FrameLayout.LayoutParams textParams =
-                new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                );
 
         contentFrame.addView(
-                textMessage,
-                textParams
+                textMessage
         );
+
 
         // ==================================================
         // MEDIA IMAGE
@@ -261,42 +288,52 @@ public class MessageAdapter
                 "mediaImage"
         );
 
+
+        int mediaWidth =
+                dp(parent, 216);
+
+        int mediaHeight =
+                dp(parent, 264);
+
+
+        FrameLayout.LayoutParams mediaParams =
+                new FrameLayout.LayoutParams(
+                        mediaWidth,
+                        mediaHeight
+                );
+
+
+        mediaImage.setLayoutParams(
+                mediaParams
+        );
+
+
         mediaImage.setScaleType(
                 ImageView.ScaleType.CENTER_CROP
         );
 
-        mediaImage.setAdjustViewBounds(
-                false
-        );
 
         mediaImage.setVisibility(
                 View.GONE
         );
 
-        mediaImage.setBackground(
-                roundedBackground(
-                        Color.rgb(35, 35, 35),
-                        16
+
+        mediaImage.setBackgroundColor(
+                Color.rgb(
+                        24,
+                        24,
+                        24
                 )
         );
 
-        mediaImage.setClipToOutline(
-                true
-        );
-
-        FrameLayout.LayoutParams mediaParams =
-                new FrameLayout.LayoutParams(
-                        dp(parent, 230),
-                        dp(parent, 280)
-                );
 
         contentFrame.addView(
-                mediaImage,
-                mediaParams
+                mediaImage
         );
 
+
         // ==================================================
-        // VIDEO PLAY
+        // VIDEO PLAY ICON
         // ==================================================
 
         TextView videoPlay =
@@ -308,93 +345,120 @@ public class MessageAdapter
                 "videoPlay"
         );
 
+
         videoPlay.setText(
                 "▶"
         );
+
+
+        videoPlay.setTextSize(
+                30
+        );
+
 
         videoPlay.setTextColor(
                 Color.WHITE
         );
 
-        videoPlay.setTextSize(
-                26
-        );
 
         videoPlay.setGravity(
                 Gravity.CENTER
         );
 
-        videoPlay.setVisibility(
-                View.GONE
-        );
 
         videoPlay.setBackground(
-                roundedBackground(
+                createCircleBackground(
                         Color.argb(
-                                190,
+                                170,
                                 0,
                                 0,
                                 0
-                        ),
-                        50
+                        )
                 )
         );
 
+
         FrameLayout.LayoutParams playParams =
                 new FrameLayout.LayoutParams(
-                        dp(parent, 58),
-                        dp(parent, 58)
+                        dp(parent, 60),
+                        dp(parent, 60)
                 );
+
 
         playParams.gravity =
                 Gravity.CENTER;
 
-        contentFrame.addView(
-                videoPlay,
+
+        videoPlay.setLayoutParams(
                 playParams
         );
 
+
+        videoPlay.setVisibility(
+                View.GONE
+        );
+
+
+        contentFrame.addView(
+                videoPlay
+        );
+
+
         // ==================================================
-        // UPLOAD PROGRESS
+        // PROGRESS BAR
         // ==================================================
 
         ProgressBar uploadProgressBar =
                 new ProgressBar(
-                        parent.getContext()
+                        parent.getContext(),
+                        null,
+                        android.R.attr.progressBarStyleHorizontal
                 );
+
 
         uploadProgressBar.setTag(
                 "uploadProgressBar"
         );
 
-        uploadProgressBar.setIndeterminate(
-                false
+
+        FrameLayout.LayoutParams progressParams =
+                new FrameLayout.LayoutParams(
+                        dp(parent, 170),
+                        dp(parent, 8)
+                );
+
+
+        progressParams.gravity =
+                Gravity.BOTTOM |
+                        Gravity.CENTER_HORIZONTAL;
+
+
+        progressParams.bottomMargin =
+                dp(parent, 12);
+
+
+        uploadProgressBar.setLayoutParams(
+                progressParams
         );
+
 
         uploadProgressBar.setMax(
                 100
         );
 
+
         uploadProgressBar.setVisibility(
                 View.GONE
         );
 
-        FrameLayout.LayoutParams progressParams =
-                new FrameLayout.LayoutParams(
-                        dp(parent, 42),
-                        dp(parent, 42)
-                );
-
-        progressParams.gravity =
-                Gravity.CENTER;
 
         contentFrame.addView(
-                uploadProgressBar,
-                progressParams
+                uploadProgressBar
         );
 
+
         // ==================================================
-        // UPLOAD %
+        // PROGRESS TEXT
         // ==================================================
 
         TextView uploadProgressText =
@@ -402,55 +466,52 @@ public class MessageAdapter
                         parent.getContext()
                 );
 
+
         uploadProgressText.setTag(
                 "uploadProgressText"
         );
+
 
         uploadProgressText.setTextColor(
                 Color.WHITE
         );
 
+
         uploadProgressText.setTextSize(
                 13
         );
+
 
         uploadProgressText.setGravity(
                 Gravity.CENTER
         );
 
+
+        FrameLayout.LayoutParams progressTextParams =
+                new FrameLayout.LayoutParams(
+                        dp(parent, 60),
+                        dp(parent, 30)
+                );
+
+
+        progressTextParams.gravity =
+                Gravity.CENTER;
+
+
+        uploadProgressText.setLayoutParams(
+                progressTextParams
+        );
+
+
         uploadProgressText.setVisibility(
                 View.GONE
         );
 
-        uploadProgressText.setBackground(
-                roundedBackground(
-                        Color.argb(
-                                170,
-                                0,
-                                0,
-                                0
-                        ),
-                        20
-                )
-        );
-
-        FrameLayout.LayoutParams percentParams =
-                new FrameLayout.LayoutParams(
-                        dp(parent, 54),
-                        dp(parent, 30)
-                );
-
-        percentParams.gravity =
-                Gravity.CENTER_HORIZONTAL |
-                        Gravity.BOTTOM;
-
-        percentParams.bottomMargin =
-                dp(parent, 12);
 
         contentFrame.addView(
-                uploadProgressText,
-                percentParams
+                uploadProgressText
         );
+
 
         // ==================================================
         // STATUS
@@ -465,17 +526,24 @@ public class MessageAdapter
                 "statusText"
         );
 
-        statusText.setTextColor(
-                Color.LTGRAY
-        );
 
         statusText.setTextSize(
                 11
         );
 
-        statusText.setVisibility(
-                View.GONE
+
+        statusText.setTextColor(
+                Color.LTGRAY
         );
+
+
+        statusText.setPadding(
+                dp(parent, 8),
+                dp(parent, 2),
+                dp(parent, 8),
+                0
+        );
+
 
         LinearLayout.LayoutParams statusParams =
                 new LinearLayout.LayoutParams(
@@ -483,21 +551,25 @@ public class MessageAdapter
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
 
-        statusParams.topMargin =
-                dp(parent, 3);
 
-        row.addView(
-                statusText,
+        statusText.setLayoutParams(
                 statusParams
         );
+
+
+        row.addView(
+                statusText
+        );
+
 
         return new MessageViewHolder(
                 row
         );
     }
 
+
     // ==================================================
-    // BIND
+    // BIND VIEW
     // ==================================================
 
     @Override
@@ -507,11 +579,20 @@ public class MessageAdapter
     ) {
 
         Message message =
-                messageList.get(position);
+                messageList.get(
+                        position
+                );
+
 
         if (message == null) {
+
+            clearHolder(
+                    holder
+            );
+
             return;
         }
+
 
         // ==================================================
         // RESET
@@ -521,58 +602,86 @@ public class MessageAdapter
                 View.GONE
         );
 
+
         holder.mediaImage.setVisibility(
                 View.GONE
         );
+
 
         holder.videoPlay.setVisibility(
                 View.GONE
         );
 
+
         holder.uploadProgressBar.setVisibility(
                 View.GONE
         );
+
 
         holder.uploadProgressText.setVisibility(
                 View.GONE
         );
 
+
         holder.statusText.setVisibility(
                 View.GONE
         );
 
-        holder.textMessage.setText(
-                ""
-        );
 
-        holder.statusText.setText(
-                ""
-        );
+        holder.textMessage.setText("");
+
+        holder.statusText.setText("");
+
 
         holder.mediaImage.setImageDrawable(
                 null
         );
 
+
         holder.mediaImage.setOnClickListener(
                 null
         );
+
+
+        holder.videoPlay.setOnClickListener(
+                null
+        );
+
+
+        holder.textMessage.setOnLongClickListener(
+                null
+        );
+
+
+        holder.mediaImage.setOnLongClickListener(
+                null
+        );
+
+
+        holder.videoPlay.setOnLongClickListener(
+                null
+        );
+
 
         holder.contentFrame.setOnLongClickListener(
                 null
         );
 
+
         // ==================================================
-        // OWNER
+        // CHECK OWNER
         // ==================================================
 
         boolean isOwnMessage =
                 currentUserId != null &&
+                        !currentUserId.isEmpty() &&
                         currentUserId.equals(
                                 message.getSenderId()
                         );
 
+
         // ==================================================
-        // UPLOADING MEDIA
+        // UPLOADING MESSAGE
         // ==================================================
 
         if (message.isUploading()) {
@@ -581,8 +690,10 @@ public class MessageAdapter
                     View.VISIBLE
             );
 
+
             String localUri =
                     message.getImageUrl();
+
 
             if (
                     localUri != null &&
@@ -601,58 +712,69 @@ public class MessageAdapter
                         );
             }
 
+
             holder.uploadProgressBar.setVisibility(
                     View.VISIBLE
             );
+
 
             holder.uploadProgressBar.setProgress(
                     message.getUploadProgress()
             );
 
+
             holder.uploadProgressText.setVisibility(
                     View.VISIBLE
             );
 
+
             holder.uploadProgressText.setText(
-                    message.getUploadProgress() +
-                            "%"
+                    message.getUploadProgress()
+                            + "%"
             );
 
-            applyPosition(
+
+            applyMessagePosition(
                     holder,
-                    true
+                    isOwnMessage
             );
 
+
+            // Uploading photo/video is not actual sent message.
             return;
         }
 
+
         // ==================================================
-        // TYPE
+        // MESSAGE TYPE
         // ==================================================
 
-        String type =
+        String messageType =
                 message.getMessageType();
+
 
         if (
                 "image".equalsIgnoreCase(
-                        type
+                        messageType
                 )
         ) {
 
             bindImage(
                     holder,
-                    message
+                    message,
+                    isOwnMessage
             );
 
         } else if (
                 "video".equalsIgnoreCase(
-                        type
+                        messageType
                 )
         ) {
 
             bindVideo(
                     holder,
-                    message
+                    message,
+                    isOwnMessage
             );
 
         } else {
@@ -664,14 +786,6 @@ public class MessageAdapter
             );
         }
 
-        // ==================================================
-        // POSITION
-        // ==================================================
-
-        applyPosition(
-                holder,
-                isOwnMessage
-        );
 
         // ==================================================
         // STATUS
@@ -682,6 +796,7 @@ public class MessageAdapter
             String status =
                     message.getStatus();
 
+
             if (
                     status != null &&
                             !status.trim().isEmpty()
@@ -691,23 +806,35 @@ public class MessageAdapter
                         formatStatus(status)
                 );
 
+
                 holder.statusText.setVisibility(
                         View.VISIBLE
                 );
             }
         }
 
+
         // ==================================================
-        // LONG PRESS = UNSEND
+        // POSITION
         // ==================================================
 
-        holder.contentFrame.setOnLongClickListener(
-                v -> {
+        applyMessagePosition(
+                holder,
+                isOwnMessage
+        );
 
-                    if (
-                            isOwnMessage &&
-                                    onUnsendListener != null
-                    ) {
+
+        // ==================================================
+        // LONG PRESS - CONTENT
+        // ==================================================
+
+        if (
+                isOwnMessage &&
+                        onUnsendListener != null
+        ) {
+
+            holder.contentFrame.setOnLongClickListener(
+                    v -> {
 
                         onUnsendListener.onUnsend(
                                 message
@@ -715,11 +842,46 @@ public class MessageAdapter
 
                         return true;
                     }
+            );
 
-                    return false;
-                }
-        );
+
+            holder.textMessage.setOnLongClickListener(
+                    v -> {
+
+                        onUnsendListener.onUnsend(
+                                message
+                        );
+
+                        return true;
+                    }
+            );
+
+
+            holder.mediaImage.setOnLongClickListener(
+                    v -> {
+
+                        onUnsendListener.onUnsend(
+                                message
+                        );
+
+                        return true;
+                    }
+            );
+
+
+            holder.videoPlay.setOnLongClickListener(
+                    v -> {
+
+                        onUnsendListener.onUnsend(
+                                message
+                        );
+
+                        return true;
+                    }
+            );
+        }
     }
+
 
     // ==================================================
     // TEXT
@@ -728,19 +890,22 @@ public class MessageAdapter
     private void bindText(
             MessageViewHolder holder,
             Message message,
-            boolean isOwn
+            boolean isOwnMessage
     ) {
 
         holder.textMessage.setVisibility(
                 View.VISIBLE
         );
 
+
         holder.textMessage.setText(
                 message.getMessage()
         );
 
+
         GradientDrawable background =
                 new GradientDrawable();
+
 
         background.setCornerRadius(
                 dp(
@@ -749,7 +914,8 @@ public class MessageAdapter
                 )
         );
 
-        if (isOwn) {
+
+        if (isOwnMessage) {
 
             background.setColor(
                     Color.rgb(
@@ -770,10 +936,12 @@ public class MessageAdapter
             );
         }
 
+
         holder.textMessage.setBackground(
                 background
         );
     }
+
 
     // ==================================================
     // IMAGE
@@ -781,98 +949,57 @@ public class MessageAdapter
 
     private void bindImage(
             MessageViewHolder holder,
-            Message message
+            Message message,
+            boolean isOwnMessage
     ) {
 
         holder.mediaImage.setVisibility(
                 View.VISIBLE
         );
 
+
         String imageUrl =
                 message.getImageUrl();
 
+
         if (
-                imageUrl == null ||
-                        imageUrl.trim().isEmpty()
+                imageUrl != null &&
+                        !imageUrl.trim().isEmpty()
         ) {
 
-            showMediaError(
-                    holder,
-                    "Image URL is empty"
-            );
+            Glide.with(
+                            holder.itemView.getContext()
+                    )
+                    .load(
+                            imageUrl
+                    )
+                    .centerCrop()
+                    .into(
+                            holder.mediaImage
+                    );
 
-            return;
+
+            // ==========================================
+            // TAP PHOTO
+            // ==========================================
+
+            holder.mediaImage.setOnClickListener(
+                    v ->
+                            openMedia(
+                                    holder,
+                                    imageUrl,
+                                    false
+                            )
+            );
         }
 
-        Glide.with(
-                        holder.itemView.getContext()
-                )
-                .load(imageUrl)
-                .centerCrop()
-                .listener(
-                        new RequestListener<android.graphics.drawable.Drawable>() {
 
-                            @Override
-                            public boolean onLoadFailed(
-                                    GlideException e,
-                                    Object model,
-                                    Target<android.graphics.drawable.Drawable> target,
-                                    boolean isFirstResource
-                            ) {
-
-                                String errorMessage =
-                                        "Image load failed";
-
-                                if (e != null &&
-                                        e.getRootCauses() != null &&
-                                        !e.getRootCauses().isEmpty()) {
-
-                                    errorMessage =
-                                            "Image load failed: " +
-                                                    e.getRootCauses()
-                                                            .get(0)
-                                                            .getClass()
-                                                            .getSimpleName();
-                                }
-
-                                Toast.makeText(
-                                        holder.itemView.getContext(),
-                                        errorMessage,
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(
-                                    android.graphics.drawable.Drawable resource,
-                                    Object model,
-                                    Target<android.graphics.drawable.Drawable> target,
-                                    DataSource dataSource,
-                                    boolean isFirstResource
-                            ) {
-
-                                return false;
-                            }
-                        }
-                )
-                .into(
-                        holder.mediaImage
-                );
-
-        // ==================================================
-        // TAP TO OPEN IMAGE
-        // ==================================================
-
-        holder.mediaImage.setOnClickListener(
-                v -> openMedia(
-                        holder,
-                        imageUrl,
-                        false
-                )
+        // Video icon hidden for photo
+        holder.videoPlay.setVisibility(
+                View.GONE
         );
     }
+
 
     // ==================================================
     // VIDEO
@@ -880,89 +1007,86 @@ public class MessageAdapter
 
     private void bindVideo(
             MessageViewHolder holder,
-            Message message
+            Message message,
+            boolean isOwnMessage
     ) {
 
         holder.mediaImage.setVisibility(
                 View.VISIBLE
         );
 
+
         holder.videoPlay.setVisibility(
                 View.VISIBLE
         );
 
+
         String videoUrl =
                 message.getImageUrl();
 
+
         if (
-                videoUrl == null ||
-                        videoUrl.trim().isEmpty()
+                videoUrl != null &&
+                        !videoUrl.trim().isEmpty()
         ) {
 
-            showMediaError(
-                    holder,
-                    "Video URL is empty"
+            // ==========================================
+            // CLOUDINARY VIDEO THUMBNAIL
+            // ==========================================
+
+            String thumbnailUrl =
+                    createCloudinaryVideoThumbnail(
+                            videoUrl
+                    );
+
+
+            Glide.with(
+                            holder.itemView.getContext()
+                    )
+                    .load(
+                            thumbnailUrl
+                    )
+                    .centerCrop()
+                    .placeholder(
+                            createVideoPlaceholder()
+                    )
+                    .error(
+                            createVideoPlaceholder()
+                    )
+                    .into(
+                            holder.mediaImage
+                    );
+
+
+            // ==========================================
+            // TAP THUMBNAIL
+            // ==========================================
+
+            holder.mediaImage.setOnClickListener(
+                    v ->
+                            openMedia(
+                                    holder,
+                                    videoUrl,
+                                    true
+                            )
             );
 
-            return;
+
+            // ==========================================
+            // TAP PLAY
+            // ==========================================
+
+            holder.videoPlay.setOnClickListener(
+                    v ->
+                            openMedia(
+                                    holder,
+                                    videoUrl,
+                                    true
+                            )
+            );
         }
-
-        Glide.with(
-                        holder.itemView.getContext()
-                )
-                .load(videoUrl)
-                .centerCrop()
-                .listener(
-                        new RequestListener<android.graphics.drawable.Drawable>() {
-
-                            @Override
-                            public boolean onLoadFailed(
-                                    GlideException e,
-                                    Object model,
-                                    Target<android.graphics.drawable.Drawable> target,
-                                    boolean isFirstResource
-                            ) {
-
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(
-                                    android.graphics.drawable.Drawable resource,
-                                    Object model,
-                                    Target<android.graphics.drawable.Drawable> target,
-                                    DataSource dataSource,
-                                    boolean isFirstResource
-                            ) {
-
-                                return false;
-                            }
-                        }
-                )
-                .into(
-                        holder.mediaImage
-                );
-
-        // ==================================================
-        // TAP TO OPEN VIDEO
-        // ==================================================
-
-        holder.mediaImage.setOnClickListener(
-                v -> openMedia(
-                        holder,
-                        videoUrl,
-                        true
-                )
-        );
-
-        holder.videoPlay.setOnClickListener(
-                v -> openMedia(
-                        holder,
-                        videoUrl,
-                        true
-                )
-        );
     }
+
 
     // ==================================================
     // OPEN MEDIA
@@ -978,114 +1102,249 @@ public class MessageAdapter
                 url == null ||
                         url.trim().isEmpty()
         ) {
+
             Toast.makeText(
                     holder.itemView.getContext(),
-                    "Media unavailable",
+                    isVideo
+                            ? "Video unavailable"
+                            : "Photo unavailable",
                     Toast.LENGTH_SHORT
             ).show();
 
             return;
         }
 
+
         try {
+
+            // ==========================================
+            // VIDEO
+            // ==========================================
+
+            if (isVideo) {
+
+                Intent intent =
+                        new Intent(
+                                holder.itemView.getContext(),
+                                VideoPlayerActivity.class
+                        );
+
+
+                intent.putExtra(
+                        "videoUrl",
+                        url
+                );
+
+
+                holder.itemView
+                        .getContext()
+                        .startActivity(
+                                intent
+                        );
+
+                return;
+            }
+
+
+            // ==========================================
+            // PHOTO
+            // ==========================================
 
             Intent intent =
                     new Intent(
                             Intent.ACTION_VIEW
                     );
 
-            Uri uri =
-                    Uri.parse(url);
 
             intent.setDataAndType(
-                    uri,
-                    isVideo
-                            ? "video/*"
-                            : "image/*"
+                    Uri.parse(url),
+                    "image/*"
             );
+
 
             intent.addFlags(
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    Intent.FLAG_ACTIVITY_NEW_TASK
             );
 
-            holder.itemView.getContext()
-                    .startActivity(intent);
+
+            holder.itemView
+                    .getContext()
+                    .startActivity(
+                            intent
+                    );
 
         } catch (Exception e) {
 
             Toast.makeText(
                     holder.itemView.getContext(),
                     isVideo
-                            ? "No video app found"
-                            : "No image app found",
+                            ? "Unable to play video"
+                            : "Unable to open photo",
                     Toast.LENGTH_SHORT
             ).show();
         }
     }
 
+
     // ==================================================
-    // MEDIA ERROR
+    // CLOUDINARY VIDEO THUMBNAIL
     // ==================================================
 
-    private void showMediaError(
-            MessageViewHolder holder,
-            String message
+    private String createCloudinaryVideoThumbnail(
+            String videoUrl
     ) {
 
-        Toast.makeText(
-                holder.itemView.getContext(),
-                message,
-                Toast.LENGTH_SHORT
-        ).show();
+        if (
+                videoUrl == null ||
+                        videoUrl.trim().isEmpty()
+        ) {
+
+            return "";
+        }
+
+
+        try {
+
+            // Example:
+            // https://res.cloudinary.com/cloud/video/upload/v123/file.mp4
+            //
+            // becomes:
+            // https://res.cloudinary.com/cloud/video/upload/so_0/file.jpg
+
+            int uploadIndex =
+                    videoUrl.indexOf(
+                            "/video/upload/"
+                    );
+
+
+            if (uploadIndex == -1) {
+
+                return videoUrl;
+            }
+
+
+            int start =
+                    uploadIndex +
+                            "/video/upload/".length();
+
+
+            String prefix =
+                    videoUrl.substring(
+                            0,
+                            start
+                    );
+
+
+            String remaining =
+                    videoUrl.substring(
+                            start
+                    );
+
+
+            if (
+                    remaining.startsWith(
+                            "v"
+                    )
+            ) {
+
+                int slashIndex =
+                        remaining.indexOf(
+                                "/"
+                        );
+
+
+                if (slashIndex != -1) {
+
+                    remaining =
+                            remaining.substring(
+                                    slashIndex + 1
+                            );
+                }
+            }
+
+
+            int queryIndex =
+                    remaining.indexOf(
+                            "?"
+                    );
+
+
+            if (queryIndex != -1) {
+
+                remaining =
+                        remaining.substring(
+                                0,
+                                queryIndex
+                        );
+            }
+
+
+            int dotIndex =
+                    remaining.lastIndexOf(
+                            "."
+                    );
+
+
+            if (dotIndex != -1) {
+
+                remaining =
+                        remaining.substring(
+                                0,
+                                dotIndex
+                        );
+            }
+
+
+            return prefix +
+                    "so_0/" +
+                    remaining +
+                    ".jpg";
+
+        } catch (Exception e) {
+
+            return videoUrl;
+        }
     }
 
+
     // ==================================================
-    // POSITION
+    // VIDEO PLACEHOLDER
     // ==================================================
 
-    private void applyPosition(
-            MessageViewHolder holder,
-            boolean isOwn
-    ) {
+    private GradientDrawable createVideoPlaceholder() {
 
-        LinearLayout.LayoutParams
-                contentParams =
-                (LinearLayout.LayoutParams)
-                        holder.contentFrame
-                                .getLayoutParams();
+        GradientDrawable drawable =
+                new GradientDrawable();
 
-        contentParams.gravity =
-                isOwn
-                        ? Gravity.END
-                        : Gravity.START;
-
-        holder.contentFrame.setLayoutParams(
-                contentParams
+        drawable.setColor(
+                Color.rgb(
+                        30,
+                        30,
+                        30
+                )
         );
 
-        LinearLayout.LayoutParams
-                statusParams =
-                (LinearLayout.LayoutParams)
-                        holder.statusText
-                                .getLayoutParams();
-
-        statusParams.gravity =
-                isOwn
-                        ? Gravity.END
-                        : Gravity.START;
-
-        holder.statusText.setLayoutParams(
-                statusParams
+        drawable.setCornerRadius(
+                18
         );
+
+        return drawable;
     }
 
+
     // ==================================================
-    // STATUS
+    // STATUS FORMAT
     // ==================================================
 
     private String formatStatus(
             String status
     ) {
+
+        if (status == null) {
+
+            return "";
+        }
+
 
         if (
                 "sent".equalsIgnoreCase(
@@ -1096,6 +1355,7 @@ public class MessageAdapter
             return "Sent";
         }
 
+
         if (
                 "delivered".equalsIgnoreCase(
                         status
@@ -1104,6 +1364,7 @@ public class MessageAdapter
 
             return "Delivered";
         }
+
 
         if (
                 "seen".equalsIgnoreCase(
@@ -1114,11 +1375,108 @@ public class MessageAdapter
             return "Seen";
         }
 
+
         return status;
     }
 
+
     // ==================================================
-    // COUNT
+    // MESSAGE POSITION
+    // ==================================================
+
+    private void applyMessagePosition(
+            MessageViewHolder holder,
+            boolean isOwnMessage
+    ) {
+
+        LinearLayout.LayoutParams contentParams =
+                (LinearLayout.LayoutParams)
+                        holder.contentFrame
+                                .getLayoutParams();
+
+
+        if (isOwnMessage) {
+
+            contentParams.gravity =
+                    Gravity.END;
+
+        } else {
+
+            contentParams.gravity =
+                    Gravity.START;
+        }
+
+
+        holder.contentFrame.setLayoutParams(
+                contentParams
+        );
+
+
+        LinearLayout.LayoutParams statusParams =
+                (LinearLayout.LayoutParams)
+                        holder.statusText
+                                .getLayoutParams();
+
+
+        if (isOwnMessage) {
+
+            statusParams.gravity =
+                    Gravity.END;
+
+        } else {
+
+            statusParams.gravity =
+                    Gravity.START;
+        }
+
+
+        holder.statusText.setLayoutParams(
+                statusParams
+        );
+    }
+
+
+    // ==================================================
+    // CLEAR HOLDER
+    // ==================================================
+
+    private void clearHolder(
+            MessageViewHolder holder
+    ) {
+
+        holder.textMessage.setVisibility(
+                View.GONE
+        );
+
+
+        holder.mediaImage.setVisibility(
+                View.GONE
+        );
+
+
+        holder.videoPlay.setVisibility(
+                View.GONE
+        );
+
+
+        holder.uploadProgressBar.setVisibility(
+                View.GONE
+        );
+
+
+        holder.uploadProgressText.setVisibility(
+                View.GONE
+        );
+
+
+        holder.statusText.setVisibility(
+                View.GONE
+        );
+    }
+
+
+    // ==================================================
+    // ITEM COUNT
     // ==================================================
 
     @Override
@@ -1128,6 +1486,7 @@ public class MessageAdapter
                 ? 0
                 : messageList.size();
     }
+
 
     // ==================================================
     // DP
@@ -1147,6 +1506,7 @@ public class MessageAdapter
                 );
     }
 
+
     private int dp(
             ViewGroup parent,
             int value
@@ -1161,36 +1521,29 @@ public class MessageAdapter
                 );
     }
 
+
     // ==================================================
-    // ROUNDED BACKGROUND
+    // CIRCLE BACKGROUND
     // ==================================================
 
-    private GradientDrawable roundedBackground(
-            int color,
-            int radiusDp
+    private GradientDrawable createCircleBackground(
+            int color
     ) {
 
         GradientDrawable drawable =
                 new GradientDrawable();
 
+
+        drawable.setShape(
+                GradientDrawable.OVAL
+        );
+
+
         drawable.setColor(
                 color
         );
 
-        drawable.setCornerRadius(
-                dpValue(
-                        radiusDp
-                )
-        );
 
         return drawable;
-    }
-
-    private float dpValue(
-            int value
-    ) {
-
-        return value *
-                1.0f;
     }
 }
