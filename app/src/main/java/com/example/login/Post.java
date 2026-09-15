@@ -1,5 +1,6 @@
 package com.example.login;
 
+@SuppressWarnings("unused")
 public class Post {
 
     private String postId;

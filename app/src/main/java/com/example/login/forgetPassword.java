@@ -1,17 +1,22 @@
 package com.example.login;
 
-import android.content.*;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.*;
-import android.view.inputmethod.*;
-import android.widget.*;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.*;
-import androidx.core.view.*;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-import com.google.firebase.auth.*;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class forgetPassword extends AppCompatActivity {
 
@@ -300,14 +305,10 @@ public class forgetPassword extends AppCompatActivity {
         recoveryDot1.animate()
                 .alpha(0.3f)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    recoveryDot1.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> recoveryDot1.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
 
@@ -315,14 +316,10 @@ public class forgetPassword extends AppCompatActivity {
                 .alpha(0.3f)
                 .setStartDelay(200)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    recoveryDot2.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> recoveryDot2.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
 
@@ -330,14 +327,10 @@ public class forgetPassword extends AppCompatActivity {
                 .alpha(0.3f)
                 .setStartDelay(400)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    recoveryDot3.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> recoveryDot3.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
 

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -46,7 +47,6 @@ public class ChatActivity extends AppCompatActivity {
     // ==================================================
 
     private TextView chatUserName;
-    private TextView chatStatus;
 
     private ImageButton backButton;
     private ImageButton photoButton;
@@ -301,7 +301,7 @@ public class ChatActivity extends AppCompatActivity {
                         R.id.chatUserName
                 );
 
-        chatStatus =
+        TextView chatStatus =
                 findViewById(
                         R.id.chatStatus
                 );
@@ -341,7 +341,7 @@ public class ChatActivity extends AppCompatActivity {
         );
 
         chatStatus.setText(
-                "@" + receiverUsername
+                String.format("@%s", receiverUsername)
         );
 
 
@@ -357,10 +357,7 @@ public class ChatActivity extends AppCompatActivity {
                 new MessageAdapter(
                         messageList,
                         currentUserId,
-                        message ->
-                                showUnsendConfirmation(
-                                        message
-                                )
+                        this::showUnsendConfirmation
                 );
 
 
@@ -1421,10 +1418,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
         if (
-                currentUserId == null ||
-                        !currentUserId.equals(
-                                message.getSenderId()
-                        )
+                Objects.equals(currentUserId, message.getSenderId())
         ) {
 
             return;
@@ -1674,9 +1668,7 @@ public class ChatActivity extends AppCompatActivity {
 
                                 data.put(
                                         "lastMessageTime",
-                                        time != null
-                                                ? time
-                                                : 0L
+                                        Objects.requireNonNullElse(time, 0L)
                                 );
                             }
 
@@ -1885,10 +1877,7 @@ public class ChatActivity extends AppCompatActivity {
                                 // ==================================================
 
                                 if (
-                                        receiverId != null &&
-                                                receiverId.equals(
-                                                        message.getSenderId()
-                                                )
+                                        Objects.equals(receiverId, message.getSenderId())
                                 ) {
 
                                     String status =

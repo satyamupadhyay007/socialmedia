@@ -43,9 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         // ================= BACK =================
 
-        btnBackSettings.setOnClickListener(v -> {
-            finish();
-        });
+        btnBackSettings.setOnClickListener(v -> finish());
 
 
         // ================= ACCOUNT =================

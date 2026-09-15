@@ -3,6 +3,7 @@ package com.example.login;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -16,12 +17,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ChatListAdapter
         extends RecyclerView.Adapter<ChatListAdapter.ChatViewHolder> {
@@ -38,20 +44,13 @@ public class ChatListAdapter
             OnChatClickListener listener
     ) {
         this.chatList =
-                chatList != null
-                        ? chatList
-                        : new ArrayList<>();
+                Objects.requireNonNullElseGet(chatList, ArrayList::new);
 
         this.listener = listener;
     }
 
     public void updateList(List<ChatItem> newList) {
-
-        if (newList == null) {
-            chatList = new ArrayList<>();
-        } else {
-            chatList = newList;
-        }
+        chatList = Objects.requireNonNullElseGet(newList, ArrayList::new);
 
         notifyDataSetChanged();
     }
@@ -81,6 +80,13 @@ public class ChatListAdapter
 
         LinearLayout row =
                 new LinearLayout(context);
+
+        row.setLayoutParams(
+                new RecyclerView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
 
         row.setOrientation(
                 LinearLayout.HORIZONTAL
@@ -585,7 +591,7 @@ public class ChatListAdapter
             );
 
             holder.username.setText(
-                    "@" + username
+                    String.format("@%s", username)
             );
         }
 
@@ -709,13 +715,13 @@ public class ChatListAdapter
                             holder.profileImage.getBackground()
                     )
                     .listener(
-                            new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
+                            new RequestListener<>() {
 
                                 @Override
                                 public boolean onLoadFailed(
-                                        com.bumptech.glide.load.engine.GlideException e,
+                                        GlideException e,
                                         Object model,
-                                        com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
+                                        Target<Drawable> target,
                                         boolean isFirstResource
                                 ) {
                                     holder.avatarInitial.setVisibility(
@@ -727,10 +733,10 @@ public class ChatListAdapter
 
                                 @Override
                                 public boolean onResourceReady(
-                                        android.graphics.drawable.Drawable resource,
+                                        Drawable resource,
                                         Object model,
-                                        com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target,
-                                        com.bumptech.glide.load.DataSource dataSource,
+                                        Target<Drawable> target,
+                                        DataSource dataSource,
                                         boolean isFirstResource
                                 ) {
                                     holder.avatarInitial.setVisibility(
@@ -750,13 +756,11 @@ public class ChatListAdapter
         // CLICK
         // ==================================================
 
-        ChatItem finalItem = item;
-
         holder.itemView.setOnClickListener(
                 v -> {
                     if (listener != null) {
                         listener.onChatClick(
-                                finalItem
+                                item
                         );
                     }
                 }
@@ -803,10 +807,7 @@ public class ChatListAdapter
                 );
 
         if (
-                dayFormat.format(date)
-                        .equals(
-                                dayFormat.format(now)
-                        )
+                Objects.equals(dayFormat.format(date), dayFormat.format(now))
         ) {
 
             return new SimpleDateFormat(

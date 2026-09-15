@@ -1,6 +1,5 @@
 package com.example.login;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -21,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MessageAdapter
         extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
@@ -673,11 +674,7 @@ public class MessageAdapter
         // ==================================================
 
         boolean isOwnMessage =
-                currentUserId != null &&
-                        !currentUserId.isEmpty() &&
-                        currentUserId.equals(
-                                message.getSenderId()
-                        );
+                Objects.equals(currentUserId, message.getSenderId());
 
 
         // ==================================================
@@ -729,8 +726,7 @@ public class MessageAdapter
 
 
             holder.uploadProgressText.setText(
-                    message.getUploadProgress()
-                            + "%"
+                    String.format(Locale.getDefault(), "%d%%", message.getUploadProgress())
             );
 
 
@@ -1211,10 +1207,8 @@ public class MessageAdapter
             // becomes:
             // https://res.cloudinary.com/cloud/video/upload/so_0/file.jpg
 
-            int uploadIndex =
-                    videoUrl.indexOf(
-                            "/video/upload/"
-                    );
+            String cloudinaryPrefix = "/video/upload/";
+            int uploadIndex = videoUrl.indexOf(cloudinaryPrefix);
 
 
             if (uploadIndex == -1) {
@@ -1225,7 +1219,7 @@ public class MessageAdapter
 
             int start =
                     uploadIndex +
-                            "/video/upload/".length();
+                            cloudinaryPrefix.length();
 
 
             String prefix =
@@ -1345,38 +1339,16 @@ public class MessageAdapter
             return "";
         }
 
-
-        if (
-                "sent".equalsIgnoreCase(
-                        status
-                )
-        ) {
-
-            return "Sent";
+        switch (status.toLowerCase()) {
+            case "sent":
+                return "Sent";
+            case "delivered":
+                return "Delivered";
+            case "seen":
+                return "Seen";
+            default:
+                return status;
         }
-
-
-        if (
-                "delivered".equalsIgnoreCase(
-                        status
-                )
-        ) {
-
-            return "Delivered";
-        }
-
-
-        if (
-                "seen".equalsIgnoreCase(
-                        status
-                )
-        ) {
-
-            return "Seen";
-        }
-
-
-        return status;
     }
 
 

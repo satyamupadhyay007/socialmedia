@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Collections;
+import java.util.Objects;
 
 public class profilepage extends AppCompatActivity {
 
@@ -36,7 +37,6 @@ public class profilepage extends AppCompatActivity {
     private View bottomNavigation;
 
     private ImageButton btnBack;
-    private ImageButton btnSettings;
 
     private Button btnEditProfile;
     private Button btnUploadPost;
@@ -145,7 +145,7 @@ public class profilepage extends AppCompatActivity {
                         R.id.btnBack
                 );
 
-        btnSettings =
+        ImageButton btnSettings =
                 findViewById(
                         R.id.btnSettings
                 );
@@ -530,7 +530,7 @@ public class profilepage extends AppCompatActivity {
                             ) {
 
                                 tvUsername.setText(
-                                        "@" + userId
+                                        String.format("@%s", userId)
                                 );
                             } else {
 
@@ -660,27 +660,21 @@ public class profilepage extends AppCompatActivity {
 
                             tvPostCount.setText(
                                     String.valueOf(
-                                            postCount != null
-                                                    ? postCount
-                                                    : 0
+                                            Objects.requireNonNullElse(postCount, 0L)
                                     )
                             );
 
 
                             tvFollowerCount.setText(
                                     String.valueOf(
-                                            followerCount != null
-                                                    ? followerCount
-                                                    : 0
+                                            Objects.requireNonNullElse(followerCount, 0L)
                                     )
                             );
 
 
                             tvFollowingCount.setText(
                                     String.valueOf(
-                                            followingCount != null
-                                                    ? followingCount
-                                                    : 0
+                                            Objects.requireNonNullElse(followingCount, 0L)
                                     )
                             );
                         }

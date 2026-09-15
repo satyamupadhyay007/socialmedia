@@ -3,7 +3,6 @@ package com.example.login;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -43,8 +42,6 @@ public class ChatListActivity extends AppCompatActivity {
     private ImageButton searchUserButton;
 
     private TextView currentUserIdText;
-
-    private RecyclerView chatListRecyclerView;
 
     private ImageButton btnHome;
     private ImageButton btnCreate;
@@ -163,7 +160,7 @@ public class ChatListActivity extends AppCompatActivity {
                         R.id.currentUserIdText
                 );
 
-        chatListRecyclerView =
+        RecyclerView chatListRecyclerView =
                 findViewById(
                         R.id.chatListRecyclerView
                 );
@@ -329,12 +326,9 @@ public class ChatListActivity extends AppCompatActivity {
                         }
                 )
                 .addOnFailureListener(
-                        e -> {
-
-                            currentUserIdText.setText(
-                                    "User"
-                            );
-                        }
+                        e -> currentUserIdText.setText(
+                                "User"
+                        )
                 );
     }
 
@@ -792,23 +786,10 @@ public class ChatListActivity extends AppCompatActivity {
                 uniqueChats.values()
         );
 
-        Collections.sort(
-                chatList,
-                new Comparator<ChatItem>() {
-
-                    @Override
-                    public int compare(
-                            ChatItem first,
-                            ChatItem second
-                    ) {
-
-                        return Long.compare(
-                                second.getLastMessageTime(),
-                                first.getLastMessageTime()
-                        );
-                    }
-                }
-        );
+        chatList.sort((first, second) -> Long.compare(
+                second.getLastMessageTime(),
+                first.getLastMessageTime()
+        ));
 
         chatListAdapter.updateList(
                 new ArrayList<>(

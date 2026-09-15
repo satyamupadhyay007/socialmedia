@@ -44,7 +44,7 @@ public class ProfilePostAdapter
         return images.size();
     }
 
-    static class PostViewHolder extends RecyclerView.ViewHolder {
+    public static class PostViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imgPost;
 
