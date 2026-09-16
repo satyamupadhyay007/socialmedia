@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/uploadPostRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- ================= BACK BUTTON ================= -->
+
+    <ImageButton
+        android:id="@+id/btnBackUpload"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="Back"
+        android:padding="12dp"
+        android:tint="#FFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ================= TITLE ================= -->
+
+    <TextView
+        android:id="@+id/tvCreatePostTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="Create Post"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- ================= POST PREVIEW ================= -->
+
+    <ImageView
+        android:id="@+id/imgPostPreview"
+        android:layout_width="0dp"
+        android:layout_height="320dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:background="#111111"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_gallery"
+        android:contentDescription="Post preview"
+        app:layout_constraintTop_toBottomOf="@id/tvCreatePostTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ================= CHOOSE PHOTO / VIDEO ================= -->
+
+    <Button
+        android:id="@+id/btnChoosePhoto"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="12dp"
+        android:text="Choose Photo / Video"
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/imgPostPreview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ================= CAPTION ================= -->
+
+    <EditText
+        android:id="@+id/editCaption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="16dp"
+        android:hint="Write a caption..."
+        android:textColor="#FFFFFF"
+        android:textColorHint="#AAAAAA"
+        android:backgroundTint="#FFFFFF"
+        android:inputType="textCapSentences|textMultiLine"
+        android:gravity="top|start"
+        android:minHeight="48dp"
+        android:maxLines="5"
+        app:layout_constraintTop_toBottomOf="@id/btnChoosePhoto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ================= POST BUTTON ================= -->
+
+    <Button
+        android:id="@+id/btnPost"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="16dp"
+        android:text="Post"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ================= PROGRESS ================= -->
+
+    <ProgressBar
+        android:id="@+id/progressPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/imgPostPreview"
+        app:layout_constraintBottom_toBottomOf="@id/imgPostPreview"
+        app:layout_constraintStart_toStartOf="@id/imgPostPreview"
+        app:layout_constraintEnd_toEndOf="@id/imgPostPreview" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

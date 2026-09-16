@@ -2,4 +2,13 @@
     <string name="app_name">Frenzo</string>
     <string name="logintext">Login</string>
     <string name="login">Login</string>
+    <string name="home">Home</string>
+    <string name="create">Create</string>
+    <string name="message">Message</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
+    <style name="CircleImageStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

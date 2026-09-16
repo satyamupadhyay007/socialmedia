@@ -3,14 +3,28 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="120dp">
+    android:layout_height="140dp"
+    android:layout_margin="1dp"
+    android:background="#000000">
 
+    <!-- POST / REEL THUMBNAIL -->
     <ImageView
-        android:id="@+id/imgPost"
+        android:id="@+id/postImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@android:drawable/ic_menu_gallery"
-        android:contentDescription="Post Image"/>
+        android:contentDescription="Post or Reel"/>
+
+    <!-- REEL PLAY ICON -->
+    <ImageView
+        android:id="@+id/playIcon"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:src="@android:drawable/ic_media_play"
+        android:tint="#FFFFFF"
+        android:contentDescription="Reel"
+        android:visibility="gone"/>
 
 </FrameLayout>

@@ -81,6 +81,16 @@ public class ChatListActivity extends AppCompatActivity {
 
 
     // ==================================================
+    // SHARED POST DATA
+    // ==================================================
+
+    private boolean sharePost = false;
+    private String sharedPostId = "";
+    private String sharedPostImage = "";
+    private String sharedPostCaption = "";
+
+
+    // ==================================================
     // ON CREATE
     // ==================================================
 
@@ -149,6 +159,45 @@ public class ChatListActivity extends AppCompatActivity {
 
         mAuth =
                 FirebaseAuth.getInstance();
+
+
+        // ==================================================
+        // RECEIVE SHARED POST
+        // ==================================================
+
+        Intent incomingIntent = getIntent();
+
+        sharePost = incomingIntent.getBooleanExtra(
+                "sharePost",
+                false
+        );
+
+        if (sharePost) {
+
+            sharedPostId = incomingIntent.getStringExtra(
+                    "sharedPostId"
+            );
+
+            sharedPostImage = incomingIntent.getStringExtra(
+                    "sharedPostImage"
+            );
+
+            sharedPostCaption = incomingIntent.getStringExtra(
+                    "sharedPostCaption"
+            );
+
+            if (sharedPostId == null) {
+                sharedPostId = "";
+            }
+
+            if (sharedPostImage == null) {
+                sharedPostImage = "";
+            }
+
+            if (sharedPostCaption == null) {
+                sharedPostCaption = "";
+            }
+        }
 
 
         // ==================================================
@@ -1482,16 +1531,11 @@ public class ChatListActivity extends AppCompatActivity {
             ChatItem chatItem
     ) {
 
-        if (
-                chatItem == null
-        ) {
-
+        if (chatItem == null) {
             return;
         }
 
-
         hideKeyboard();
-
 
         Intent intent =
                 new Intent(
@@ -1499,22 +1543,44 @@ public class ChatListActivity extends AppCompatActivity {
                         ChatActivity.class
                 );
 
-
         intent.putExtra(
                 "receiverId",
                 chatItem.getUid()
         );
-
 
         intent.putExtra(
                 "receiverUsername",
                 chatItem.getUsername()
         );
 
+        // ==================================================
+        // SHARED POST
+        // ==================================================
 
-        startActivity(
-                intent
-        );
+        if (sharePost) {
+
+            intent.putExtra(
+                    "sharePost",
+                    true
+            );
+
+            intent.putExtra(
+                    "sharedPostId",
+                    sharedPostId
+            );
+
+            intent.putExtra(
+                    "sharedPostImage",
+                    sharedPostImage
+            );
+
+            intent.putExtra(
+                    "sharedPostCaption",
+                    sharedPostCaption
+            );
+        }
+
+        startActivity(intent);
     }
 
 
@@ -1526,16 +1592,11 @@ public class ChatListActivity extends AppCompatActivity {
             User user
     ) {
 
-        if (
-                user == null
-        ) {
-
+        if (user == null) {
             return;
         }
 
-
         hideKeyboard();
-
 
         Intent intent =
                 new Intent(
@@ -1543,22 +1604,44 @@ public class ChatListActivity extends AppCompatActivity {
                         ChatActivity.class
                 );
 
-
         intent.putExtra(
                 "receiverId",
                 user.getUid()
         );
-
 
         intent.putExtra(
                 "receiverUsername",
                 user.getUsername()
         );
 
+        // ==================================================
+        // SHARED POST
+        // ==================================================
 
-        startActivity(
-                intent
-        );
+        if (sharePost) {
+
+            intent.putExtra(
+                    "sharePost",
+                    true
+            );
+
+            intent.putExtra(
+                    "sharedPostId",
+                    sharedPostId
+            );
+
+            intent.putExtra(
+                    "sharedPostImage",
+                    sharedPostImage
+            );
+
+            intent.putExtra(
+                    "sharedPostCaption",
+                    sharedPostCaption
+            );
+        }
+
+        startActivity(intent);
     }
 
 

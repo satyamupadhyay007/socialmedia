@@ -1,0 +1,21 @@
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">Frenzo</string>\r\n    <string name=\"logintext\">Login</string>\r\n    <string name=\"login\">Login</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision 200574c26e282e5f6ea593505aba1787ac307e8b)
++++ b/app/src/main/res/values/strings.xml	(date 1788622470434)
+@@ -2,4 +2,9 @@
+     <string name="app_name">Frenzo</string>
+     <string name="logintext">Login</string>
+     <string name="login">Login</string>
++    <string name="home">Home</string>
++    <string name="create">Create</string>
++    <string name="message">Message</string>
++    <string name="search">Search</string>
++    <string name="profile">Profile</string>
+ </resources>
+\ No newline at end of file

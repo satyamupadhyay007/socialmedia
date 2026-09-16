@@ -1,0 +1,249 @@
+Index: app/src/main/res/layout/activity_profile.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<androidx.constraintlayout.widget.ConstraintLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/profileRoot\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"#000000\"\r\n    tools:context=\".profilepage\">\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- TOP BAR -->\r\n    <!-- ================================================= -->\r\n\r\n    <androidx.constraintlayout.widget.ConstraintLayout\r\n        android:id=\"@+id/topBar\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"80dp\"\r\n        android:background=\"#000000\"\r\n        android:paddingTop=\"0dp\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\">\r\n\r\n\r\n        <!-- BACK BUTTON -->\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnBack\"\r\n            android:layout_width=\"48dp\"\r\n            android:layout_height=\"48dp\"\r\n            android:layout_marginStart=\"8dp\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"Back\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"10dp\"\r\n            android:src=\"@drawable/ic_arrow_back\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\" />\r\n\r\n\r\n        <!-- PROFILE TITLE -->\r\n\r\n        <TextView\r\n            android:id=\"@+id/profileTitle\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:text=\"Profile\"\r\n            android:textColor=\"#FFFFFF\"\r\n            android:textSize=\"20sp\"\r\n            android:textStyle=\"bold\"\r\n            android:includeFontPadding=\"true\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\" />\r\n\r\n\r\n        <!-- SETTINGS BUTTON -->\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnSettings\"\r\n            android:layout_width=\"48dp\"\r\n            android:layout_height=\"48dp\"\r\n            android:layout_marginEnd=\"8dp\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"Settings\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"10dp\"\r\n            android:src=\"@drawable/ic_settings\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\" />\r\n\r\n    </androidx.constraintlayout.widget.ConstraintLayout>\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- PROFILE PHOTO -->\r\n    <!-- ================================================= -->\r\n\r\n    <ImageView\r\n        android:id=\"@+id/imgProfile\"\r\n        android:layout_width=\"96dp\"\r\n        android:layout_height=\"96dp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:background=\"@drawable/profile_circle\"\r\n        android:padding=\"3dp\"\r\n        android:scaleType=\"centerCrop\"\r\n        android:src=\"@android:drawable/ic_menu_gallery\"\r\n        android:contentDescription=\"Profile Picture\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/topBar\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\" />\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- NAME -->\r\n    <!-- ================================================= -->\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvName\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"10dp\"\r\n        android:text=\"Aayush\"\r\n        android:textColor=\"#FFFFFF\"\r\n        android:textSize=\"20sp\"\r\n        android:textStyle=\"bold\"\r\n        android:includeFontPadding=\"true\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/imgProfile\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\" />\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- USERNAME -->\r\n    <!-- ================================================= -->\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvUsername\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"3dp\"\r\n        android:text=\"@aayush\"\r\n        android:textColor=\"#BDBDBD\"\r\n        android:textSize=\"14sp\"\r\n        android:includeFontPadding=\"true\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/tvName\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\" />\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- BIO -->\r\n    <!-- ================================================= -->\r\n\r\n    <TextView\r\n        android:id=\"@+id/tvBio\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginStart=\"35dp\"\r\n        android:layout_marginTop=\"8dp\"\r\n        android:layout_marginEnd=\"35dp\"\r\n        android:gravity=\"center\"\r\n        android:text=\"Creating memories and sharing moments ✨\"\r\n        android:textColor=\"#FFFFFF\"\r\n        android:textSize=\"14sp\"\r\n        android:includeFontPadding=\"true\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/tvUsername\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\" />\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- STATS -->\r\n    <!-- ================================================= -->\r\n\r\n    <LinearLayout\r\n        android:id=\"@+id/statsLayout\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"22dp\"\r\n        android:orientation=\"horizontal\"\r\n        android:gravity=\"center\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/tvBio\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\">\r\n\r\n\r\n        <!-- POSTS -->\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_weight=\"1\"\r\n            android:gravity=\"center\"\r\n            android:orientation=\"vertical\">\r\n\r\n            <TextView\r\n                android:id=\"@+id/tvPostCount\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"0\"\r\n                android:textColor=\"#FFFFFF\"\r\n                android:textSize=\"18sp\"\r\n                android:textStyle=\"bold\"\r\n                android:includeFontPadding=\"true\" />\r\n\r\n            <TextView\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginTop=\"3dp\"\r\n                android:text=\"Posts\"\r\n                android:textColor=\"#BDBDBD\"\r\n                android:textSize=\"13sp\" />\r\n\r\n        </LinearLayout>\r\n\r\n\r\n        <!-- FOLLOWERS -->\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_weight=\"1\"\r\n            android:gravity=\"center\"\r\n            android:orientation=\"vertical\">\r\n\r\n            <TextView\r\n                android:id=\"@+id/tvFollowerCount\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"0\"\r\n                android:textColor=\"#FFFFFF\"\r\n                android:textSize=\"18sp\"\r\n                android:textStyle=\"bold\"\r\n                android:includeFontPadding=\"true\" />\r\n\r\n            <TextView\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginTop=\"3dp\"\r\n                android:text=\"Followers\"\r\n                android:textColor=\"#BDBDBD\"\r\n                android:textSize=\"13sp\" />\r\n\r\n        </LinearLayout>\r\n\r\n\r\n        <!-- FOLLOWING -->\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_weight=\"1\"\r\n            android:gravity=\"center\"\r\n            android:orientation=\"vertical\">\r\n\r\n            <TextView\r\n                android:id=\"@+id/tvFollowingCount\"\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:text=\"0\"\r\n                android:textColor=\"#FFFFFF\"\r\n                android:textSize=\"18sp\"\r\n                android:textStyle=\"bold\"\r\n                android:includeFontPadding=\"true\" />\r\n\r\n            <TextView\r\n                android:layout_width=\"wrap_content\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:layout_marginTop=\"3dp\"\r\n                android:text=\"Following\"\r\n                android:textColor=\"#BDBDBD\"\r\n                android:textSize=\"13sp\" />\r\n\r\n        </LinearLayout>\r\n\r\n    </LinearLayout>\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- EDIT PROFILE -->\r\n    <!-- ================================================= -->\r\n\r\n    <Button\r\n        android:id=\"@+id/btnEditProfile\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"46dp\"\r\n        android:layout_marginStart=\"20dp\"\r\n        android:layout_marginTop=\"18dp\"\r\n        android:layout_marginEnd=\"5dp\"\r\n        android:background=\"@drawable/edit_profile_bg\"\r\n        android:text=\"Edit Profile\"\r\n        android:textAllCaps=\"false\"\r\n        android:textColor=\"#FFFFFF\"\r\n        android:textSize=\"14sp\"\r\n        android:textStyle=\"bold\"\r\n        android:stateListAnimator=\"@null\"\r\n        android:elevation=\"0dp\"\r\n        android:foreground=\"?attr/selectableItemBackground\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/statsLayout\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toStartOf=\"@id/btnUploadPost\" />\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- UPLOAD POST -->\r\n    <!-- ================================================= -->\r\n\r\n    <Button\r\n        android:id=\"@+id/btnUploadPost\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"46dp\"\r\n        android:layout_marginStart=\"5dp\"\r\n        android:layout_marginTop=\"18dp\"\r\n        android:layout_marginEnd=\"20dp\"\r\n        android:background=\"@drawable/edit_profile_bg\"\r\n        android:text=\"+ Upload Post\"\r\n        android:textAllCaps=\"false\"\r\n        android:textColor=\"#FFFFFF\"\r\n        android:textSize=\"14sp\"\r\n        android:textStyle=\"bold\"\r\n        android:stateListAnimator=\"@null\"\r\n        android:elevation=\"0dp\"\r\n        android:foreground=\"?attr/selectableItemBackground\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/statsLayout\"\r\n        app:layout_constraintStart_toEndOf=\"@id/btnEditProfile\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\" />\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- TABS -->\r\n    <!-- ================================================= -->\r\n\r\n    <LinearLayout\r\n        android:id=\"@+id/tabsLayout\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"52dp\"\r\n        android:layout_marginTop=\"12dp\"\r\n        android:orientation=\"horizontal\"\r\n        android:gravity=\"center\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/btnEditProfile\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\">\r\n\r\n\r\n        <Button\r\n            android:id=\"@+id/btnPosts\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"48dp\"\r\n            android:layout_weight=\"1\"\r\n            android:text=\"Posts\"\r\n            android:textAllCaps=\"false\"\r\n            android:textColor=\"#FFFFFF\"\r\n            android:textSize=\"14sp\"\r\n            android:background=\"@drawable/tabs_bg\"\r\n            android:stateListAnimator=\"@null\"\r\n            android:elevation=\"0dp\"\r\n            android:foreground=\"?attr/selectableItemBackground\" />\r\n\r\n\r\n        <Button\r\n            android:id=\"@+id/btnReels\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"48dp\"\r\n            android:layout_weight=\"1\"\r\n            android:text=\"Reels\"\r\n            android:textAllCaps=\"false\"\r\n            android:textColor=\"#FFFFFF\"\r\n            android:textSize=\"14sp\"\r\n            android:background=\"@drawable/tabs_bg\"\r\n            android:stateListAnimator=\"@null\"\r\n            android:elevation=\"0dp\"\r\n            android:foreground=\"?attr/selectableItemBackground\" />\r\n\r\n\r\n        <Button\r\n            android:id=\"@+id/btnTagged\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"48dp\"\r\n            android:layout_weight=\"1\"\r\n            android:text=\"Tagged\"\r\n            android:textAllCaps=\"false\"\r\n            android:textColor=\"#FFFFFF\"\r\n            android:textSize=\"14sp\"\r\n            android:background=\"@drawable/tabs_bg\"\r\n            android:stateListAnimator=\"@null\"\r\n            android:elevation=\"0dp\"\r\n            android:foreground=\"?attr/selectableItemBackground\" />\r\n\r\n    </LinearLayout>\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- POSTS GRID -->\r\n    <!-- ================================================= -->\r\n\r\n    <androidx.recyclerview.widget.RecyclerView\r\n        android:id=\"@+id/recyclerPosts\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"0dp\"\r\n        android:layout_marginTop=\"2dp\"\r\n        android:clipToPadding=\"false\"\r\n        android:paddingBottom=\"0dp\"\r\n        android:background=\"#000000\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/tabsLayout\"\r\n        app:layout_constraintBottom_toTopOf=\"@id/bottomNavigation\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\" />\r\n\r\n\r\n    <!-- ================================================= -->\r\n    <!-- BOTTOM NAVIGATION -->\r\n    <!-- ================================================= -->\r\n\r\n    <LinearLayout\r\n        android:id=\"@+id/bottomNavigation\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"82dp\"\r\n        android:background=\"#000000\"\r\n        android:elevation=\"10dp\"\r\n        android:gravity=\"center_vertical\"\r\n        android:orientation=\"horizontal\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\">\r\n\r\n\r\n        <!-- HOME -->\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnHome\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"58dp\"\r\n            android:layout_weight=\"1\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"@string/home\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"12dp\"\r\n            android:scaleType=\"center\"\r\n            android:src=\"@drawable/ic_home\" />\r\n\r\n\r\n        <!-- CREATE -->\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnCreate\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"58dp\"\r\n            android:layout_weight=\"1\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"@string/create\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"10dp\"\r\n            android:scaleType=\"center\"\r\n            android:src=\"@drawable/ic_play\" />\r\n\r\n\r\n        <!-- MESSAGE -->\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnMessage\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"58dp\"\r\n            android:layout_weight=\"1\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"@string/message\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"9dp\"\r\n            android:scaleType=\"center\"\r\n            android:src=\"@drawable/ic_send\" />\r\n\r\n\r\n        <!-- SEARCH -->\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnSearch\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"58dp\"\r\n            android:layout_weight=\"1\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"@string/search\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"12dp\"\r\n            android:scaleType=\"center\"\r\n            android:src=\"@drawable/ic_search\" />\r\n\r\n\r\n        <!-- PROFILE -->\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnProfile\"\r\n            android:layout_width=\"0dp\"\r\n            android:layout_height=\"58dp\"\r\n            android:layout_weight=\"1\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"@string/profile\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"12dp\"\r\n            android:scaleType=\"center\"\r\n            android:src=\"@drawable/ic_profile\" />\r\n\r\n    </LinearLayout>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_profile.xml b/app/src/main/res/layout/activity_profile.xml
+--- a/app/src/main/res/layout/activity_profile.xml	(revision 200574c26e282e5f6ea593505aba1787ac307e8b)
++++ b/app/src/main/res/layout/activity_profile.xml	(date 1789139761903)
+@@ -424,7 +424,8 @@
+             android:foreground="?attr/selectableItemBackgroundBorderless"
+             android:padding="12dp"
+             android:scaleType="center"
+-            android:src="@drawable/ic_home" />
++            android:src="@drawable/home"
++            app:tint="#FFFFFF" />
+ 
+ 
+         <!-- CREATE -->
+@@ -439,7 +440,8 @@
+             android:foreground="?attr/selectableItemBackgroundBorderless"
+             android:padding="10dp"
+             android:scaleType="center"
+-            android:src="@drawable/ic_play" />
++            android:src="@drawable/play"
++            app:tint="#FFFFFF" />
+ 
+ 
+         <!-- MESSAGE -->
+@@ -454,7 +456,8 @@
+             android:foreground="?attr/selectableItemBackgroundBorderless"
+             android:padding="9dp"
+             android:scaleType="center"
+-            android:src="@drawable/ic_send" />
++            android:src="@drawable/chat"
++            app:tint="#FFFFFF" />
+ 
+ 
+         <!-- SEARCH -->
+@@ -469,7 +472,8 @@
+             android:foreground="?attr/selectableItemBackgroundBorderless"
+             android:padding="12dp"
+             android:scaleType="center"
+-            android:src="@drawable/ic_search" />
++            android:src="@drawable/search"
++            app:tint="#FFFFFF" />
+ 
+ 
+         <!-- PROFILE -->
+@@ -484,7 +488,8 @@
+             android:foreground="?attr/selectableItemBackgroundBorderless"
+             android:padding="12dp"
+             android:scaleType="center"
+-            android:src="@drawable/ic_profile" />
++            android:src="@drawable/account"
++            app:tint="#FFFFFF" />
+ 
+     </LinearLayout>
+ 
+Index: app/src/main/res/layout/activity_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<androidx.constraintlayout.widget.ConstraintLayout\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"#000000\">\r\n\r\n    <!-- Top Bar -->\r\n\r\n    <androidx.constraintlayout.widget.ConstraintLayout\r\n        android:id=\"@+id/settingsTopBar\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"56dp\"\r\n        android:background=\"#000000\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\">\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/btnBackSettings\"\r\n            android:layout_width=\"48dp\"\r\n            android:layout_height=\"48dp\"\r\n            android:layout_marginStart=\"4dp\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:contentDescription=\"Back\"\r\n            android:foreground=\"?attr/selectableItemBackgroundBorderless\"\r\n            android:padding=\"12dp\"\r\n            android:src=\"@drawable/ic_arrow_back\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            app:layout_constraintVertical_bias=\"1.0\" />\r\n\r\n        <TextView\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"match_parent\"\r\n            android:gravity=\"center\"\r\n            android:text=\"Settings\"\r\n            android:textColor=\"#111111\"\r\n            android:textSize=\"20sp\"\r\n            android:textStyle=\"bold\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            app:layout_constraintBottom_toBottomOf=\"parent\" />\r\n\r\n    </androidx.constraintlayout.widget.ConstraintLayout>\r\n\r\n\r\n    <!-- Settings Options -->\r\n\r\n    <ScrollView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"0dp\"\r\n        android:fillViewport=\"true\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/settingsTopBar\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\">\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:orientation=\"vertical\"\r\n            android:padding=\"16dp\">\r\n\r\n            <Button\r\n                android:id=\"@+id/btnAccount\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:text=\"Account\"\r\n                android:textAllCaps=\"false\"\r\n                android:gravity=\"start|center_vertical\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/btnPrivacy\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:text=\"Privacy\"\r\n                android:textAllCaps=\"false\"\r\n                android:gravity=\"start|center_vertical\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/btnSecurity\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:text=\"Security\"\r\n                android:textAllCaps=\"false\"\r\n                android:gravity=\"start|center_vertical\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/btnNotifications\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:text=\"Notifications\"\r\n                android:textAllCaps=\"false\"\r\n                android:gravity=\"start|center_vertical\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/btnHelp\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:text=\"Help &amp; Support\"\r\n                android:textAllCaps=\"false\"\r\n                android:gravity=\"start|center_vertical\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/btnAbout\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:text=\"About\"\r\n                android:textAllCaps=\"false\"\r\n                android:gravity=\"start|center_vertical\" />\r\n\r\n            <View\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"1dp\"\r\n                android:layout_marginTop=\"15dp\"\r\n                android:layout_marginBottom=\"15dp\"\r\n                android:background=\"#DDDDDD\" />\r\n\r\n            <Button\r\n                android:id=\"@+id/btnLogout\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"55dp\"\r\n                android:text=\"Log Out\"\r\n                android:textAllCaps=\"false\"\r\n                android:textColor=\"#D32F2F\"\r\n                android:gravity=\"start|center_vertical\" />\r\n\r\n        </LinearLayout>\r\n\r\n    </ScrollView>\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_settings.xml b/app/src/main/res/layout/activity_settings.xml
+--- a/app/src/main/res/layout/activity_settings.xml	(revision 200574c26e282e5f6ea593505aba1787ac307e8b)
++++ b/app/src/main/res/layout/activity_settings.xml	(date 1788625131293)
+@@ -38,7 +38,7 @@
+             android:layout_height="match_parent"
+             android:gravity="center"
+             android:text="Settings"
+-            android:textColor="#111111"
++            android:textColor="#FFFFFF"
+             android:textSize="20sp"
+             android:textStyle="bold"
+             app:layout_constraintStart_toStartOf="parent"
+Index: app/src/main/java/com/example/login/SettingsActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.login;\r\n\r\nimport android.os.Bundle;\r\nimport android.widget.Button;\r\nimport android.widget.ImageButton;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\npublic class SettingsActivity extends AppCompatActivity {\r\n\r\n    Button btnAccount;\r\n    Button btnPrivacy;\r\n    Button btnSecurity;\r\n    Button btnNotifications;\r\n    Button btnHelp;\r\n    Button btnAbout;\r\n    Button btnLogout;\r\n\r\n    ImageButton btnBackSettings;\r\n\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n\r\n        setContentView(R.layout.activity_settings);\r\n\r\n\r\n        // ================= FIND VIEWS =================\r\n\r\n        btnAccount = findViewById(R.id.btnAccount);\r\n        btnPrivacy = findViewById(R.id.btnPrivacy);\r\n        btnSecurity = findViewById(R.id.btnSecurity);\r\n        btnNotifications = findViewById(R.id.btnNotifications);\r\n        btnHelp = findViewById(R.id.btnHelp);\r\n        btnAbout = findViewById(R.id.btnAbout);\r\n        btnLogout = findViewById(R.id.btnLogout);\r\n\r\n        // Back button is ImageButton\r\n        btnBackSettings = findViewById(R.id.btnBackSettings);\r\n\r\n\r\n        // ================= BACK =================\r\n\r\n        btnBackSettings.setOnClickListener(v -> {\r\n            finish();\r\n        });\r\n\r\n\r\n        // ================= ACCOUNT =================\r\n\r\n        btnAccount.setOnClickListener(v -> {\r\n\r\n            Toast.makeText(\r\n                    SettingsActivity.this,\r\n                    \"Account settings\",\r\n                    Toast.LENGTH_SHORT\r\n            ).show();\r\n\r\n        });\r\n\r\n\r\n        // ================= PRIVACY =================\r\n\r\n        btnPrivacy.setOnClickListener(v -> {\r\n\r\n            Toast.makeText(\r\n                    SettingsActivity.this,\r\n                    \"Privacy settings\",\r\n                    Toast.LENGTH_SHORT\r\n            ).show();\r\n\r\n        });\r\n\r\n\r\n        // ================= SECURITY =================\r\n\r\n        btnSecurity.setOnClickListener(v -> {\r\n\r\n            Toast.makeText(\r\n                    SettingsActivity.this,\r\n                    \"Security settings\",\r\n                    Toast.LENGTH_SHORT\r\n            ).show();\r\n\r\n        });\r\n\r\n\r\n        // ================= NOTIFICATIONS =================\r\n\r\n        btnNotifications.setOnClickListener(v -> {\r\n\r\n            Toast.makeText(\r\n                    SettingsActivity.this,\r\n                    \"Notification settings\",\r\n                    Toast.LENGTH_SHORT\r\n            ).show();\r\n\r\n        });\r\n\r\n\r\n        // ================= HELP =================\r\n\r\n        btnHelp.setOnClickListener(v -> {\r\n\r\n            Toast.makeText(\r\n                    SettingsActivity.this,\r\n                    \"Help & Support\",\r\n                    Toast.LENGTH_SHORT\r\n            ).show();\r\n\r\n        });\r\n\r\n\r\n        // ================= ABOUT =================\r\n\r\n        btnAbout.setOnClickListener(v -> {\r\n\r\n            Toast.makeText(\r\n                    SettingsActivity.this,\r\n                    \"About SocialMedia App\",\r\n                    Toast.LENGTH_SHORT\r\n            ).show();\r\n\r\n        });\r\n\r\n\r\n        // ================= LOGOUT =================\r\n\r\n        btnLogout.setOnClickListener(v -> {\r\n\r\n            Toast.makeText(\r\n                    SettingsActivity.this,\r\n                    \"Logged out\",\r\n                    Toast.LENGTH_SHORT\r\n            ).show();\r\n\r\n            /*\r\n             * Abhi tumhara login system Firebase Authentication\r\n             * se connected nahi hai.\r\n             *\r\n             * Firebase Authentication connect karne ke baad:\r\n             *\r\n             * FirebaseAuth.getInstance().signOut();\r\n             *\r\n             * yahan add karenge.\r\n             */\r\n\r\n            finishAffinity();\r\n\r\n        });\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/login/SettingsActivity.java b/app/src/main/java/com/example/login/SettingsActivity.java
+--- a/app/src/main/java/com/example/login/SettingsActivity.java	(revision 200574c26e282e5f6ea593505aba1787ac307e8b)
++++ b/app/src/main/java/com/example/login/SettingsActivity.java	(date 1789139761921)
+@@ -1,7 +1,9 @@
+ package com.example.login;
+ 
++import static android.os.Build.VERSION_CODES_FULL.R;
++
+ import android.os.Bundle;
+-import android.widget.Button;
++import android.view.View;
+ import android.widget.ImageButton;
+ import android.widget.Toast;
+ 
+@@ -9,24 +11,23 @@
+ 
+ public class SettingsActivity extends AppCompatActivity {
+ 
+-    Button btnAccount;
+-    Button btnPrivacy;
+-    Button btnSecurity;
+-    Button btnNotifications;
+-    Button btnHelp;
+-    Button btnAbout;
+-    Button btnLogout;
++    private static final Object R = ;
++    View btnAccount;
++    View btnPrivacy;
++    View btnSecurity;
++    View btnNotifications;
++    View btnHelp;
++    View btnAbout;
++    View btnLogout;
+ 
+     ImageButton btnBackSettings;
+ 
+-
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+ 
+         setContentView(R.layout.activity_settings);
+ 
+-
+         // ================= FIND VIEWS =================
+ 
+         btnAccount = findViewById(R.id.btnAccount);
+@@ -37,94 +38,73 @@
+         btnAbout = findViewById(R.id.btnAbout);
+         btnLogout = findViewById(R.id.btnLogout);
+ 
+-        // Back button is ImageButton
+         btnBackSettings = findViewById(R.id.btnBackSettings);
+ 
+-
+         // ================= BACK =================
+ 
+         btnBackSettings.setOnClickListener(v -> {
+             finish();
+         });
+ 
+-
+         // ================= ACCOUNT =================
+ 
+         btnAccount.setOnClickListener(v -> {
+-
+             Toast.makeText(
+                     SettingsActivity.this,
+                     "Account settings",
+                     Toast.LENGTH_SHORT
+             ).show();
+-
+         });
+-
+ 
+         // ================= PRIVACY =================
+ 
+         btnPrivacy.setOnClickListener(v -> {
+-
+             Toast.makeText(
+                     SettingsActivity.this,
+                     "Privacy settings",
+                     Toast.LENGTH_SHORT
+             ).show();
+-
+         });
+-
+ 
+         // ================= SECURITY =================
+ 
+         btnSecurity.setOnClickListener(v -> {
+-
+             Toast.makeText(
+                     SettingsActivity.this,
+                     "Security settings",
+                     Toast.LENGTH_SHORT
+             ).show();
+-
+         });
+-
+ 
+         // ================= NOTIFICATIONS =================
+ 
+         btnNotifications.setOnClickListener(v -> {
+-
+             Toast.makeText(
+                     SettingsActivity.this,
+                     "Notification settings",
+                     Toast.LENGTH_SHORT
+             ).show();
+-
+         });
+-
+ 
+         // ================= HELP =================
+ 
+         btnHelp.setOnClickListener(v -> {
+-
+             Toast.makeText(
+                     SettingsActivity.this,
+                     "Help & Support",
+                     Toast.LENGTH_SHORT
+             ).show();
+-
+         });
+-
+ 
+         // ================= ABOUT =================
+ 
+         btnAbout.setOnClickListener(v -> {
+-
+             Toast.makeText(
+                     SettingsActivity.this,
+                     "About SocialMedia App",
+                     Toast.LENGTH_SHORT
+             ).show();
+-
+         });
+-
+ 
+         // ================= LOGOUT =================
+ 
+@@ -136,19 +116,7 @@
+                     Toast.LENGTH_SHORT
+             ).show();
+ 
+-            /*
+-             * Abhi tumhara login system Firebase Authentication
+-             * se connected nahi hai.
+-             *
+-             * Firebase Authentication connect karne ke baad:
+-             *
+-             * FirebaseAuth.getInstance().signOut();
+-             *
+-             * yahan add karenge.
+-             */
+-
+             finishAffinity();
+-
+         });
+     }
+ }
+\ No newline at end of file

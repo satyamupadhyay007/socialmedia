@@ -45,9 +45,21 @@ public class StoryViewerActivity extends AppCompatActivity {
     private ImageButton btnClose;
     private ImageButton btnLike;
 
+    // Like count is visible only to the story owner.
+    private TextView storyLikeCount;
+
     private TextView storyViewCount;
+    private TextView storyCaptionOverlay;
+    private TextView storyMusicOverlay;
+
+    private MediaPlayer storyMusicPlayer;
 
     private ProgressBar progressBar;
+    private LinearLayout storyProgressContainer;
+    private final ArrayList<ProgressBar> storyProgressBars = new ArrayList<>();
+    private TextView storyCount;
+    private ImageButton btnMoreStory;
+    private boolean storyIsMine = false;
 
     // ==================================================
     // VIEWERS PANEL
@@ -187,14 +199,39 @@ public class StoryViewerActivity extends AppCompatActivity {
                         R.id.btnLikeStory
                 );
 
+        storyLikeCount =
+                findViewById(
+                        R.id.storyLikeCount
+                );
+
         storyViewCount =
                 findViewById(
                         R.id.storyViewCount
                 );
 
-        progressBar =
+        storyCaptionOverlay =
                 findViewById(
-                        R.id.storyProgress
+                        R.id.storyCaptionOverlay
+                );
+
+        storyMusicOverlay =
+                findViewById(
+                        R.id.storyMusicOverlay
+                );
+
+        storyProgressContainer =
+                findViewById(
+                        R.id.storyProgressContainer
+                );
+
+        storyCount =
+                findViewById(
+                        R.id.storyCount
+                );
+
+        btnMoreStory =
+                findViewById(
+                        R.id.btnMoreStory
                 );
 
         viewersPanel =
@@ -276,6 +313,12 @@ public class StoryViewerActivity extends AppCompatActivity {
         btnClose.setOnClickListener(
                 v -> finish()
         );
+
+        if (btnMoreStory != null) {
+            btnMoreStory.setOnClickListener(
+                    v -> showStoryOptions()
+            );
+        }
 
         // ==================================================
         // LIKE
@@ -410,7 +453,86 @@ public class StoryViewerActivity extends AppCompatActivity {
     // SHOW CURRENT STORY
     // ==================================================
 
+    // ==================================================
+    // INSTAGRAM-STYLE STORY PROGRESS
+    // ==================================================
+
+    private void setupStoryProgress() {
+
+        if (storyProgressContainer == null ||
+                mediaUrls == null ||
+                mediaUrls.isEmpty()) {
+            return;
+        }
+
+        storyProgressContainer.removeAllViews();
+        storyProgressBars.clear();
+
+        for (int i = 0; i < mediaUrls.size(); i++) {
+
+            ProgressBar bar =
+                    new ProgressBar(
+                            this,
+                            null,
+                            android.R.attr.progressBarStyleHorizontal
+                    );
+
+            bar.setMax(100);
+            bar.setProgress(i < currentIndex ? 100 : 0);
+
+            bar.setProgressTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            Color.WHITE
+                    )
+            );
+
+            bar.setBackgroundTintList(
+                    android.content.res.ColorStateList.valueOf(
+                            0x55FFFFFF
+                    )
+            );
+
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(
+                            0,
+                            dp(3),
+                            1f
+                    );
+
+            if (i > 0) {
+                params.setMargins(
+                        dp(3),
+                        0,
+                        0,
+                        0
+                );
+            }
+
+            bar.setLayoutParams(params);
+
+            storyProgressContainer.addView(bar);
+            storyProgressBars.add(bar);
+        }
+
+        if (currentIndex < storyProgressBars.size()) {
+            progressBar =
+                    storyProgressBars.get(currentIndex);
+        } else {
+            progressBar = null;
+        }
+    }
+
+    private void completeCurrentProgress() {
+
+        if (progressBar != null) {
+            progressBar.setProgress(100);
+        }
+    }
+
+
     private void showCurrentStory() {
+
+        releaseStoryMusic();
 
         handler.removeCallbacks(
                 nextRunnable
@@ -435,16 +557,28 @@ public class StoryViewerActivity extends AppCompatActivity {
                 View.GONE
         );
 
-        progressBar.setProgress(
-                0
-        );
-
         if (currentIndex < 0 ||
+                mediaUrls == null ||
                 currentIndex >= mediaUrls.size()) {
 
             finish();
 
             return;
+        }
+
+        // Build progress segments before using the current progress bar.
+        setupStoryProgress();
+
+        if (progressBar != null) {
+            progressBar.setProgress(
+                    0
+            );
+        }
+
+        if (storyCount != null) {
+            storyCount.setText(
+                    (currentIndex + 1) + "/" + mediaUrls.size()
+            );
         }
 
         String url =
@@ -486,6 +620,9 @@ public class StoryViewerActivity extends AppCompatActivity {
 
         loadStoryStats();
 
+        // Load caption + music saved by Story Editor.
+        loadStoryPresentation();
+
         // ==================================================
         // SHOW MEDIA
         // ==================================================
@@ -505,8 +642,313 @@ public class StoryViewerActivity extends AppCompatActivity {
     }
 
     // ==================================================
+    // LOAD STORY CAPTION + MUSIC
+    // ==================================================
+
+    private void loadStoryPresentation() {
+
+        if (storyIds == null ||
+                currentIndex < 0 ||
+                currentIndex >= storyIds.size()) {
+            return;
+        }
+
+        String storyId =
+                storyIds.get(currentIndex);
+
+        if (storyId == null ||
+                storyId.trim().isEmpty()) {
+            return;
+        }
+
+        db.collection("stories")
+                .document(storyId)
+                .get()
+                .addOnSuccessListener(
+                        storyDocument -> {
+
+                            if (!storyDocument.exists()) {
+                                return;
+                            }
+
+                            String ownerId =
+                                    safeString(
+                                            storyDocument.getString("userId")
+                                    );
+
+                            storyIsMine =
+                                    currentUserId != null &&
+                                            currentUserId.equals(ownerId);
+
+                            if (btnMoreStory != null) {
+                                btnMoreStory.setVisibility(
+                                        storyIsMine
+                                                ? View.VISIBLE
+                                                : View.GONE
+                                );
+                            }
+
+                            String caption =
+                                    safeString(
+                                            storyDocument.getString(
+                                                    "caption"
+                                            )
+                                    );
+
+                            String songName =
+                                    safeString(
+                                            storyDocument.getString(
+                                                    "songName"
+                                            )
+                                    );
+
+                            String songUrl =
+                                    safeString(
+                                            storyDocument.getString(
+                                                    "songUrl"
+                                            )
+                                    );
+
+                            if (storyCaptionOverlay != null) {
+
+                                if (caption.isEmpty()) {
+
+                                    storyCaptionOverlay
+                                            .setVisibility(
+                                                    View.GONE
+                                            );
+
+                                } else {
+
+                                    storyCaptionOverlay.setText(
+                                            caption
+                                    );
+
+                                    storyCaptionOverlay
+                                            .setVisibility(
+                                                    View.VISIBLE
+                                            );
+                                }
+                            }
+
+                            if (storyMusicOverlay != null) {
+
+                                if (songName.isEmpty() &&
+                                        songUrl.isEmpty()) {
+
+                                    storyMusicOverlay
+                                            .setVisibility(
+                                                    View.GONE
+                                            );
+
+                                } else {
+
+                                    String label =
+                                            songName.isEmpty()
+                                                    ? "♫ Music"
+                                                    : "♫ " + songName;
+
+                                    storyMusicOverlay.setText(
+                                            label
+                                    );
+
+                                    storyMusicOverlay
+                                            .setVisibility(
+                                                    View.VISIBLE
+                                            );
+                                }
+                            }
+
+                            // Play the saved Cloudinary audio.
+                            if (!songUrl.isEmpty()) {
+
+                                playStoryMusic(songUrl);
+                            }
+                        }
+                );
+    }
+
+    private String safeString(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private void playStoryMusic(String url) {
+
+        releaseStoryMusic();
+
+        try {
+
+            storyMusicPlayer =
+                    new MediaPlayer();
+
+            storyMusicPlayer.setAudioStreamType(
+                    android.media.AudioManager.STREAM_MUSIC
+            );
+
+            storyMusicPlayer.setDataSource(
+                    this,
+                    Uri.parse(url)
+            );
+
+            storyMusicPlayer.setLooping(true);
+
+            storyMusicPlayer.setOnPreparedListener(
+                    MediaPlayer::start
+            );
+
+            storyMusicPlayer.prepareAsync();
+
+        } catch (Exception e) {
+
+            releaseStoryMusic();
+        }
+    }
+
+    private void releaseStoryMusic() {
+
+        if (storyMusicPlayer != null) {
+
+            try {
+                storyMusicPlayer.stop();
+            } catch (Exception ignored) {
+            }
+
+            try {
+                storyMusicPlayer.release();
+            } catch (Exception ignored) {
+            }
+
+            storyMusicPlayer = null;
+        }
+    }
+
+    // ==================================================
     // REGISTER STORY VIEW
     // ==================================================
+
+    // ==================================================
+    // STORY OPTIONS / DELETE
+    // ==================================================
+
+    private void showStoryOptions() {
+
+        if (!storyIsMine ||
+                storyIds == null ||
+                currentIndex >= storyIds.size()) {
+            return;
+        }
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setItems(
+                        new String[]{"Delete Story"},
+                        (dialog, which) -> confirmDeleteStory()
+                )
+                .show();
+    }
+
+
+    private void confirmDeleteStory() {
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete story?")
+                .setMessage("This story will be removed now.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton(
+                        "Delete",
+                        (dialog, which) -> deleteCurrentStory()
+                )
+                .show();
+    }
+
+
+    private void deleteCurrentStory() {
+
+        if (storyIds == null ||
+                currentIndex >= storyIds.size()) {
+            return;
+        }
+
+        String storyId =
+                storyIds.get(currentIndex);
+
+        db.collection("stories")
+                .document(storyId)
+                .get()
+                .addOnSuccessListener(document -> {
+
+                    if (!document.exists()) {
+                        goNext();
+                        return;
+                    }
+
+                    String ownerId =
+                            document.getString("userId");
+
+                    if (ownerId == null ||
+                            !ownerId.equals(currentUserId)) {
+
+                        Toast.makeText(
+                                this,
+                                "You can delete only your own story",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        return;
+                    }
+
+                    releaseStoryMusic();
+
+                    db.collection("stories")
+                            .document(storyId)
+                            .delete()
+                            .addOnSuccessListener(unused -> {
+
+                                Toast.makeText(
+                                        this,
+                                        "Story deleted",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                storyIds.remove(currentIndex);
+                                mediaUrls.remove(currentIndex);
+
+                                if (mediaTypes != null &&
+                                        currentIndex < mediaTypes.size()) {
+                                    mediaTypes.remove(currentIndex);
+                                }
+
+                                if (usernames != null &&
+                                        currentIndex < usernames.size()) {
+                                    usernames.remove(currentIndex);
+                                }
+
+                                if (profileImages != null &&
+                                        currentIndex < profileImages.size()) {
+                                    profileImages.remove(currentIndex);
+                                }
+
+                                if (storyIds.isEmpty()) {
+                                    finish();
+                                    return;
+                                }
+
+                                if (currentIndex >= storyIds.size()) {
+                                    currentIndex =
+                                            storyIds.size() - 1;
+                                }
+
+                                showCurrentStory();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(
+                                            this,
+                                            "Could not delete story",
+                                            Toast.LENGTH_SHORT
+                                    ).show()
+                            );
+                });
+    }
+
 
     private void registerStoryView() {
 
@@ -574,6 +1016,27 @@ public class StoryViewerActivity extends AppCompatActivity {
                                 return;
                             }
 
+                            // =================================
+                            // STORY OWNER
+                            // =================================
+                            String ownerId =
+                                    safeString(
+                                            document.getString("userId")
+                                    );
+
+                            storyIsMine =
+                                    currentUserId != null &&
+                                            currentUserId.equals(ownerId);
+
+                            // Like count is private to the story owner.
+                            if (storyLikeCount != null) {
+                                storyLikeCount.setVisibility(
+                                        storyIsMine
+                                                ? View.VISIBLE
+                                                : View.GONE
+                                );
+                            }
+
                             List<String> viewers =
                                     getStringList(
                                             document,
@@ -588,6 +1051,12 @@ public class StoryViewerActivity extends AppCompatActivity {
 
                             int viewCount =
                                     viewers.size();
+
+                            if (storyLikeCount != null) {
+                                storyLikeCount.setText(
+                                        likes.size() + " Likes"
+                                );
+                            }
 
                             storyViewCount.setText(
                                     "👁 " +
@@ -746,13 +1215,10 @@ public class StoryViewerActivity extends AppCompatActivity {
                 .load(url)
                 .into(storyImage);
 
-        progressBar.setMax(
-                100
-        );
-
-        progressBar.setProgress(
-                0
-        );
+        if (progressBar != null) {
+            progressBar.setMax(100);
+            progressBar.setProgress(0);
+        }
 
         final long duration =
                 5000;
@@ -783,9 +1249,9 @@ public class StoryViewerActivity extends AppCompatActivity {
                                                 )
                                         );
 
-                        progressBar.setProgress(
-                                progress
-                        );
+                        if (progressBar != null) {
+                            progressBar.setProgress(progress);
+                        }
 
                         if (elapsed <
                                 duration) {
@@ -835,13 +1301,10 @@ public class StoryViewerActivity extends AppCompatActivity {
                     int duration =
                             mp.getDuration();
 
-                    progressBar.setMax(
-                            100
-                    );
-
-                    progressBar.setProgress(
-                            0
-                    );
+                    if (progressBar != null) {
+                        progressBar.setMax(100);
+                        progressBar.setProgress(0);
+                    }
 
                     storyVideo.start();
 
@@ -895,9 +1358,9 @@ public class StoryViewerActivity extends AppCompatActivity {
                                     ) /
                                             duration;
 
-                            progressBar.setProgress(
-                                    progress
-                            );
+                            if (progressBar != null) {
+                                progressBar.setProgress(progress);
+                            }
                         }
 
                         handler.postDelayed(
@@ -915,6 +1378,8 @@ public class StoryViewerActivity extends AppCompatActivity {
     // ==================================================
 
     private void goNext() {
+
+        completeCurrentProgress();
 
         handler.removeCallbacks(
                 nextRunnable
@@ -1316,6 +1781,32 @@ public class StoryViewerActivity extends AppCompatActivity {
     // ==================================================
     // DESTROY
     // ==================================================
+    @Override
+    protected void onPause() {
+
+        releaseStoryMusic();
+
+        if (storyVideo != null) {
+            storyVideo.pause();
+        }
+
+        super.onPause();
+    }
+
+
+    @Override
+    protected void onStop() {
+
+        // Stop music immediately when the Story Viewer is left.
+        stopStoryMusic();
+
+        if (storyVideo != null) {
+            storyVideo.stopPlayback();
+        }
+
+        super.onStop();
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -1324,11 +1815,40 @@ public class StoryViewerActivity extends AppCompatActivity {
                 null
         );
 
-        if (storyVideo != null) {
+        // Safety: release music player again if needed.
+        stopStoryMusic();
 
+        if (storyVideo != null) {
             storyVideo.stopPlayback();
+            storyVideo.setVideoURI(null);
         }
 
         super.onDestroy();
+    }
+
+
+    // ==================================================
+    // STOP STORY MUSIC
+    // ==================================================
+
+    private void stopStoryMusic() {
+
+        if (storyMusicPlayer != null) {
+
+            try {
+                if (storyMusicPlayer.isPlaying()) {
+                    storyMusicPlayer.stop();
+                }
+            } catch (IllegalStateException ignored) {
+            }
+
+            try {
+                storyMusicPlayer.reset();
+            } catch (IllegalStateException ignored) {
+            }
+
+            storyMusicPlayer.release();
+            storyMusicPlayer = null;
+        }
     }
 }

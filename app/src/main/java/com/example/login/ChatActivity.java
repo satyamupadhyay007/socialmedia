@@ -96,6 +96,16 @@ public class ChatActivity extends AppCompatActivity {
 
 
     // ==================================================
+    // SHARED POST
+    // ==================================================
+
+    private boolean sharePost = false;
+    private String sharedPostId = "";
+    private String sharedPostImage = "";
+    private String sharedPostCaption = "";
+
+
+    // ==================================================
     // CLOUDINARY
     // ==================================================
 
@@ -219,6 +229,43 @@ public class ChatActivity extends AppCompatActivity {
                 );
 
 
+        // ==================================================
+        // RECEIVE SHARED POST
+        // ==================================================
+
+        sharePost = getIntent().getBooleanExtra(
+                "sharePost",
+                false
+        );
+
+        if (sharePost) {
+
+            sharedPostId = getIntent().getStringExtra(
+                    "sharedPostId"
+            );
+
+            sharedPostImage = getIntent().getStringExtra(
+                    "sharedPostImage"
+            );
+
+            sharedPostCaption = getIntent().getStringExtra(
+                    "sharedPostCaption"
+            );
+
+            if (sharedPostId == null) {
+                sharedPostId = "";
+            }
+
+            if (sharedPostImage == null) {
+                sharedPostImage = "";
+            }
+
+            if (sharedPostCaption == null) {
+                sharedPostCaption = "";
+            }
+        }
+
+
         if (
                 receiverId == null ||
                         receiverId.isEmpty()
@@ -289,6 +336,21 @@ public class ChatActivity extends AppCompatActivity {
                 findViewById(
                         R.id.messageEditText
                 );
+
+        // ==================================================
+        // SHARED POST UI
+        // ==================================================
+
+        if (sharePost && !sharedPostImage.isEmpty()) {
+
+            messageEditText.setText("");
+
+            messageEditText.setHint(
+                    "Post selected • Press Send"
+            );
+
+            messageEditText.requestFocus();
+        }
 
         messageRecyclerView =
                 findViewById(
@@ -667,6 +729,23 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendCurrentContent() {
 
+        // ==================================================
+        // SHARED POST
+        // ==================================================
+
+        if (sharePost &&
+                sharedPostImage != null &&
+                !sharedPostImage.trim().isEmpty()) {
+
+            sendSharedPost();
+
+            return;
+        }
+
+        // ==================================================
+        // NORMAL PHOTO / VIDEO
+        // ==================================================
+
         if (selectedMediaUri != null) {
 
             uploadMediaToCloudinary();
@@ -674,6 +753,9 @@ public class ChatActivity extends AppCompatActivity {
             return;
         }
 
+        // ==================================================
+        // NORMAL TEXT
+        // ==================================================
 
         sendMessage();
     }
@@ -769,6 +851,98 @@ public class ChatActivity extends AppCompatActivity {
                                     this,
                                     "Message could not be sent: "
                                             + error,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                );
+    }
+
+
+    // ==================================================
+    // SEND SHARED POST
+    // ==================================================
+
+    private void sendSharedPost() {
+
+        if (sharedPostImage == null ||
+                sharedPostImage.trim().isEmpty()) {
+
+            Toast.makeText(
+                    this,
+                    "Post image missing",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        String messageId =
+                db.collection("chats")
+                        .document(chatId)
+                        .collection("messages")
+                        .document()
+                        .getId();
+
+        String messageText = sharedPostCaption;
+
+        if (messageText == null) {
+            messageText = "";
+        }
+
+        Message sharedMessage =
+                new Message(
+                        messageId,
+                        currentUserId,
+                        receiverId,
+                        messageText,
+                        sharedPostImage,
+                        "image",
+                        System.currentTimeMillis(),
+                        "sent"
+                );
+
+        db.collection("chats")
+                .document(chatId)
+                .collection("messages")
+                .document(messageId)
+                .set(sharedMessage)
+                .addOnSuccessListener(
+                        unused -> {
+
+                            updateChatSummary(
+                                    sharedMessage
+                            );
+
+                            Toast.makeText(
+                                    this,
+                                    "Post sent ✓",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                            sharePost = false;
+                            sharedPostId = "";
+                            sharedPostImage = "";
+                            sharedPostCaption = "";
+
+                            messageEditText.setText("");
+                            messageEditText.setHint(
+                                    "Write a message..."
+                            );
+                            messageEditText.requestFocus();
+                        }
+                )
+                .addOnFailureListener(
+                        e -> {
+
+                            String error = e.getMessage();
+
+                            if (error == null || error.isEmpty()) {
+                                error = "Unknown error";
+                            }
+
+                            Toast.makeText(
+                                    this,
+                                    "Post could not be sent: " + error,
                                     Toast.LENGTH_LONG
                             ).show();
                         }

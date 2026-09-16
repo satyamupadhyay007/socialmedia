@@ -284,6 +284,9 @@ public class homepage extends AppCompatActivity {
 
         if (storyRow != null) {
 
+            // NEW: clean expired stories before loading active stories.
+            deleteExpiredOwnStories();
+
             loadStories();
         }
     }
@@ -621,6 +624,67 @@ public class homepage extends AppCompatActivity {
                                         followingIds,
                                         index + 1
                                 )
+                );
+    }
+
+    // ==================================================
+    // NEW: DELETE EXPIRED OWN STORIES
+    // ==================================================
+    //
+    // Stories expire after 24 hours because every story stores
+    // an expiresAt timestamp. This cleanup removes expired
+    // stories belonging to the currently logged-in user when
+    // Home is opened/resumed.
+    //
+    // The existing story loading/filtering code is unchanged.
+    // ==================================================
+
+    private void deleteExpiredOwnStories() {
+
+        if (db == null ||
+                currentUserId == null ||
+                currentUserId.isEmpty()) {
+
+            return;
+        }
+
+        final long now =
+                System.currentTimeMillis();
+
+        db.collection("stories")
+                .whereEqualTo(
+                        "userId",
+                        currentUserId
+                )
+                .get()
+                .addOnSuccessListener(
+                        snapshot -> {
+
+                            if (snapshot == null ||
+                                    snapshot.isEmpty()) {
+
+                                return;
+                            }
+
+                            for (DocumentSnapshot document :
+                                    snapshot.getDocuments()) {
+
+                                Long expiresAt =
+                                        document.getLong(
+                                                "expiresAt"
+                                        );
+
+                                if (expiresAt == null) {
+                                    continue;
+                                }
+
+                                if (expiresAt <= now) {
+
+                                    document.getReference()
+                                            .delete();
+                                }
+                            }
+                        }
                 );
     }
 
@@ -1075,8 +1139,8 @@ public class homepage extends AppCompatActivity {
                         ? username
                         : (
                         isMine
-                                ? "Your story"
-                                : "User"
+                        ? "Your story"
+                        : "User"
                 );
 
         usernameText.setText(
@@ -2150,3 +2214,4 @@ public class homepage extends AppCompatActivity {
         }
     }
 }
+

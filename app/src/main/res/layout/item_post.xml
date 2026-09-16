@@ -1,27 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
-    android:layout_margin="1dp">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#000000">
 
-    <!-- Post image / video thumbnail -->
-    <ImageView
-        android:id="@+id/postImage"
+    <!-- ================= POST IMAGE ================= -->
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:contentDescription="Post" />
+        android:layout_height="320dp">
 
-    <!-- Reel play icon -->
-    <ImageView
-        android:id="@+id/playIcon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_gravity="top|end"
-        android:layout_margin="8dp"
-        android:src="@android:drawable/ic_media_play"
-        android:contentDescription="Play"
+        <ImageView
+            android:id="@+id/postImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="Post Image" />
+
+        <!-- Reel / Video icon -->
+        <ImageView
+            android:id="@+id/playIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="12dp"
+            android:src="@android:drawable/ic_media_play"
+            android:contentDescription="Play"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+
+    <!-- ================= ACTION BAR ================= -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="#000000">
+
+        <!-- LIKE -->
+
+        <ImageButton
+            android:id="@+id/btnLike"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_heart"
+            android:contentDescription="Like"
+            android:padding="8dp"
+            app:tint="#FFFFFF" />
+
+
+        <!-- COMMENT -->
+
+        <ImageButton
+            android:id="@+id/btnComment"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_edit"
+            android:contentDescription="Comment"
+            android:padding="8dp"
+            app:tint="#FFFFFF" />
+
+
+        <!-- SHARE -->
+
+        <ImageButton
+            android:id="@+id/btnShare"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_send"
+            android:contentDescription="Share"
+            android:padding="8dp"
+            app:tint="#FFFFFF" />
+
+    </LinearLayout>
+
+
+    <!-- ================= LIKE COUNT ================= -->
+
+    <TextView
+        android:id="@+id/tvLikeCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="4dp"
+        android:text="0 Likes"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+
+    <!-- ================= CAPTION ================= -->
+
+    <TextView
+        android:id="@+id/tvCaption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="14dp"
+        android:text=""
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
         android:visibility="gone" />
 
-</FrameLayout>
+</LinearLayout>
