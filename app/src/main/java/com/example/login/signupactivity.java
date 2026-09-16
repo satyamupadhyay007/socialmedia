@@ -1,20 +1,28 @@
 package com.example.login;
 
-import android.content.*;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.*;
-import android.view.inputmethod.*;
-import android.widget.*;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.*;
-import androidx.core.view.*;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
-import com.google.firebase.auth.*;
-import com.google.firebase.firestore.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class signupactivity extends AppCompatActivity {
 
@@ -543,42 +551,30 @@ public class signupactivity extends AppCompatActivity {
         signupDot1.animate()
                 .alpha(0.3f)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    signupDot1.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> signupDot1.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
         signupDot2.animate()
                 .alpha(0.3f)
                 .setStartDelay(200)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    signupDot2.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> signupDot2.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
         signupDot3.animate()
                 .alpha(0.3f)
                 .setStartDelay(400)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    signupDot3.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> signupDot3.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
         // Repeat animation while loading

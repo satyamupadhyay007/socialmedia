@@ -1,7 +1,6 @@
 package com.example.login;
 
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +28,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class StoryViewerActivity extends AppCompatActivity {
 
@@ -76,13 +77,11 @@ public class StoryViewerActivity extends AppCompatActivity {
     // ==================================================
 
     private ArrayList<String> storyIds;
-    private ArrayList<String> storyUserIds;
 
     private ArrayList<String> mediaUrls;
     private ArrayList<String> mediaTypes;
 
     private ArrayList<String> usernames;
-    private ArrayList<String> profileImages;
 
     private int currentIndex = 0;
 
@@ -264,12 +263,6 @@ public class StoryViewerActivity extends AppCompatActivity {
                                 "storyIds"
                         );
 
-        storyUserIds =
-                getIntent()
-                        .getStringArrayListExtra(
-                                "storyUserIds"
-                        );
-
         mediaUrls =
                 getIntent()
                         .getStringArrayListExtra(
@@ -286,12 +279,6 @@ public class StoryViewerActivity extends AppCompatActivity {
                 getIntent()
                         .getStringArrayListExtra(
                                 "usernames"
-                        );
-
-        profileImages =
-                getIntent()
-                        .getStringArrayListExtra(
-                                "profileImages"
                         );
 
         // ==================================================
@@ -1059,8 +1046,7 @@ public class StoryViewerActivity extends AppCompatActivity {
                             }
 
                             storyViewCount.setText(
-                                    "👁 " +
-                                            viewCount
+                                    String.format(Locale.getDefault(), "👁 %d", viewCount)
                             );
 
                             boolean liked =
@@ -1497,8 +1483,7 @@ public class StoryViewerActivity extends AppCompatActivity {
                             viewersList.removeAllViews();
 
                             viewersTitle.setText(
-                                    "Views " +
-                                            viewerIds.size()
+                                    String.format(Locale.getDefault(), "Views %d", viewerIds.size())
                             );
 
                             if (viewerIds.isEmpty()) {

@@ -28,7 +28,6 @@ import java.util.Map;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private ImageButton btnBack;
     private ImageView imgEditProfile;
 
     private Button btnChangePhoto;
@@ -113,7 +112,7 @@ public class EditProfileActivity extends AppCompatActivity {
         // CONNECT XML
         // ==================================================
 
-        btnBack =
+        ImageButton btnBack =
                 findViewById(R.id.btnBack);
 
         imgEditProfile =

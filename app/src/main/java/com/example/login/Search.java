@@ -2,10 +2,10 @@
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Search extends AppCompatActivity {
 
@@ -75,15 +76,6 @@ public class Search extends AppCompatActivity {
     private ImageButton btnSearch;
 
     private ImageButton btnProfile;
-
-
-    // ==================================================
-    // ROOT / NAVIGATION
-    // ==================================================
-
-    private View searchRoot;
-
-    private View bottomNavigation;
 
 
     // ==================================================
@@ -156,21 +148,6 @@ public class Search extends AppCompatActivity {
         btnProfile =
                 findViewById(
                         R.id.btnProfile
-                );
-
-
-        // ==================================================
-        // ROOT / BOTTOM NAV
-        // ==================================================
-
-        searchRoot =
-                findViewById(
-                        R.id.searchRoot
-                );
-
-        bottomNavigation =
-                findViewById(
-                        R.id.bottomNavigation
                 );
 
 
@@ -252,7 +229,7 @@ public class Search extends AppCompatActivity {
         // ==================================================
 
         searchEditText.addTextChangedListener(
-                new android.text.TextWatcher() {
+                new TextWatcher() {
 
                     @Override
                     public void beforeTextChanged(
@@ -280,7 +257,7 @@ public class Search extends AppCompatActivity {
 
                     @Override
                     public void afterTextChanged(
-                            android.text.Editable s
+                            Editable s
                     ) {
                     }
                 }
@@ -292,143 +269,9 @@ public class Search extends AppCompatActivity {
         // ==================================================
 
         setupBottomNavigation();
-
-
-        // ==================================================
-        // KEYBOARD HANDLING
-        // ==================================================
-
-        setupKeyboardHandling();
     }
 
 
-    // ==================================================
-    // KEYBOARD HANDLING
-    //
-    // Hides bottom navigation when keyboard opens.
-    // ==================================================
-
-    private void setupKeyboardHandling() {
-
-        if (
-                searchRoot == null ||
-                        bottomNavigation == null
-        ) {
-
-            return;
-        }
-
-
-        final Rect visibleFrame =
-                new Rect();
-
-
-        searchRoot
-                .getViewTreeObserver()
-                .addOnGlobalLayoutListener(
-                        new ViewTreeObserver.OnGlobalLayoutListener() {
-
-                            @Override
-                            public void onGlobalLayout() {
-
-                                if (
-                                        searchRoot
-                                                .getWindowToken()
-                                                == null
-                                ) {
-
-                                    return;
-                                }
-
-
-                                searchRoot
-                                        .getWindowVisibleDisplayFrame(
-                                                visibleFrame
-                                        );
-
-
-                                int rootHeight =
-                                        searchRoot
-                                                .getRootView()
-                                                .getHeight();
-
-
-                                int visibleHeight =
-                                        visibleFrame.height();
-
-
-                                if (
-                                        rootHeight <= 0 ||
-                                                visibleHeight <= 0
-                                ) {
-
-                                    return;
-                                }
-
-
-                                int heightDifference =
-                                        rootHeight -
-                                                visibleHeight;
-
-
-                                // ==================================================
-                                // KEYBOARD THRESHOLD
-                                // ==================================================
-
-                                int keyboardThreshold =
-                                        (int)
-                                                (
-                                                        rootHeight *
-                                                                0.15f
-                                                );
-
-
-                                boolean keyboardOpen =
-                                        heightDifference >
-                                                keyboardThreshold;
-
-
-                                // ==================================================
-                                // KEYBOARD OPEN
-                                // ==================================================
-
-                                if (keyboardOpen) {
-
-                                    if (
-                                            bottomNavigation
-                                                    .getVisibility()
-                                                    != View.GONE
-                                    ) {
-
-                                        bottomNavigation.setVisibility(
-                                                View.GONE
-                                        );
-                                    }
-
-                                }
-
-
-                                // ==================================================
-                                // KEYBOARD CLOSED
-                                // ==================================================
-
-                                else {
-
-                                    if (
-                                            bottomNavigation
-                                                    .getVisibility()
-                                                    != View.VISIBLE
-                                    ) {
-
-                                        bottomNavigation.setVisibility(
-                                                View.VISIBLE
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                );
-    }
 
 
     // ==================================================
@@ -704,12 +547,8 @@ public class Search extends AppCompatActivity {
                                         new User(
                                                 uid,
                                                 displayName,
-                                                name != null
-                                                        ? name
-                                                        : "",
-                                                profileImage != null
-                                                        ? profileImage
-                                                        : ""
+                                                Objects.requireNonNullElse(name, ""),
+                                                Objects.requireNonNullElse(profileImage, "")
                                         )
                                 );
                             }

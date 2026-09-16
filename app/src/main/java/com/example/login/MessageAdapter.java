@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class MessageAdapter
         extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
@@ -234,17 +237,21 @@ public class MessageAdapter
                 "textMessage"
         );
 
+
         textMessage.setTextSize(
                 16
         );
+
 
         textMessage.setTextColor(
                 Color.WHITE
         );
 
+
         textMessage.setGravity(
                 Gravity.CENTER_VERTICAL
         );
+
 
         textMessage.setPadding(
                 dp(parent, 18),
@@ -252,6 +259,7 @@ public class MessageAdapter
                 dp(parent, 18),
                 dp(parent, 12)
         );
+
 
         textMessage.setMaxWidth(
                 (int) (
@@ -311,6 +319,15 @@ public class MessageAdapter
         );
 
 
+        mediaImage.setBackgroundColor(
+                Color.rgb(
+                        24,
+                        24,
+                        24
+                )
+        );
+
+
         contentFrame.addView(
                 mediaImage
         );
@@ -329,21 +346,26 @@ public class MessageAdapter
                 "videoPlay"
         );
 
+
         videoPlay.setText(
                 "▶"
         );
+
 
         videoPlay.setTextSize(
                 30
         );
 
+
         videoPlay.setTextColor(
                 Color.WHITE
         );
 
+
         videoPlay.setGravity(
                 Gravity.CENTER
         );
+
 
         videoPlay.setBackground(
                 createCircleBackground(
@@ -393,6 +415,7 @@ public class MessageAdapter
                         null,
                         android.R.attr.progressBarStyleHorizontal
                 );
+
 
         uploadProgressBar.setTag(
                 "uploadProgressBar"
@@ -499,7 +522,6 @@ public class MessageAdapter
                 new TextView(
                         parent.getContext()
                 );
-
 
         statusText.setTag(
                 "statusText"
@@ -609,13 +631,18 @@ public class MessageAdapter
 
         holder.textMessage.setText("");
 
-
         holder.statusText.setText("");
+
+
+        holder.mediaImage.setImageDrawable(
+                null
+        );
 
 
         holder.mediaImage.setOnClickListener(
                 null
         );
+
 
         holder.videoPlay.setOnClickListener(
                 null
@@ -632,6 +659,11 @@ public class MessageAdapter
         );
 
 
+        holder.videoPlay.setOnLongClickListener(
+                null
+        );
+
+
         holder.contentFrame.setOnLongClickListener(
                 null
         );
@@ -642,11 +674,7 @@ public class MessageAdapter
         // ==================================================
 
         boolean isOwnMessage =
-                currentUserId != null &&
-                        !currentUserId.isEmpty() &&
-                        currentUserId.equals(
-                                message.getSenderId()
-                        );
+                Objects.equals(currentUserId, message.getSenderId());
 
 
         // ==================================================
@@ -698,8 +726,7 @@ public class MessageAdapter
 
 
             holder.uploadProgressText.setText(
-                    message.getUploadProgress()
-                            + "%"
+                    String.format(Locale.getDefault(), "%d%%", message.getUploadProgress())
             );
 
 
@@ -709,8 +736,7 @@ public class MessageAdapter
             );
 
 
-            // Uploading photo/video is not an actual
-            // sent message, so no unsend listener.
+            // Uploading photo/video is not actual sent message.
             return;
         }
 
@@ -769,11 +795,11 @@ public class MessageAdapter
 
             if (
                     status != null &&
-                            !status.isEmpty()
+                            !status.trim().isEmpty()
             ) {
 
                 holder.statusText.setText(
-                        status
+                        formatStatus(status)
                 );
 
 
@@ -803,7 +829,6 @@ public class MessageAdapter
                         onUnsendListener != null
         ) {
 
-            // Content frame
             holder.contentFrame.setOnLongClickListener(
                     v -> {
 
@@ -816,7 +841,6 @@ public class MessageAdapter
             );
 
 
-            // Text directly
             holder.textMessage.setOnLongClickListener(
                     v -> {
 
@@ -829,7 +853,6 @@ public class MessageAdapter
             );
 
 
-            // Media directly
             holder.mediaImage.setOnLongClickListener(
                     v -> {
 
@@ -842,7 +865,6 @@ public class MessageAdapter
             );
 
 
-            // Video play icon directly
             holder.videoPlay.setOnLongClickListener(
                     v -> {
 
@@ -938,7 +960,7 @@ public class MessageAdapter
 
         if (
                 imageUrl != null &&
-                        !imageUrl.isEmpty()
+                        !imageUrl.trim().isEmpty()
         ) {
 
             Glide.with(
@@ -953,18 +975,22 @@ public class MessageAdapter
                     );
 
 
-            // Normal tap -> open photo
+            // ==========================================
+            // TAP PHOTO
+            // ==========================================
+
             holder.mediaImage.setOnClickListener(
-                    v -> openMedia(
-                            holder,
-                            imageUrl,
-                            false
-                    )
+                    v ->
+                            openMedia(
+                                    holder,
+                                    imageUrl,
+                                    false
+                            )
             );
         }
 
 
-        // Video play must stay hidden for photo
+        // Video icon hidden for photo
         holder.videoPlay.setVisibility(
                 View.GONE
         );
@@ -997,37 +1023,62 @@ public class MessageAdapter
 
         if (
                 videoUrl != null &&
-                        !videoUrl.isEmpty()
+                        !videoUrl.trim().isEmpty()
         ) {
+
+            // ==========================================
+            // CLOUDINARY VIDEO THUMBNAIL
+            // ==========================================
+
+            String thumbnailUrl =
+                    createCloudinaryVideoThumbnail(
+                            videoUrl
+                    );
+
 
             Glide.with(
                             holder.itemView.getContext()
                     )
                     .load(
-                            videoUrl
+                            thumbnailUrl
                     )
                     .centerCrop()
+                    .placeholder(
+                            createVideoPlaceholder()
+                    )
+                    .error(
+                            createVideoPlaceholder()
+                    )
                     .into(
                             holder.mediaImage
                     );
 
 
-            // Normal tap -> open video
+            // ==========================================
+            // TAP THUMBNAIL
+            // ==========================================
+
             holder.mediaImage.setOnClickListener(
-                    v -> openMedia(
-                            holder,
-                            videoUrl,
-                            true
-                    )
+                    v ->
+                            openMedia(
+                                    holder,
+                                    videoUrl,
+                                    true
+                            )
             );
 
 
+            // ==========================================
+            // TAP PLAY
+            // ==========================================
+
             holder.videoPlay.setOnClickListener(
-                    v -> openMedia(
-                            holder,
-                            videoUrl,
-                            true
-                    )
+                    v ->
+                            openMedia(
+                                    holder,
+                                    videoUrl,
+                                    true
+                            )
             );
         }
     }
@@ -1045,13 +1096,55 @@ public class MessageAdapter
 
         if (
                 url == null ||
-                        url.isEmpty()
+                        url.trim().isEmpty()
         ) {
+
+            Toast.makeText(
+                    holder.itemView.getContext(),
+                    isVideo
+                            ? "Video unavailable"
+                            : "Photo unavailable",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             return;
         }
 
 
         try {
+
+            // ==========================================
+            // VIDEO
+            // ==========================================
+
+            if (isVideo) {
+
+                Intent intent =
+                        new Intent(
+                                holder.itemView.getContext(),
+                                VideoPlayerActivity.class
+                        );
+
+
+                intent.putExtra(
+                        "videoUrl",
+                        url
+                );
+
+
+                holder.itemView
+                        .getContext()
+                        .startActivity(
+                                intent
+                        );
+
+                return;
+            }
+
+
+            // ==========================================
+            // PHOTO
+            // ==========================================
 
             Intent intent =
                     new Intent(
@@ -1061,9 +1154,7 @@ public class MessageAdapter
 
             intent.setDataAndType(
                     Uri.parse(url),
-                    isVideo
-                            ? "video/*"
-                            : "image/*"
+                    "image/*"
             );
 
 
@@ -1072,37 +1163,197 @@ public class MessageAdapter
             );
 
 
-            holder.itemView.getContext()
-                    .startActivity(intent);
+            holder.itemView
+                    .getContext()
+                    .startActivity(
+                            intent
+                    );
 
         } catch (Exception e) {
 
-            // Fallback
-            try {
-
-                Intent intent =
-                        new Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse(url)
-                        );
-
-
-                intent.addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK
-                );
-
-
-                holder.itemView.getContext()
-                        .startActivity(intent);
-
-            } catch (Exception ignored) {
-            }
+            Toast.makeText(
+                    holder.itemView.getContext(),
+                    isVideo
+                            ? "Unable to play video"
+                            : "Unable to open photo",
+                    Toast.LENGTH_SHORT
+            ).show();
         }
     }
 
 
     // ==================================================
-    // POSITION
+    // CLOUDINARY VIDEO THUMBNAIL
+    // ==================================================
+
+    private String createCloudinaryVideoThumbnail(
+            String videoUrl
+    ) {
+
+        if (
+                videoUrl == null ||
+                        videoUrl.trim().isEmpty()
+        ) {
+
+            return "";
+        }
+
+
+        try {
+
+            // Example:
+            // https://res.cloudinary.com/cloud/video/upload/v123/file.mp4
+            //
+            // becomes:
+            // https://res.cloudinary.com/cloud/video/upload/so_0/file.jpg
+
+            String cloudinaryPrefix = "/video/upload/";
+            int uploadIndex = videoUrl.indexOf(cloudinaryPrefix);
+
+
+            if (uploadIndex == -1) {
+
+                return videoUrl;
+            }
+
+
+            int start =
+                    uploadIndex +
+                            cloudinaryPrefix.length();
+
+
+            String prefix =
+                    videoUrl.substring(
+                            0,
+                            start
+                    );
+
+
+            String remaining =
+                    videoUrl.substring(
+                            start
+                    );
+
+
+            if (
+                    remaining.startsWith(
+                            "v"
+                    )
+            ) {
+
+                int slashIndex =
+                        remaining.indexOf(
+                                "/"
+                        );
+
+
+                if (slashIndex != -1) {
+
+                    remaining =
+                            remaining.substring(
+                                    slashIndex + 1
+                            );
+                }
+            }
+
+
+            int queryIndex =
+                    remaining.indexOf(
+                            "?"
+                    );
+
+
+            if (queryIndex != -1) {
+
+                remaining =
+                        remaining.substring(
+                                0,
+                                queryIndex
+                        );
+            }
+
+
+            int dotIndex =
+                    remaining.lastIndexOf(
+                            "."
+                    );
+
+
+            if (dotIndex != -1) {
+
+                remaining =
+                        remaining.substring(
+                                0,
+                                dotIndex
+                        );
+            }
+
+
+            return prefix +
+                    "so_0/" +
+                    remaining +
+                    ".jpg";
+
+        } catch (Exception e) {
+
+            return videoUrl;
+        }
+    }
+
+
+    // ==================================================
+    // VIDEO PLACEHOLDER
+    // ==================================================
+
+    private GradientDrawable createVideoPlaceholder() {
+
+        GradientDrawable drawable =
+                new GradientDrawable();
+
+        drawable.setColor(
+                Color.rgb(
+                        30,
+                        30,
+                        30
+                )
+        );
+
+        drawable.setCornerRadius(
+                18
+        );
+
+        return drawable;
+    }
+
+
+    // ==================================================
+    // STATUS FORMAT
+    // ==================================================
+
+    private String formatStatus(
+            String status
+    ) {
+
+        if (status == null) {
+
+            return "";
+        }
+
+        switch (status.toLowerCase()) {
+            case "sent":
+                return "Sent";
+            case "delivered":
+                return "Delivered";
+            case "seen":
+                return "Seen";
+            default:
+                return status;
+        }
+    }
+
+
+    // ==================================================
+    // MESSAGE POSITION
     // ==================================================
 
     private void applyMessagePosition(

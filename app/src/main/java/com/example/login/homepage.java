@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,10 +32,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class homepage extends AppCompatActivity {
 
@@ -743,34 +744,31 @@ public class homepage extends AppCompatActivity {
             return;
         }
 
-        Collections.sort(
-                stories,
-                (a, b) -> {
+        stories.sort((a, b) -> {
 
-                    Long timeA =
-                            a.getLong(
-                                    "timestamp"
-                            );
-
-                    Long timeB =
-                            b.getLong(
-                                    "timestamp"
-                            );
-
-                    if (timeA == null) {
-                        timeA = 0L;
-                    }
-
-                    if (timeB == null) {
-                        timeB = 0L;
-                    }
-
-                    return Long.compare(
-                            timeB,
-                            timeA
+            Long timeA =
+                    a.getLong(
+                            "timestamp"
                     );
-                }
-        );
+
+            Long timeB =
+                    b.getLong(
+                            "timestamp"
+                    );
+
+            if (timeA == null) {
+                timeA = 0L;
+            }
+
+            if (timeB == null) {
+                timeB = 0L;
+            }
+
+            return Long.compare(
+                    timeB,
+                    timeA
+            );
+        });
     }
 
     // ==================================================
@@ -863,8 +861,8 @@ public class homepage extends AppCompatActivity {
         android.widget.LinearLayout.LayoutParams
                 frameParams =
                 new android.widget.LinearLayout.LayoutParams(
-                        dp(64),
-                        dp(64)
+                        dp(70),
+                        dp(70)
                 );
 
         frameParams.gravity =
@@ -1219,13 +1217,13 @@ public class homepage extends AppCompatActivity {
                 storyRow.getChildAt(0);
 
         if (!(yourStoryItem
-                instanceof android.widget.LinearLayout)) {
+                instanceof LinearLayout)) {
 
             return;
         }
 
-        android.widget.LinearLayout item =
-                (android.widget.LinearLayout)
+        LinearLayout item =
+                (LinearLayout)
                         yourStoryItem;
 
         if (item.getChildCount() == 0) {
@@ -1290,15 +1288,11 @@ public class homepage extends AppCompatActivity {
         // WHITE ROTATING CIRCLE
         // ==================================================
 
-        if (android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.LOLLIPOP) {
-
-            storyUploadProgress
-                    .getIndeterminateDrawable()
-                    .setTint(
-                            Color.WHITE
-                    );
-        }
+        storyUploadProgress
+                .getIndeterminateDrawable()
+                .setTint(
+                        Color.WHITE
+                );
 
         // ==================================================
         // ADD OVER PHOTO
@@ -1367,9 +1361,7 @@ public class homepage extends AppCompatActivity {
                 continue;
             }
 
-            if (currentUserId.equals(
-                    String.valueOf(uid)
-            )) {
+            if (Objects.equals(currentUserId, String.valueOf(uid))) {
 
                 return true;
             }
@@ -1897,14 +1889,7 @@ public class homepage extends AppCompatActivity {
             return "";
         }
 
-        String value =
-                document.getString(
-                        field
-                );
-
-        return value != null
-                ? value
-                : "";
+        return Objects.requireNonNullElse(document.getString(field), "");
     }
 
     // ==================================================
@@ -2201,15 +2186,12 @@ public class homepage extends AppCompatActivity {
         if (btnProfile != null) {
 
             btnProfile.setOnClickListener(
-                    v -> {
-
-                        startActivity(
-                                new Intent(
-                                        homepage.this,
-                                        profilepage.class
-                                )
-                        );
-                    }
+                    v -> startActivity(
+                            new Intent(
+                                    homepage.this,
+                                    profilepage.class
+                            )
+                    )
             );
         }
     }
