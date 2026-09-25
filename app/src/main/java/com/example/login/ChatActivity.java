@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Objects;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -22,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.cloudinary.android.MediaManager;
 import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
@@ -42,10 +46,9 @@ public class ChatActivity extends AppCompatActivity {
     // UI
     // ==================================================
 
-    private TextView chatUserName;
-    private TextView chatStatus;
+    private TextView chatProfile;
+    private ImageView imgChatProfile;
 
-    private ImageButton backButton;
     private ImageButton photoButton;
     private ImageButton sendButton;
 
@@ -58,7 +61,6 @@ public class ChatActivity extends AppCompatActivity {
     // FIREBASE
     // ==================================================
 
-    private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
 
@@ -195,7 +197,7 @@ public class ChatActivity extends AppCompatActivity {
         // FIREBASE
         // ==================================================
 
-        mAuth =
+        FirebaseAuth mAuth =
                 FirebaseAuth.getInstance();
 
         db =
@@ -307,17 +309,27 @@ public class ChatActivity extends AppCompatActivity {
         // FIND VIEWS
         // ==================================================
 
-        chatUserName =
+        TextView chatUserName =
                 findViewById(
                         R.id.chatUserName
                 );
 
-        chatStatus =
+        TextView chatStatus =
                 findViewById(
                         R.id.chatStatus
                 );
 
-        backButton =
+        chatProfile =
+                findViewById(
+                        R.id.chatProfile
+                );
+
+        imgChatProfile =
+                findViewById(
+                        R.id.imgChatProfile
+                );
+
+        ImageButton backButton =
                 findViewById(
                         R.id.backButton
                 );
@@ -367,8 +379,10 @@ public class ChatActivity extends AppCompatActivity {
         );
 
         chatStatus.setText(
-                "@" + receiverUsername
+                getString(R.string.chat_handle, receiverUsername)
         );
+
+        loadReceiverProfile();
 
 
         // ==================================================
@@ -383,10 +397,7 @@ public class ChatActivity extends AppCompatActivity {
                 new MessageAdapter(
                         messageList,
                         currentUserId,
-                        message ->
-                                showUnsendConfirmation(
-                                        message
-                                )
+                        this::showUnsendConfirmation
                 );
 
 
@@ -476,6 +487,48 @@ public class ChatActivity extends AppCompatActivity {
         // ==================================================
 
         setupWindowInsets();
+    }
+
+
+    // ==================================================
+    // LOAD RECEIVER PROFILE
+    // ==================================================
+
+    private void loadReceiverProfile() {
+
+        db.collection("users")
+                .document(receiverId)
+                .get()
+                .addOnSuccessListener(document -> {
+
+                    if (!document.exists()) {
+                        return;
+                    }
+
+                    String name = document.getString("name");
+                    String profileImage = document.getString("profileImage");
+
+                    if (name != null && !name.trim().isEmpty()) {
+                        chatProfile.setText(name.substring(0, 1).toUpperCase());
+                    } else {
+                        chatProfile.setText(receiverUsername.substring(0, 1).toUpperCase());
+                    }
+
+                    if (profileImage != null && !profileImage.isEmpty()) {
+
+                        Glide.with(this)
+                                .load(profileImage)
+                                .circleCrop()
+                                .into(imgChatProfile);
+
+                        chatProfile.setVisibility(View.GONE);
+
+                    } else {
+
+                        imgChatProfile.setImageDrawable(null);
+                        chatProfile.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 
 
@@ -698,18 +751,13 @@ public class ChatActivity extends AppCompatActivity {
                 .setItems(
                         options,
                         (dialog, which) -> {
-
-                            if (which == 0) {
-
-                                photoPicker.launch(
-                                        "image/*"
-                                );
-
-                            } else {
-
-                                videoPicker.launch(
-                                        "video/*"
-                                );
+                            switch (which) {
+                                case 0:
+                                    photoPicker.launch("image/*");
+                                    break;
+                                case 1:
+                                    videoPicker.launch("video/*");
+                                    break;
                             }
                         }
                 )
@@ -833,24 +881,12 @@ public class ChatActivity extends AppCompatActivity {
 
                 .addOnFailureListener(
                         e -> {
-
-                            String error =
-                                    e.getMessage();
-
-
-                            if (
-                                    error == null ||
-                                            error.isEmpty()
-                            ) {
-                                error =
-                                        "Unknown error";
-                            }
-
+                            String error = (e.getMessage() == null || e.getMessage().isEmpty())
+                                    ? "Unknown error" : e.getMessage();
 
                             Toast.makeText(
                                     this,
-                                    "Message could not be sent: "
-                                            + error,
+                                    "Message could not be sent: " + error,
                                     Toast.LENGTH_LONG
                             ).show();
                         }
@@ -883,11 +919,7 @@ public class ChatActivity extends AppCompatActivity {
                         .document()
                         .getId();
 
-        String messageText = sharedPostCaption;
-
-        if (messageText == null) {
-            messageText = "";
-        }
+        String messageText = (sharedPostCaption == null) ? "" : sharedPostCaption;
 
         Message sharedMessage =
                 new Message(
@@ -933,12 +965,8 @@ public class ChatActivity extends AppCompatActivity {
                 )
                 .addOnFailureListener(
                         e -> {
-
-                            String error = e.getMessage();
-
-                            if (error == null || error.isEmpty()) {
-                                error = "Unknown error";
-                            }
+                            String error = (e.getMessage() == null || e.getMessage().isEmpty())
+                                    ? "Unknown error" : e.getMessage();
 
                             Toast.makeText(
                                     this,
@@ -1172,32 +1200,8 @@ public class ChatActivity extends AppCompatActivity {
                                     String requestId,
                                     Map resultData
                             ) {
-
-                                String mediaUrl =
-                                        "";
-
-
-                                if (resultData != null) {
-
-                                    Object secureUrl =
-                                            resultData.get(
-                                                    "secure_url"
-                                            );
-
-
-                                    if (
-                                            secureUrl != null
-                                    ) {
-
-                                        mediaUrl =
-                                                secureUrl.toString();
-                                    }
-                                }
-
-
-                                final String finalUrl =
-                                        mediaUrl;
-
+                                Object secureUrlObj = (resultData != null) ? resultData.get("secure_url") : null;
+                                final String finalUrl = (secureUrlObj != null) ? secureUrlObj.toString() : "";
 
                                 runOnUiThread(
                                         () -> {
@@ -1233,33 +1237,11 @@ public class ChatActivity extends AppCompatActivity {
                                     String requestId,
                                     ErrorInfo error
                             ) {
+                                String errorText = (error != null && error.getDescription() != null
+                                        && !error.getDescription().isEmpty())
+                                        ? error.getDescription() : "Upload failed";
 
-                                String errorText =
-                                        "Upload failed";
-
-
-                                if (
-                                        error != null &&
-                                                error.getDescription() != null &&
-                                                !error.getDescription()
-                                                        .isEmpty()
-                                ) {
-
-                                    errorText =
-                                            error.getDescription();
-                                }
-
-
-                                final String finalError =
-                                        errorText;
-
-
-                                runOnUiThread(
-                                        () ->
-                                                uploadFailed(
-                                                        finalError
-                                                )
-                                );
+                                runOnUiThread(() -> uploadFailed(errorText));
                             }
 
 
@@ -1454,20 +1436,12 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
-        if (
-                currentUserId == null ||
-                        !currentUserId.equals(
-                                message.getSenderId()
-                        )
-        ) {
-
+        if (!Objects.equals(currentUserId, message.getSenderId())) {
             return;
         }
 
 
-        String title =
-                "Unsend message?";
-
+        String title;
 
         if (
                 "image".equalsIgnoreCase(
@@ -1486,6 +1460,8 @@ public class ChatActivity extends AppCompatActivity {
 
             title =
                     "Unsend video?";
+        } else {
+            title = "Unsend message?";
         }
 
 
@@ -1589,37 +1565,21 @@ public class ChatActivity extends AppCompatActivity {
                 )
 
                 .addOnSuccessListener(
-                        unused -> {
-
-                            Toast.makeText(
-                                    this,
-                                    "Unsent successfully",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                        }
+                        unused -> Toast.makeText(
+                                this,
+                                "Unsent successfully",
+                                Toast.LENGTH_SHORT
+                        ).show()
                 )
 
                 .addOnFailureListener(
                         e -> {
-
-                            String errorMessage =
-                                    e.getMessage();
-
-
-                            if (
-                                    errorMessage == null ||
-                                            errorMessage.isEmpty()
-                            ) {
-
-                                errorMessage =
-                                        "Unknown Firebase error";
-                            }
-
+                            String errorMessage = (e.getMessage() == null || e.getMessage().isEmpty())
+                                    ? "Unknown Firebase error" : e.getMessage();
 
                             Toast.makeText(
                                     this,
-                                    "Unsend failed: "
-                                            + errorMessage,
+                                    "Unsend failed: " + errorMessage,
                                     Toast.LENGTH_LONG
                             ).show();
                         }
@@ -1696,30 +1656,13 @@ public class ChatActivity extends AppCompatActivity {
                                 // CHECK NEW UNSENT FIELD
                                 // ==================================================
 
-                                boolean unsent =
-                                        message.isUnsent();
-
-
-                                // ==================================================
-                                // SUPPORT OLD DATA
-                                //
-                                // Previous version used "isUnsent".
-                                // So old messages are also hidden.
-                                // ==================================================
-
                                 Boolean oldUnsent =
                                         document.getBoolean(
                                                 "isUnsent"
                                         );
 
-
-                                if (
-                                        oldUnsent != null &&
-                                                oldUnsent
-                                ) {
-
-                                    unsent = true;
-                                }
+                                boolean unsent =
+                                        message.isUnsent() || (oldUnsent != null && oldUnsent);
 
 
                                 // ==================================================
@@ -1738,8 +1681,8 @@ public class ChatActivity extends AppCompatActivity {
 
                                 if (
                                         currentUserId != null &&
-                                                receiverId != null &&
-                                                receiverId.equals(
+                                                Objects.equals(
+                                                        receiverId,
                                                         message.getSenderId()
                                                 )
                                 ) {

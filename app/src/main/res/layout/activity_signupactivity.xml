@@ -29,10 +29,21 @@
             android:padding="24dp">
 
             <TextView
+                android:id="@+id/newuser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New User !"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                tools:ignore="TextSizeCheck" />
+
+            <TextView
                 android:id="@+id/signup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sign In"
+                android:text="Sign Up"
                 android:textAlignment="center"
                 android:textColor="#3956F2"
                 android:textSize="36sp"
@@ -99,7 +110,7 @@
                 android:textSize="30dp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
-                tools:text=" Sign In" />
+                tools:text=" Sign Up" />
 
             <!-- THREE DOT PROGRESS -->
 

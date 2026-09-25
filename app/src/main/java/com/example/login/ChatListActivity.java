@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -38,6 +39,8 @@ public class ChatListActivity extends AppCompatActivity {
     private EditText searchUserEditText;
 
     private ImageButton searchUserButton;
+
+    private TextView currentUserIdText;
 
     private RecyclerView chatListRecyclerView;
 
@@ -214,6 +217,11 @@ public class ChatListActivity extends AppCompatActivity {
                         R.id.searchUserButton
                 );
 
+        currentUserIdText =
+                findViewById(
+                        R.id.currentUserIdText
+                );
+
         chatListRecyclerView =
                 findViewById(
                         R.id.chatListRecyclerView
@@ -290,6 +298,13 @@ public class ChatListActivity extends AppCompatActivity {
         // ==================================================
 
         loadChats();
+
+
+        // ==================================================
+        // CURRENT USER
+        // ==================================================
+
+        loadCurrentUser();
 
 
         // ==================================================
@@ -476,6 +491,96 @@ public class ChatListActivity extends AppCompatActivity {
                 0,
                 0
         );
+    }
+
+
+    // ==================================================
+    // CURRENT USER
+    // ==================================================
+
+    private void loadCurrentUser() {
+
+        if (
+                currentUserIdText == null
+        ) {
+            return;
+        }
+
+
+        if (
+                mAuth == null ||
+                        mAuth.getCurrentUser() == null
+        ) {
+
+            currentUserIdText.setText(
+                    "User"
+            );
+
+            return;
+        }
+
+
+        String currentUid =
+                mAuth.getCurrentUser()
+                        .getUid();
+
+
+        db.collection("users")
+                .document(currentUid)
+                .get()
+                .addOnSuccessListener(
+                        document -> {
+
+                            if (
+                                    !document.exists()
+                            ) {
+
+                                currentUserIdText.setText(
+                                        "User"
+                                );
+
+                                return;
+                            }
+
+
+                            String username =
+                                    document.getString(
+                                            "userId"
+                                    );
+
+
+                            if (
+                                    username == null ||
+                                            username.isEmpty()
+                            ) {
+
+                                username =
+                                        document.getString(
+                                                "username"
+                                        );
+                            }
+
+
+                            if (
+                                    username == null ||
+                                            username.isEmpty()
+                            ) {
+
+                                username =
+                                        "User";
+                            }
+
+
+                            currentUserIdText.setText(
+                                    username
+                            );
+                        }
+                )
+                .addOnFailureListener(
+                        e -> currentUserIdText.setText(
+                                "User"
+                        )
+                );
     }
 
 
@@ -707,6 +812,10 @@ public class ChatListActivity extends AppCompatActivity {
                             String username =
                                     "Unknown User";
 
+                            String name = "";
+
+                            String profileImage = "";
+
 
                             if (
                                     userDocument.exists()
@@ -743,6 +852,12 @@ public class ChatListActivity extends AppCompatActivity {
                                                 oldUsername;
                                     }
                                 }
+
+                                name = userDocument.getString("name");
+                                profileImage = userDocument.getString("profileImage");
+
+                                if (name == null) name = "";
+                                if (profileImage == null) profileImage = "";
                             }
 
 
@@ -755,6 +870,8 @@ public class ChatListActivity extends AppCompatActivity {
                                     chatId,
                                     otherUserId,
                                     username,
+                                    name,
+                                    profileImage,
                                     unreadCount,
                                     uniqueChats,
                                     thisGeneration,
@@ -779,6 +896,8 @@ public class ChatListActivity extends AppCompatActivity {
                                     chatId,
                                     otherUserId,
                                     "Unknown User",
+                                    "",
+                                    "",
                                     unreadCount,
                                     uniqueChats,
                                     thisGeneration,
@@ -798,6 +917,8 @@ public class ChatListActivity extends AppCompatActivity {
             String chatId,
             String otherUserId,
             String username,
+            String name,
+            String profileImage,
             int unreadCount,
             Map<String, ChatItem> uniqueChats,
             int thisGeneration,
@@ -900,6 +1021,8 @@ public class ChatListActivity extends AppCompatActivity {
                                     new ChatItem(
                                             otherUserId,
                                             username,
+                                            name,
+                                            profileImage,
                                             lastMessage,
                                             lastMessageTime,
                                             unreadCount
@@ -994,6 +1117,8 @@ public class ChatListActivity extends AppCompatActivity {
                                     new ChatItem(
                                             otherUserId,
                                             username,
+                                            name,
+                                            profileImage,
                                             lastMessage,
                                             timestamp,
                                             unreadCount
@@ -1688,6 +1813,8 @@ public class ChatListActivity extends AppCompatActivity {
                 mAuth != null &&
                         mAuth.getCurrentUser() != null
         ) {
+
+            loadCurrentUser();
 
             loadChats();
         }

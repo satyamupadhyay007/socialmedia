@@ -1,5 +1,6 @@
 package com.example.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -156,416 +157,114 @@ public class MessageAdapter
             @NonNull ViewGroup parent,
             int viewType
     ) {
-
-        // ==================================================
-        // ROOT ROW
-        // ==================================================
-
-        LinearLayout row =
-                new LinearLayout(
-                        parent.getContext()
-                );
-
-        row.setOrientation(
-                LinearLayout.VERTICAL
-        );
-
-        row.setGravity(
-                Gravity.START
-        );
-
-        row.setPadding(
-                dp(parent, 2),
-                dp(parent, 4),
-                dp(parent, 2),
-                dp(parent, 4)
-        );
-
-
-        RecyclerView.LayoutParams rowParams =
-                new RecyclerView.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                );
-
-        row.setLayoutParams(
-                rowParams
-        );
-
-
-        // ==================================================
-        // CONTENT FRAME
-        // ==================================================
-
-        FrameLayout contentFrame =
-                new FrameLayout(
-                        parent.getContext()
-                );
-
-        contentFrame.setTag(
-                "contentFrame"
-        );
-
-
-        LinearLayout.LayoutParams contentParams =
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                );
-
-
-        contentFrame.setLayoutParams(
-                contentParams
-        );
-
-
-        row.addView(
-                contentFrame
-        );
-
-
-        // ==================================================
-        // TEXT MESSAGE
-        // ==================================================
-
-        TextView textMessage =
-                new TextView(
-                        parent.getContext()
-                );
-
-        textMessage.setTag(
-                "textMessage"
-        );
-
-
-        textMessage.setTextSize(
-                16
-        );
-
-
-        textMessage.setTextColor(
-                Color.WHITE
-        );
-
-
-        textMessage.setGravity(
-                Gravity.CENTER_VERTICAL
-        );
-
-
-        textMessage.setPadding(
-                dp(parent, 18),
-                dp(parent, 12),
-                dp(parent, 18),
-                dp(parent, 12)
-        );
-
-
-        textMessage.setMaxWidth(
-                (int) (
-                        parent.getResources()
-                                .getDisplayMetrics()
-                                .widthPixels
-                                * 0.75f
-                )
-        );
-
-
-        contentFrame.addView(
-                textMessage
-        );
-
-
-        // ==================================================
-        // MEDIA IMAGE
-        // ==================================================
-
-        ImageView mediaImage =
-                new ImageView(
-                        parent.getContext()
-                );
-
-        mediaImage.setTag(
-                "mediaImage"
-        );
-
-
-        int mediaWidth =
-                dp(parent, 216);
-
-        int mediaHeight =
-                dp(parent, 264);
-
-
-        FrameLayout.LayoutParams mediaParams =
-                new FrameLayout.LayoutParams(
-                        mediaWidth,
-                        mediaHeight
-                );
-
-
-        mediaImage.setLayoutParams(
-                mediaParams
-        );
-
-
-        mediaImage.setScaleType(
-                ImageView.ScaleType.CENTER_CROP
-        );
-
-
-        mediaImage.setVisibility(
-                View.GONE
-        );
-
-
-        mediaImage.setBackgroundColor(
-                Color.rgb(
-                        24,
-                        24,
-                        24
-                )
-        );
-
-
-        contentFrame.addView(
-                mediaImage
-        );
-
-
-        // ==================================================
-        // VIDEO PLAY ICON
-        // ==================================================
-
-        TextView videoPlay =
-                new TextView(
-                        parent.getContext()
-                );
-
-        videoPlay.setTag(
-                "videoPlay"
-        );
-
-
-        videoPlay.setText(
-                "▶"
-        );
-
-
-        videoPlay.setTextSize(
-                30
-        );
-
-
-        videoPlay.setTextColor(
-                Color.WHITE
-        );
-
-
-        videoPlay.setGravity(
-                Gravity.CENTER
-        );
-
-
-        videoPlay.setBackground(
-                createCircleBackground(
-                        Color.argb(
-                                170,
-                                0,
-                                0,
-                                0
-                        )
-                )
-        );
-
-
-        FrameLayout.LayoutParams playParams =
-                new FrameLayout.LayoutParams(
-                        dp(parent, 60),
-                        dp(parent, 60)
-                );
-
-
-        playParams.gravity =
-                Gravity.CENTER;
-
-
-        videoPlay.setLayoutParams(
-                playParams
-        );
-
-
-        videoPlay.setVisibility(
-                View.GONE
-        );
-
-
-        contentFrame.addView(
-                videoPlay
-        );
-
-
-        // ==================================================
-        // PROGRESS BAR
-        // ==================================================
-
-        ProgressBar uploadProgressBar =
-                new ProgressBar(
-                        parent.getContext(),
-                        null,
-                        android.R.attr.progressBarStyleHorizontal
-                );
-
-
-        uploadProgressBar.setTag(
-                "uploadProgressBar"
-        );
-
-
-        FrameLayout.LayoutParams progressParams =
-                new FrameLayout.LayoutParams(
-                        dp(parent, 170),
-                        dp(parent, 8)
-                );
-
-
-        progressParams.gravity =
-                Gravity.BOTTOM |
-                        Gravity.CENTER_HORIZONTAL;
-
-
-        progressParams.bottomMargin =
-                dp(parent, 12);
-
-
-        uploadProgressBar.setLayoutParams(
-                progressParams
-        );
-
-
-        uploadProgressBar.setMax(
-                100
-        );
-
-
-        uploadProgressBar.setVisibility(
-                View.GONE
-        );
-
-
-        contentFrame.addView(
-                uploadProgressBar
-        );
-
-
-        // ==================================================
-        // PROGRESS TEXT
-        // ==================================================
-
-        TextView uploadProgressText =
-                new TextView(
-                        parent.getContext()
-                );
-
-
-        uploadProgressText.setTag(
-                "uploadProgressText"
-        );
-
-
-        uploadProgressText.setTextColor(
-                Color.WHITE
-        );
-
-
-        uploadProgressText.setTextSize(
-                13
-        );
-
-
-        uploadProgressText.setGravity(
-                Gravity.CENTER
-        );
-
-
-        FrameLayout.LayoutParams progressTextParams =
-                new FrameLayout.LayoutParams(
-                        dp(parent, 60),
-                        dp(parent, 30)
-                );
-
-
-        progressTextParams.gravity =
-                Gravity.CENTER;
-
-
-        uploadProgressText.setLayoutParams(
-                progressTextParams
-        );
-
-
-        uploadProgressText.setVisibility(
-                View.GONE
-        );
-
-
-        contentFrame.addView(
-                uploadProgressText
-        );
-
-
-        // ==================================================
-        // STATUS
-        // ==================================================
-
-        TextView statusText =
-                new TextView(
-                        parent.getContext()
-                );
-
-        statusText.setTag(
-                "statusText"
-        );
-
-
-        statusText.setTextSize(
-                11
-        );
-
-
-        statusText.setTextColor(
-                Color.LTGRAY
-        );
-
-
-        statusText.setPadding(
-                dp(parent, 8),
-                dp(parent, 2),
-                dp(parent, 8),
-                0
-        );
-
-
-        LinearLayout.LayoutParams statusParams =
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                );
-
-
-        statusText.setLayoutParams(
-                statusParams
-        );
-
-
-        row.addView(
-                statusText
-        );
-
-
-        return new MessageViewHolder(
-                row
-        );
+        LinearLayout row = createRootRow(parent);
+        FrameLayout contentFrame = createContentFrame(parent);
+        row.addView(contentFrame);
+
+        contentFrame.addView(createTextMessage(parent));
+        contentFrame.addView(createMediaImage(parent));
+        contentFrame.addView(createVideoPlayIcon(parent));
+        contentFrame.addView(createUploadProgressBar(parent));
+        contentFrame.addView(createUploadProgressText(parent));
+        row.addView(createStatusText(parent));
+
+        return new MessageViewHolder(row);
+    }
+
+    private LinearLayout createRootRow(ViewGroup parent) {
+        LinearLayout row = new LinearLayout(parent.getContext());
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setGravity(Gravity.START);
+        row.setPadding(dp(row.getContext(), 2), dp(row.getContext(), 4), dp(row.getContext(), 2), dp(row.getContext(), 4));
+        row.setLayoutParams(new RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        return row;
+    }
+
+    private FrameLayout createContentFrame(ViewGroup parent) {
+        FrameLayout contentFrame = new FrameLayout(parent.getContext());
+        contentFrame.setTag("contentFrame");
+        contentFrame.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        return contentFrame;
+    }
+
+    private TextView createTextMessage(ViewGroup parent) {
+        TextView textMessage = new TextView(parent.getContext());
+        textMessage.setTag("textMessage");
+        textMessage.setTextSize(16);
+        textMessage.setTextColor(Color.WHITE);
+        textMessage.setGravity(Gravity.CENTER_VERTICAL);
+        textMessage.setPadding(dp(textMessage.getContext(), 18), dp(textMessage.getContext(), 12), dp(textMessage.getContext(), 18), dp(textMessage.getContext(), 12));
+        textMessage.setMaxWidth((int) (parent.getResources().getDisplayMetrics().widthPixels * 0.75f));
+        return textMessage;
+    }
+
+    private ImageView createMediaImage(ViewGroup parent) {
+        ImageView mediaImage = new ImageView(parent.getContext());
+        mediaImage.setTag("mediaImage");
+        mediaImage.setLayoutParams(new FrameLayout.LayoutParams(dp(mediaImage.getContext(), 216), dp(mediaImage.getContext(), 264)));
+        mediaImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        mediaImage.setVisibility(View.GONE);
+        mediaImage.setBackgroundColor(Color.rgb(24, 24, 24));
+        return mediaImage;
+    }
+
+    private TextView createVideoPlayIcon(ViewGroup parent) {
+        TextView videoPlay = new TextView(parent.getContext());
+        videoPlay.setTag("videoPlay");
+        videoPlay.setText("▶");
+        videoPlay.setTextSize(30);
+        videoPlay.setTextColor(Color.WHITE);
+        videoPlay.setGravity(Gravity.CENTER);
+        videoPlay.setBackground(createCircleBackground(Color.argb(170, 0, 0, 0)));
+        FrameLayout.LayoutParams playParams = new FrameLayout.LayoutParams(dp(videoPlay.getContext(), 60), dp(videoPlay.getContext(), 60));
+        playParams.gravity = Gravity.CENTER;
+        videoPlay.setLayoutParams(playParams);
+        videoPlay.setVisibility(View.GONE);
+        return videoPlay;
+    }
+
+    private ProgressBar createUploadProgressBar(ViewGroup parent) {
+        ProgressBar uploadProgressBar = new ProgressBar(parent.getContext(), null, android.R.attr.progressBarStyleHorizontal);
+        uploadProgressBar.setTag("uploadProgressBar");
+        FrameLayout.LayoutParams progressParams = new FrameLayout.LayoutParams(dp(uploadProgressBar.getContext(), 170), dp(uploadProgressBar.getContext(), 8));
+        progressParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+        progressParams.bottomMargin = dp(uploadProgressBar.getContext(), 12);
+        uploadProgressBar.setLayoutParams(progressParams);
+        uploadProgressBar.setMax(100);
+        uploadProgressBar.setVisibility(View.GONE);
+        return uploadProgressBar;
+    }
+
+    private TextView createUploadProgressText(ViewGroup parent) {
+        TextView uploadProgressText = new TextView(parent.getContext());
+        uploadProgressText.setTag("uploadProgressText");
+        uploadProgressText.setTextColor(Color.WHITE);
+        uploadProgressText.setTextSize(13);
+        uploadProgressText.setGravity(Gravity.CENTER);
+        FrameLayout.LayoutParams progressTextParams = new FrameLayout.LayoutParams(dp(uploadProgressText.getContext(), 60), dp(uploadProgressText.getContext(), 30));
+        progressTextParams.gravity = Gravity.CENTER;
+        uploadProgressText.setLayoutParams(progressTextParams);
+        uploadProgressText.setVisibility(View.GONE);
+        return uploadProgressText;
+    }
+
+    private TextView createStatusText(ViewGroup parent) {
+        TextView statusText = new TextView(parent.getContext());
+        statusText.setTag("statusText");
+        statusText.setTextSize(11);
+        statusText.setTextColor(Color.LTGRAY);
+        statusText.setPadding(dp(statusText.getContext(), 8), dp(statusText.getContext(), 2), dp(statusText.getContext(), 8), 0);
+        statusText.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        return statusText;
     }
 
 
@@ -757,8 +456,7 @@ public class MessageAdapter
 
             bindImage(
                     holder,
-                    message,
-                    isOwnMessage
+                    message
             );
 
         } else if (
@@ -769,8 +467,7 @@ public class MessageAdapter
 
             bindVideo(
                     holder,
-                    message,
-                    isOwnMessage
+                    message
             );
 
         } else {
@@ -905,7 +602,7 @@ public class MessageAdapter
 
         background.setCornerRadius(
                 dp(
-                        holder.itemView,
+                        holder.itemView.getContext(),
                         18
                 )
         );
@@ -945,8 +642,7 @@ public class MessageAdapter
 
     private void bindImage(
             MessageViewHolder holder,
-            Message message,
-            boolean isOwnMessage
+            Message message
     ) {
 
         holder.mediaImage.setVisibility(
@@ -1003,8 +699,7 @@ public class MessageAdapter
 
     private void bindVideo(
             MessageViewHolder holder,
-            Message message,
-            boolean isOwnMessage
+            Message message
     ) {
 
         holder.mediaImage.setVisibility(
@@ -1044,10 +739,10 @@ public class MessageAdapter
                     )
                     .centerCrop()
                     .placeholder(
-                            createVideoPlaceholder()
+                            createVideoPlaceholder(holder.itemView.getContext())
                     )
                     .error(
-                            createVideoPlaceholder()
+                            createVideoPlaceholder(holder.itemView.getContext())
                     )
                     .into(
                             holder.mediaImage
@@ -1229,69 +924,12 @@ public class MessageAdapter
                     );
 
 
-            String remaining =
-                    videoUrl.substring(
-                            start
-                    );
-
-
-            if (
-                    remaining.startsWith(
-                            "v"
-                    )
-            ) {
-
-                int slashIndex =
-                        remaining.indexOf(
-                                "/"
-                        );
-
-
-                if (slashIndex != -1) {
-
-                    remaining =
-                            remaining.substring(
-                                    slashIndex + 1
-                            );
-                }
-            }
-
-
-            int queryIndex =
-                    remaining.indexOf(
-                            "?"
-                    );
-
-
-            if (queryIndex != -1) {
-
-                remaining =
-                        remaining.substring(
-                                0,
-                                queryIndex
-                        );
-            }
-
-
-            int dotIndex =
-                    remaining.lastIndexOf(
-                            "."
-                    );
-
-
-            if (dotIndex != -1) {
-
-                remaining =
-                        remaining.substring(
-                                0,
-                                dotIndex
-                        );
-            }
+            String finalRemaining = getFinalRemaining(videoUrl.substring(start));
 
 
             return prefix +
                     "so_0/" +
-                    remaining +
+                    finalRemaining +
                     ".jpg";
 
         } catch (Exception e) {
@@ -1300,12 +938,42 @@ public class MessageAdapter
         }
     }
 
+    private String getFinalRemaining(String rawRemaining) {
+        String remainingWithoutVersion =
+                (rawRemaining.startsWith("v") && rawRemaining.contains("/"))
+                        ? rawRemaining.substring(rawRemaining.indexOf("/") + 1)
+                        : rawRemaining;
+
+
+        int queryIndex =
+                remainingWithoutVersion.indexOf(
+                        "?"
+                );
+
+
+        String remainingWithoutQuery =
+                (queryIndex != -1)
+                        ? remainingWithoutVersion.substring(0, queryIndex)
+                        : remainingWithoutVersion;
+
+
+        int dotIndex =
+                remainingWithoutQuery.lastIndexOf(
+                        "."
+                );
+
+
+        return (dotIndex != -1)
+                ? remainingWithoutQuery.substring(0, dotIndex)
+                : remainingWithoutQuery;
+    }
+
 
     // ==================================================
     // VIDEO PLACEHOLDER
     // ==================================================
 
-    private GradientDrawable createVideoPlaceholder() {
+    private GradientDrawable createVideoPlaceholder(Context context) {
 
         GradientDrawable drawable =
                 new GradientDrawable();
@@ -1319,7 +987,7 @@ public class MessageAdapter
         );
 
         drawable.setCornerRadius(
-                18
+                dp(context, 18)
         );
 
         return drawable;
@@ -1464,58 +1132,14 @@ public class MessageAdapter
     // DP
     // ==================================================
 
-    private int dp(
-            View view,
-            int value
-    ) {
-
-        return (int)
-                (
-                        value *
-                                view.getResources()
-                                        .getDisplayMetrics()
-                                        .density
-                );
+    private int dp(Context context, int value) {
+        return (int) (value * context.getResources().getDisplayMetrics().density);
     }
 
-
-    private int dp(
-            ViewGroup parent,
-            int value
-    ) {
-
-        return (int)
-                (
-                        value *
-                                parent.getResources()
-                                        .getDisplayMetrics()
-                                        .density
-                );
-    }
-
-
-    // ==================================================
-    // CIRCLE BACKGROUND
-    // ==================================================
-
-    private GradientDrawable createCircleBackground(
-            int color
-    ) {
-
-        GradientDrawable drawable =
-                new GradientDrawable();
-
-
-        drawable.setShape(
-                GradientDrawable.OVAL
-        );
-
-
-        drawable.setColor(
-                color
-        );
-
-
+    private GradientDrawable createCircleBackground(int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(color);
         return drawable;
     }
 }

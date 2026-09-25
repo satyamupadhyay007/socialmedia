@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -74,6 +76,49 @@ public class PostAdapter
 
         Context context = holder.itemView.getContext();
 
+
+        // ========================================================
+        // POST HEADER (USERNAME & PROFILE)
+        // ========================================================
+
+        holder.tvPostUsername.setText(
+                post.getUserName() == null || post.getUserName().isEmpty()
+                ? "user" : post.getUserName()
+        );
+
+        // Load profile photo of post owner
+        if (post.getUserId() != null) {
+            db.collection("users").document(post.getUserId())
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        String profileUrl = document.getString("profileImage");
+                        if (profileUrl != null && !profileUrl.isEmpty()) {
+                            Glide.with(context)
+                                .load(profileUrl)
+                                .circleCrop()
+                                .into(holder.imgPostProfile);
+                        } else {
+                            holder.imgPostProfile.setImageResource(android.R.drawable.ic_menu_myplaces);
+                        }
+                    }
+                });
+
+            // Follow logic
+            loadFollowStatus(holder, post.getUserId());
+
+            holder.btnPostFollow.setOnClickListener(v -> toggleFollow(post.getUserId(), holder));
+
+            // Go to profile
+            View.OnClickListener toProfile = v -> {
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                intent.putExtra("userId", post.getUserId());
+                context.startActivity(intent);
+            };
+
+            holder.tvPostUsername.setOnClickListener(toProfile);
+            holder.imgPostProfile.setOnClickListener(toProfile);
+        }
 
         // ========================================================
         // IMAGE
@@ -837,18 +882,86 @@ public class PostAdapter
     // VIEW HOLDER
     // ============================================================
 
+    // ============================================================
+    // FOLLOW LOGIC
+    // ============================================================
+
+    private void loadFollowStatus(PostViewHolder holder, String targetUserId) {
+        if (auth.getCurrentUser() == null || targetUserId.equals(auth.getCurrentUser().getUid())) {
+            holder.btnPostFollow.setVisibility(View.GONE);
+            return;
+        }
+
+        holder.btnPostFollow.setVisibility(View.VISIBLE);
+        String currentUid = auth.getCurrentUser().getUid();
+        String relationshipId = currentUid + "_" + targetUserId;
+
+        db.collection("relationships").document(relationshipId)
+            .get()
+            .addOnSuccessListener(document -> {
+                if (document.exists() && "accepted".equals(document.getString("status"))) {
+                    holder.btnPostFollow.setText("Following");
+                    holder.btnPostFollow.setTextColor(Color.LTGRAY);
+                } else if (document.exists() && "pending".equals(document.getString("status"))) {
+                    holder.btnPostFollow.setText("Requested");
+                    holder.btnPostFollow.setTextColor(Color.LTGRAY);
+                } else {
+                    holder.btnPostFollow.setText("Follow");
+                    holder.btnPostFollow.setTextColor(0xFF0095F6);
+                }
+            });
+    }
+
+    private void toggleFollow(String targetUserId, PostViewHolder holder) {
+        if (auth.getCurrentUser() == null) return;
+        String currentUid = auth.getCurrentUser().getUid();
+        String relationshipId = currentUid + "_" + targetUserId;
+
+        db.collection("relationships").document(relationshipId)
+            .get()
+            .addOnSuccessListener(document -> {
+                if (document.exists()) {
+                    // Unfollow / Cancel
+                    db.collection("relationships").document(relationshipId).delete()
+                        .addOnSuccessListener(aVoid -> {
+                            db.collection("users").document(currentUid)
+                                .update("following", FieldValue.arrayRemove(targetUserId));
+                            loadFollowStatus(holder, targetUserId);
+                        });
+                } else {
+                    // Follow
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("followerId", currentUid);
+                    data.put("followingId", targetUserId);
+                    data.put("status", "accepted"); // Assuming public for simplicity, or check private status
+                    data.put("createdAt", FieldValue.serverTimestamp());
+
+                    db.collection("relationships").document(relationshipId).set(data)
+                        .addOnSuccessListener(aVoid -> {
+                            db.collection("users").document(currentUid)
+                                .update("following", FieldValue.arrayUnion(targetUserId));
+                            loadFollowStatus(holder, targetUserId);
+                        });
+                }
+            });
+    }
+
     public static class PostViewHolder
             extends RecyclerView.ViewHolder {
 
         ImageView postImage;
+        ImageView imgPostProfile;
         ImageView playIcon;
 
         ImageButton btnLike;
         ImageButton btnComment;
         ImageButton btnShare;
 
+        TextView tvPostUsername;
         TextView tvCaption;
         TextView tvLikeCount;
+
+        Button btnPostFollow;
 
 
         public PostViewHolder(
@@ -861,6 +974,11 @@ public class PostAdapter
             postImage =
                     itemView.findViewById(
                             R.id.postImage
+                    );
+
+            imgPostProfile =
+                    itemView.findViewById(
+                            R.id.imgPostProfile
                     );
 
 
@@ -888,6 +1006,12 @@ public class PostAdapter
                     );
 
 
+            tvPostUsername =
+                    itemView.findViewById(
+                            R.id.tvPostUsername
+                    );
+
+
             tvCaption =
                     itemView.findViewById(
                             R.id.tvCaption
@@ -897,6 +1021,11 @@ public class PostAdapter
             tvLikeCount =
                     itemView.findViewById(
                             R.id.tvLikeCount
+                    );
+
+            btnPostFollow =
+                    itemView.findViewById(
+                            R.id.btnPostFollow
                     );
         }
     }

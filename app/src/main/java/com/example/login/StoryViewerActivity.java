@@ -1,11 +1,15 @@
 package com.example.login;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -16,12 +20,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -43,7 +47,6 @@ public class StoryViewerActivity extends AppCompatActivity {
 
     private TextView storyUsername;
 
-    private ImageButton btnClose;
     private ImageButton btnLike;
 
     // Like count is visible only to the story owner.
@@ -77,11 +80,13 @@ public class StoryViewerActivity extends AppCompatActivity {
     // ==================================================
 
     private ArrayList<String> storyIds;
+    private ArrayList<String> storyUserIds;
 
     private ArrayList<String> mediaUrls;
     private ArrayList<String> mediaTypes;
 
     private ArrayList<String> usernames;
+    private ArrayList<String> profileImages;
 
     private int currentIndex = 0;
 
@@ -188,7 +193,7 @@ public class StoryViewerActivity extends AppCompatActivity {
                         R.id.storyUsername
                 );
 
-        btnClose =
+        ImageButton btnClose =
                 findViewById(
                         R.id.btnCloseStory
                 );
@@ -263,6 +268,12 @@ public class StoryViewerActivity extends AppCompatActivity {
                                 "storyIds"
                         );
 
+        storyUserIds =
+                getIntent()
+                        .getStringArrayListExtra(
+                                "storyUserIds"
+                        );
+
         mediaUrls =
                 getIntent()
                         .getStringArrayListExtra(
@@ -279,6 +290,12 @@ public class StoryViewerActivity extends AppCompatActivity {
                 getIntent()
                         .getStringArrayListExtra(
                                 "usernames"
+                        );
+
+        profileImages =
+                getIntent()
+                        .getStringArrayListExtra(
+                                "profileImages"
                         );
 
         // ==================================================
@@ -468,13 +485,13 @@ public class StoryViewerActivity extends AppCompatActivity {
             bar.setProgress(i < currentIndex ? 100 : 0);
 
             bar.setProgressTintList(
-                    android.content.res.ColorStateList.valueOf(
+                    ColorStateList.valueOf(
                             Color.WHITE
                     )
             );
 
             bar.setBackgroundTintList(
-                    android.content.res.ColorStateList.valueOf(
+                    ColorStateList.valueOf(
                             0x55FFFFFF
                     )
             );
@@ -769,7 +786,7 @@ public class StoryViewerActivity extends AppCompatActivity {
                     new MediaPlayer();
 
             storyMusicPlayer.setAudioStreamType(
-                    android.media.AudioManager.STREAM_MUSIC
+                    AudioManager.STREAM_MUSIC
             );
 
             storyMusicPlayer.setDataSource(
@@ -825,7 +842,7 @@ public class StoryViewerActivity extends AppCompatActivity {
             return;
         }
 
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setItems(
                         new String[]{"Delete Story"},
                         (dialog, which) -> confirmDeleteStory()
@@ -836,7 +853,7 @@ public class StoryViewerActivity extends AppCompatActivity {
 
     private void confirmDeleteStory() {
 
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle("Delete story?")
                 .setMessage("This story will be removed now.")
                 .setNegativeButton("Cancel", null)
@@ -1582,7 +1599,7 @@ public class StoryViewerActivity extends AppCompatActivity {
         );
 
         row.setGravity(
-                android.view.Gravity.CENTER_VERTICAL
+                Gravity.CENTER_VERTICAL
         );
 
         row.setPadding(

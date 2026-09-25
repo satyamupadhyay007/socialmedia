@@ -223,11 +223,6 @@ public class login extends AppCompatActivity {
                     .addOnSuccessListener(
                             usernameDocument -> {
 
-
-                                // ==================================
-                                // USER ID NOT FOUND
-                                // ==================================
-
                                 if (
                                         !usernameDocument.exists()
                                 ) {

@@ -7,6 +7,7 @@
     <string name="message">Message</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
+    <string name="chat_handle">\@%1$s</string>
     <style name="CircleImageStyle">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
