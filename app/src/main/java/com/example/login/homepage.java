@@ -4,11 +4,13 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.cloudinary.android.MediaManager;
@@ -29,12 +33,13 @@ import com.cloudinary.android.callback.UploadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class homepage extends AppCompatActivity {
 
@@ -60,7 +65,11 @@ public class homepage extends AppCompatActivity {
     // STORIES
     // ==================================================
 
-    private android.widget.LinearLayout storyRow;
+    private LinearLayout storyRow;
+
+    // Posts
+    private PostAdapter postAdapter;
+    private final List<Post> postList = new ArrayList<>();
 
     // Upload spinner
     private ProgressBar storyUploadProgress;
@@ -211,6 +220,30 @@ public class homepage extends AppCompatActivity {
                 );
 
         // ==================================================
+        // POSTS RECYCLER
+        // ==================================================
+
+        RecyclerView postRecyclerView =
+                findViewById(
+                        R.id.postRecyclerView
+                );
+
+        postAdapter =
+                new PostAdapter(
+                        postList
+                );
+
+        postRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        this
+                )
+        );
+
+        postRecyclerView.setAdapter(
+                postAdapter
+        );
+
+        // ==================================================
         // BOTTOM NAVIGATION
         // ==================================================
 
@@ -252,6 +285,12 @@ public class homepage extends AppCompatActivity {
         setupBottomNavigation();
 
         // ==================================================
+        // LOAD POSTS
+        // ==================================================
+
+        loadPosts();
+
+        // ==================================================
         // IMPORTANT
         //
         // loadStories() is NOT called here.
@@ -283,6 +322,9 @@ public class homepage extends AppCompatActivity {
                         .getUid();
 
         if (storyRow != null) {
+
+            // NEW: clean expired stories before loading active stories.
+            deleteExpiredOwnStories();
 
             loadStories();
         }
@@ -625,6 +667,67 @@ public class homepage extends AppCompatActivity {
     }
 
     // ==================================================
+    // NEW: DELETE EXPIRED OWN STORIES
+    // ==================================================
+    //
+    // Stories expire after 24 hours because every story stores
+    // an expiresAt timestamp. This cleanup removes expired
+    // stories belonging to the currently logged-in user when
+    // Home is opened/resumed.
+    //
+    // The existing story loading/filtering code is unchanged.
+    // ==================================================
+
+    private void deleteExpiredOwnStories() {
+
+        if (db == null ||
+                currentUserId == null ||
+                currentUserId.isEmpty()) {
+
+            return;
+        }
+
+        final long now =
+                System.currentTimeMillis();
+
+        db.collection("stories")
+                .whereEqualTo(
+                        "userId",
+                        currentUserId
+                )
+                .get()
+                .addOnSuccessListener(
+                        snapshot -> {
+
+                            if (snapshot == null ||
+                                    snapshot.isEmpty()) {
+
+                                return;
+                            }
+
+                            for (DocumentSnapshot document :
+                                    snapshot.getDocuments()) {
+
+                                Long expiresAt =
+                                        document.getLong(
+                                                "expiresAt"
+                                        );
+
+                                if (expiresAt == null) {
+                                    continue;
+                                }
+
+                                if (expiresAt <= now) {
+
+                                    document.getReference()
+                                            .delete();
+                                }
+                            }
+                        }
+                );
+    }
+
+    // ==================================================
     // FILTER ACTIVE STORIES
     // ==================================================
 
@@ -679,34 +782,31 @@ public class homepage extends AppCompatActivity {
             return;
         }
 
-        Collections.sort(
-                stories,
-                (a, b) -> {
+        stories.sort((a, b) -> {
 
-                    Long timeA =
-                            a.getLong(
-                                    "timestamp"
-                            );
-
-                    Long timeB =
-                            b.getLong(
-                                    "timestamp"
-                            );
-
-                    if (timeA == null) {
-                        timeA = 0L;
-                    }
-
-                    if (timeB == null) {
-                        timeB = 0L;
-                    }
-
-                    return Long.compare(
-                            timeB,
-                            timeA
+            Long timeA =
+                    a.getLong(
+                            "timestamp"
                     );
-                }
-        );
+
+            Long timeB =
+                    b.getLong(
+                            "timestamp"
+                    );
+
+            if (timeA == null) {
+                timeA = 0L;
+            }
+
+            if (timeB == null) {
+                timeB = 0L;
+            }
+
+            return Long.compare(
+                    timeB,
+                    timeA
+            );
+        });
     }
 
     // ==================================================
@@ -763,22 +863,22 @@ public class homepage extends AppCompatActivity {
         // OUTER ITEM
         // ==================================================
 
-        android.widget.LinearLayout item =
-                new android.widget.LinearLayout(
+        LinearLayout item =
+                new LinearLayout(
                         this
                 );
 
         item.setOrientation(
-                android.widget.LinearLayout.VERTICAL
+                LinearLayout.VERTICAL
         );
 
         item.setGravity(
                 Gravity.CENTER
         );
 
-        android.widget.LinearLayout.LayoutParams
+        LinearLayout.LayoutParams
                 itemParams =
-                new android.widget.LinearLayout.LayoutParams(
+                new LinearLayout.LayoutParams(
                         dp(78),
                         dp(104)
                 );
@@ -796,9 +896,9 @@ public class homepage extends AppCompatActivity {
                         this
                 );
 
-        android.widget.LinearLayout.LayoutParams
+        LinearLayout.LayoutParams
                 frameParams =
-                new android.widget.LinearLayout.LayoutParams(
+                new LinearLayout.LayoutParams(
                         dp(70),
                         dp(70)
                 );
@@ -1075,8 +1175,8 @@ public class homepage extends AppCompatActivity {
                         ? username
                         : (
                         isMine
-                                ? "Your story"
-                                : "User"
+                        ? "Your story"
+                        : "User"
                 );
 
         usernameText.setText(
@@ -1100,12 +1200,12 @@ public class homepage extends AppCompatActivity {
         );
 
         usernameText.setEllipsize(
-                android.text.TextUtils.TruncateAt.END
+                TextUtils.TruncateAt.END
         );
 
-        android.widget.LinearLayout.LayoutParams
+        LinearLayout.LayoutParams
                 textParams =
-                new android.widget.LinearLayout.LayoutParams(
+                new LinearLayout.LayoutParams(
                         dp(74),
                         dp(25)
                 );
@@ -1155,13 +1255,13 @@ public class homepage extends AppCompatActivity {
                 storyRow.getChildAt(0);
 
         if (!(yourStoryItem
-                instanceof android.widget.LinearLayout)) {
+                instanceof LinearLayout)) {
 
             return;
         }
 
-        android.widget.LinearLayout item =
-                (android.widget.LinearLayout)
+        LinearLayout item =
+                (LinearLayout)
                         yourStoryItem;
 
         if (item.getChildCount() == 0) {
@@ -1226,15 +1326,11 @@ public class homepage extends AppCompatActivity {
         // WHITE ROTATING CIRCLE
         // ==================================================
 
-        if (android.os.Build.VERSION.SDK_INT >=
-                android.os.Build.VERSION_CODES.LOLLIPOP) {
-
-            storyUploadProgress
-                    .getIndeterminateDrawable()
-                    .setTint(
-                            Color.WHITE
-                    );
-        }
+        storyUploadProgress
+                .getIndeterminateDrawable()
+                .setTint(
+                        Color.WHITE
+                );
 
         // ==================================================
         // ADD OVER PHOTO
@@ -1303,9 +1399,7 @@ public class homepage extends AppCompatActivity {
                 continue;
             }
 
-            if (currentUserId.equals(
-                    String.valueOf(uid)
-            )) {
+            if (Objects.equals(currentUserId, String.valueOf(uid))) {
 
                 return true;
             }
@@ -1833,14 +1927,7 @@ public class homepage extends AppCompatActivity {
             return "";
         }
 
-        String value =
-                document.getString(
-                        field
-                );
-
-        return value != null
-                ? value
-                : "";
+        return Objects.requireNonNullElse(document.getString(field), "");
     }
 
     // ==================================================
@@ -2137,16 +2224,65 @@ public class homepage extends AppCompatActivity {
         if (btnProfile != null) {
 
             btnProfile.setOnClickListener(
-                    v -> {
-
-                        startActivity(
-                                new Intent(
-                                        homepage.this,
-                                        profilepage.class
-                                )
-                        );
-                    }
+                    v -> startActivity(
+                            new Intent(
+                                    homepage.this,
+                                    profilepage.class
+                            )
+                    )
             );
         }
     }
+
+
+    // ==================================================
+    // LOAD POSTS
+    // ==================================================
+
+    private void loadPosts() {
+
+        if (db == null) {
+            return;
+        }
+
+        db.collection("posts")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .addSnapshotListener((snapshot, error) -> {
+
+                    if (error != null) {
+                        Toast.makeText(
+                                homepage.this,
+                                "Error loading posts: " + error.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
+
+                    if (snapshot == null) {
+                        return;
+                    }
+
+                    postList.clear();
+
+                    for (DocumentSnapshot document : snapshot.getDocuments()) {
+
+                        Post post = document.toObject(Post.class);
+
+                        if (post != null) {
+
+                            // Set Document ID as Post ID
+                            post.setPostId(document.getId());
+
+                            postList.add(post);
+                        }
+                    }
+
+                    if (postAdapter != null) {
+                        postAdapter.updateList(
+                                new ArrayList<>(postList)
+                        );
+                    }
+                });
+    }
 }
+

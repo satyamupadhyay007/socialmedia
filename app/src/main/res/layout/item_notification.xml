@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+
+    android:orientation="horizontal"
+
+    android:gravity="center_vertical"
+
+    android:paddingStart="16dp"
+    android:paddingEnd="12dp"
+
+    android:background="#000000">
+
+
+    <ImageView
+
+        android:id="@+id/notificationUserImage"
+
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+
+        android:background="@drawable/profile_circle"
+
+        android:padding="2dp"
+
+        android:scaleType="centerCrop"
+
+        android:src="@android:drawable/ic_menu_gallery"
+
+        android:contentDescription="Profile picture" />
+
+
+    <LinearLayout
+
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_weight="1"
+
+        android:layout_marginStart="12dp"
+
+        android:orientation="vertical">
+
+
+        <TextView
+
+            android:id="@+id/notificationUsername"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textColor="#FFFFFF"
+
+            android:textSize="14sp"
+
+            android:textStyle="bold" />
+
+
+        <TextView
+
+            android:id="@+id/notificationMessage"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="3dp"
+
+            android:textColor="#AAAAAA"
+
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+
+    <TextView
+
+        android:id="@+id/notificationAction"
+
+        android:layout_width="72dp"
+        android:layout_height="36dp"
+
+        android:gravity="center"
+
+        android:text="Review"
+
+        android:textColor="#FFFFFF"
+
+        android:textSize="12sp"
+
+        android:textStyle="bold"
+
+        android:background="#0095F6"
+
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/userProfileRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+
+    <!-- ================================================= -->
+    <!-- TOP BAR -->
+    <!-- ================================================= -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+
+        android:id="@+id/userProfileTopBar"
+
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+
+        android:background="#000000"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <!-- BACK -->
+
+        <ImageButton
+
+            android:id="@+id/btnUserProfileBack"
+
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+
+            android:layout_marginStart="4dp"
+
+            android:background="@android:color/transparent"
+
+            android:src="@drawable/ic_arrow_back"
+
+            app:tint="#FFFFFF"
+
+            android:contentDescription="Back"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+
+        <!-- TITLE -->
+
+        <TextView
+
+            android:id="@+id/tvUserProfileTitle"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="Profile"
+
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+
+            app:layout_constraintStart_toEndOf="@id/btnUserProfileBack"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <!-- ================================================= -->
+    <!-- PROFILE CONTENT -->
+    <!-- ================================================= -->
+
+    <androidx.core.widget.NestedScrollView
+
+        android:id="@+id/userProfileScroll"
+
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+        android:fillViewport="true"
+
+        app:layout_constraintTop_toBottomOf="@id/userProfileTopBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical"
+
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="30dp">
+
+
+            <!-- ================================================= -->
+            <!-- PROFILE HEADER -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:orientation="horizontal"
+
+                android:gravity="center_vertical"
+
+                android:paddingTop="18dp"
+                android:paddingBottom="14dp">
+
+
+                <!-- PROFILE PHOTO -->
+
+                <ImageView
+
+                    android:id="@+id/imgUserProfile"
+
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+
+                    android:background="@drawable/profile_circle"
+
+                    android:padding="2dp"
+
+                    android:scaleType="centerCrop"
+
+                    android:src="@android:drawable/ic_menu_gallery"
+
+                    android:contentDescription="Profile picture" />
+
+
+                <!-- STATS -->
+
+                <LinearLayout
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_weight="1"
+
+                    android:orientation="horizontal"
+
+                    android:gravity="center"
+
+                    android:layout_marginStart="12dp">
+
+
+                    <!-- POSTS -->
+
+                    <LinearLayout
+
+                        android:id="@+id/postStatsContainer"
+
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:layout_weight="1"
+
+                        android:gravity="center"
+
+                        android:orientation="vertical">
+
+
+                        <TextView
+
+                            android:id="@+id/tvUserPostCount"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:text="0"
+
+                            android:textColor="#FFFFFF"
+
+                            android:textSize="17sp"
+
+                            android:textStyle="bold" />
+
+
+                        <TextView
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:text="Posts"
+
+                            android:textColor="#AAAAAA"
+
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+
+                    <!-- FOLLOWERS -->
+
+                    <LinearLayout
+
+                        android:id="@+id/followersStatsContainer"
+
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:layout_weight="1"
+
+                        android:gravity="center"
+
+                        android:orientation="vertical"
+
+
+                        android:clickable="true"
+                        android:focusable="true">
+
+
+                        <TextView
+
+                            android:id="@+id/tvUserFollowerCount"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:text="0"
+
+                            android:textColor="#FFFFFF"
+
+                            android:textSize="17sp"
+
+                            android:textStyle="bold" />
+
+
+                        <TextView
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:text="Followers"
+
+                            android:textColor="#AAAAAA"
+
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+
+                    <!-- FOLLOWING -->
+
+                    <LinearLayout
+
+                        android:id="@+id/followingStatsContainer"
+
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:layout_weight="1"
+
+                        android:gravity="center"
+
+                        android:orientation="vertical"
+
+
+                        android:clickable="true"
+                        android:focusable="true">
+
+
+                        <TextView
+
+                            android:id="@+id/tvUserFollowingCount"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:text="0"
+
+                            android:textColor="#FFFFFF"
+
+                            android:textSize="17sp"
+
+                            android:textStyle="bold" />
+
+
+                        <TextView
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:text="Following"
+
+                            android:textColor="#AAAAAA"
+
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <!-- ================================================= -->
+            <!-- NAME -->
+            <!-- ================================================= -->
+
+            <TextView
+
+                android:id="@+id/tvUserProfileName"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:textColor="#FFFFFF"
+
+                android:textSize="15sp"
+
+                android:textStyle="bold" />
+
+
+            <!-- ================================================= -->
+            <!-- USERNAME -->
+            <!-- ================================================= -->
+
+            <TextView
+
+                android:id="@+id/tvUserProfileUsername"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="2dp"
+
+                android:textColor="#AAAAAA"
+
+                android:textSize="14sp" />
+
+
+            <!-- ================================================= -->
+            <!-- BIO -->
+            <!-- ================================================= -->
+
+            <TextView
+
+                android:id="@+id/tvUserProfileBio"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="8dp"
+
+                android:textColor="#FFFFFF"
+
+                android:textSize="14sp"
+
+                android:maxLines="5" />
+
+
+            <!-- ================================================= -->
+            <!-- FOLLOW BUTTON -->
+            <!-- ================================================= -->
+
+            <Button
+
+                android:id="@+id/btnFollow"
+
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+
+                android:layout_marginTop="14dp"
+
+                android:text="Follow"
+
+                android:textColor="#FFFFFF"
+
+                android:textSize="14sp"
+
+                android:textStyle="bold"
+
+                android:backgroundTint="#0095F6" />
+
+
+            <!-- ================================================= -->
+            <!-- POSTS / REELS TABS -->
+            <!-- ================================================= -->
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+
+                android:layout_marginTop="14dp"
+
+                android:orientation="horizontal"
+
+                android:gravity="center">
+
+
+                <TextView
+
+                    android:id="@+id/tabUserPosts"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+
+                    android:layout_weight="1"
+
+                    android:gravity="center"
+
+                    android:text="▦"
+
+                    android:textColor="#FFFFFF"
+
+                    android:textSize="25sp"
+
+                    android:textStyle="bold" />
+
+
+                <TextView
+
+                    android:id="@+id/tabUserReels"
+
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+
+                    android:layout_weight="1"
+
+                    android:gravity="center"
+
+                    android:text="▶"
+
+                    android:textColor="#777777"
+
+                    android:textSize="21sp" />
+
+            </LinearLayout>
+
+
+            <!-- ================================================= -->
+            <!-- POSTS GRID -->
+            <!-- ================================================= -->
+
+            <androidx.recyclerview.widget.RecyclerView
+
+                android:id="@+id/userProfileRecyclerPosts"
+
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+
+                android:nestedScrollingEnabled="false"
+
+                android:clipToPadding="false" />
+
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

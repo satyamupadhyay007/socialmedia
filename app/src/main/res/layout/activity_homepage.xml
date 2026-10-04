@@ -155,139 +155,93 @@
 
 
         <!-- ================================================= -->
-        <!-- STORIES -->
+        <!-- SCROLLABLE CONTENT (STORIES + POSTS) -->
         <!-- ================================================= -->
 
-        <HorizontalScrollView
-            android:id="@+id/storyScroll"
-
+        <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
-            android:layout_height="104dp"
-
-            android:contentDescription="Stories"
-
-            android:fillViewport="false"
+            android:layout_height="0dp"
+            android:fillViewport="true"
             android:overScrollMode="never"
-            android:scrollbars="none"
-
             app:layout_constraintTop_toBottomOf="@id/headerLine"
+            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-
-            <!-- ================================================= -->
-            <!-- DYNAMIC STORY ROW -->
-            <!-- ================================================= -->
-
             <LinearLayout
-                android:id="@+id/storyRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                <!-- STORIES -->
+                <HorizontalScrollView
+                    android:id="@+id/storyScroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="104dp"
+                    android:contentDescription="Stories"
+                    android:fillViewport="false"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
 
-                android:gravity="center_vertical"
+                    <LinearLayout
+                        android:id="@+id/storyRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp">
 
-                android:orientation="horizontal"
+                        <!-- YOUR STORY -->
+                        <FrameLayout
+                            android:id="@+id/btnYourstory"
+                            android:layout_width="64dp"
+                            android:layout_height="82dp"
+                            android:layout_marginEnd="12dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackgroundBorderless">
 
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp">
+                            <ImageView
+                                android:layout_width="58dp"
+                                android:layout_height="58dp"
+                                android:layout_gravity="top|center_horizontal"
+                                android:background="@drawable/profile_circle"
+                                android:contentDescription="Your story"
+                                android:padding="4dp"
+                                android:scaleType="centerCrop"
+                                android:src="@android:drawable/ic_menu_myplaces" />
 
+                            <TextView
+                                android:layout_width="64dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="bottom|center_horizontal"
+                                android:gravity="center"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:text="Your story"
+                                android:textColor="@color/white"
+                                android:textSize="10sp" />
+                        </FrameLayout>
+                    </LinearLayout>
+                </HorizontalScrollView>
 
-                <!-- ================================================= -->
-                <!-- YOUR STORY -->
-                <!-- ================================================= -->
-
-                <FrameLayout
-                    android:id="@+id/btnYourstory"
-
-                    android:layout_width="64dp"
-                    android:layout_height="82dp"
-
-                    android:layout_marginEnd="12dp"
-
-                    android:clickable="true"
-                    android:focusable="true"
-
-                    android:foreground="?attr/selectableItemBackgroundBorderless">
-
-
-                    <!--
-                        Java will replace this area with
-                        the real dynamic story UI.
-                    -->
-
-                    <ImageView
-                        android:layout_width="58dp"
-                        android:layout_height="58dp"
-
-                        android:layout_gravity="top|center_horizontal"
-
-                        android:background="@drawable/profile_circle"
-
-                        android:contentDescription="Your story"
-
-                        android:padding="4dp"
-
-                        android:scaleType="centerCrop"
-
-                        android:src="@android:drawable/ic_menu_myplaces" />
-
-
-                    <TextView
-                        android:layout_width="64dp"
-                        android:layout_height="20dp"
-
-                        android:layout_gravity="bottom|center_horizontal"
-
-                        android:gravity="center"
-
-                        android:maxLines="1"
-
-                        android:ellipsize="end"
-
-                        android:text="Your story"
-
-                        android:textColor="@color/white"
-
-                        android:textSize="10sp" />
-
-                </FrameLayout>
+                <!-- POSTS -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/postRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:contentDescription="Posts"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    android:paddingStart="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="14dp" />
 
             </LinearLayout>
-
-        </HorizontalScrollView>
-
-
-        <!-- ================================================= -->
-        <!-- POSTS -->
-        <!-- ================================================= -->
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/postRecyclerView"
-
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-
-            android:clipToPadding="false"
-
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="14dp"
-
-            android:overScrollMode="never"
-
-            android:contentDescription="Posts"
-
-            app:layout_constraintTop_toBottomOf="@id/storyScroll"
-            app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-
-        <!-- ================================================= -->
-        <!-- BOTTOM NAVIGATION -->
-        <!-- ================================================= -->
+        </androidx.core.widget.NestedScrollView>
 
         <LinearLayout
             android:id="@+id/bottomNavigation"

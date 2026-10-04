@@ -223,11 +223,6 @@ public class login extends AppCompatActivity {
                     .addOnSuccessListener(
                             usernameDocument -> {
 
-
-                                // ==================================
-                                // USER ID NOT FOUND
-                                // ==================================
-
                                 if (
                                         !usernameDocument.exists()
                                 ) {
@@ -578,14 +573,10 @@ public class login extends AppCompatActivity {
         dot1.animate()
                 .alpha(0.3f)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    dot1.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> dot1.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
 
@@ -593,14 +584,10 @@ public class login extends AppCompatActivity {
                 .alpha(0.3f)
                 .setStartDelay(200)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    dot2.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> dot2.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
 
@@ -608,14 +595,10 @@ public class login extends AppCompatActivity {
                 .alpha(0.3f)
                 .setStartDelay(400)
                 .setDuration(300)
-                .withEndAction(() -> {
-
-                    dot3.animate()
-                            .alpha(1f)
-                            .setDuration(300)
-                            .start();
-
-                })
+                .withEndAction(() -> dot3.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start())
                 .start();
 
 

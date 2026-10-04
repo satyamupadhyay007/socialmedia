@@ -1,13 +1,17 @@
 package com.example.login;
 
-import android.graphics.Color;
-import android.view.*;
-import android.widget.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class SearchResultAdapter
         extends RecyclerView.Adapter<SearchResultAdapter.ResultViewHolder> {
@@ -55,7 +59,7 @@ public class SearchResultAdapter
         userList =
                 newList;
 
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, userList.size());
     }
 
 
@@ -128,7 +132,7 @@ public class SearchResultAdapter
         // ==================================================
 
         holder.resultUserId.setText(
-                "@" + username
+                String.format("@%s", username)
         );
 
 
@@ -137,11 +141,8 @@ public class SearchResultAdapter
         // ==================================================
 
         String firstLetter =
-                username.substring(
-                                0,
-                                1
-                        )
-                        .toUpperCase();
+                username.substring(0, 1)
+                        .toUpperCase(Locale.getDefault());
 
 
         holder.resultAvatar.setText(
@@ -176,15 +177,7 @@ public class SearchResultAdapter
     @Override
     public int getItemCount() {
 
-        if (
-                userList == null
-        ) {
-
-            return 0;
-        }
-
-
-        return userList.size();
+        return Objects.requireNonNullElse(userList, Collections.emptyList()).size();
     }
 
 

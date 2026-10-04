@@ -1,6 +1,5 @@
 package com.example.login;
 
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class VideoPlayerActivity extends AppCompatActivity {
 
     private VideoView videoView;
-    private ImageButton btnCloseVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +27,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_player);
 
         videoView = findViewById(R.id.videoView);
-        btnCloseVideo = findViewById(R.id.btnCloseVideo);
+        ImageButton btnCloseVideo = findViewById(R.id.btnCloseVideo);
 
         hideSystemBars();
 
