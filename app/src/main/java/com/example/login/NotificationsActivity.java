@@ -160,6 +160,7 @@ public class NotificationsActivity extends AppCompatActivity {
                         String fromUserId = document.getString("fromUserId");
                         String type = document.getString("type");
                         String message = document.getString("message");
+                        String postId = document.getString("postId");
                         Boolean readValue = document.getBoolean("read");
 
                         if (fromUserId == null ||
@@ -176,6 +177,7 @@ public class NotificationsActivity extends AppCompatActivity {
                                         fromUserId,
                                         type,
                                         message,
+                                        postId,
                                         read
                                 );
 
@@ -259,6 +261,7 @@ public class NotificationsActivity extends AppCompatActivity {
         String fromUserId;
         String type;
         String message;
+        String postId;
 
         boolean read;
 
@@ -271,12 +274,14 @@ public class NotificationsActivity extends AppCompatActivity {
                 String fromUserId,
                 String type,
                 String message,
+                String postId,
                 boolean read
         ) {
             this.notificationId = notificationId;
             this.fromUserId = fromUserId;
             this.type = type;
             this.message = message;
+            this.postId = postId;
             this.read = read;
         }
     }
@@ -390,6 +395,20 @@ public class NotificationsActivity extends AppCompatActivity {
                     Intent intent = new Intent(
                             NotificationsActivity.this,
                             FollowRequestsActivity.class
+                    );
+
+                    startActivity(intent);
+
+                } else if (item.postId != null && !item.postId.trim().isEmpty()) {
+
+                    Intent intent = new Intent(
+                            NotificationsActivity.this,
+                            PostDetailActivity.class
+                    );
+
+                    intent.putExtra(
+                            "postId",
+                            item.postId
                     );
 
                     startActivity(intent);

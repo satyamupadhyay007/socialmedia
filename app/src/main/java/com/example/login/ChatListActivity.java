@@ -138,6 +138,7 @@ public class ChatListActivity extends AppCompatActivity {
                         Insets systemBars =
                                 windowInsets.getInsets(
                                         WindowInsetsCompat.Type.systemBars()
+                                                | WindowInsetsCompat.Type.displayCutout()
                                 );
 
                         view.setPadding(
@@ -1808,6 +1809,8 @@ public class ChatListActivity extends AppCompatActivity {
     protected void onResume() {
 
         super.onResume();
+
+        UnreadChatManager.startListening(this, findViewById(R.id.btnMessageBadge));
 
         if (
                 mAuth != null &&

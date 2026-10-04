@@ -298,6 +298,46 @@ public class CommentsActivity extends AppCompatActivity {
                 .collection("comments")
                 .add(data)
                 .addOnSuccessListener(ref -> {
+                    // Send notification
+                    if (!replyingToCommentId.isEmpty()) {
+                        // Replying to a comment
+                        String targetUser = "";
+                        for (CommentModel c : commentList) {
+                            if (c.commentId != null && c.commentId.equals(replyingToCommentId)) {
+                                targetUser = c.userId;
+                                break;
+                            }
+                        }
+                        if (!targetUser.isEmpty()) {
+                            NotificationHelper.createNotification(
+                                    targetUser,
+                                    uid,
+                                    null,
+                                    "reply_comment",
+                                    "replied to your comment: \"" + text + "\"",
+                                    postId
+                            );
+                        }
+                    } else {
+                        // Top level comment -> notify post owner
+                        db.collection("posts").document(postId).get()
+                                .addOnSuccessListener(postDoc -> {
+                                    if (postDoc.exists()) {
+                                        String postOwnerId = postDoc.getString("userId");
+                                        String mType = postDoc.getString("mediaType");
+                                        boolean isVideo = "video".equalsIgnoreCase(mType);
+                                        NotificationHelper.createNotification(
+                                                postOwnerId,
+                                                uid,
+                                                null,
+                                                isVideo ? "comment_reel" : "comment_post",
+                                                "commented on your " + (isVideo ? "reel" : "post") + ": \"" + text + "\"",
+                                                postId
+                                        );
+                                    }
+                                });
+                    }
+
                     editComment.setText("");
                     btnSend.setEnabled(true);
                     cancelReply();

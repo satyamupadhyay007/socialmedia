@@ -355,6 +355,28 @@ public class profilepage extends AppCompatActivity {
         btnReels.setOnClickListener(
                 v -> showReels()
         );
+
+        // FOLLOWERS & FOLLOWING LIST
+        View followersContainer = findViewById(R.id.followersContainer);
+        View followingContainer = findViewById(R.id.followingContainer);
+
+        if (followersContainer != null) {
+            followersContainer.setOnClickListener(v -> {
+                Intent intent = new Intent(profilepage.this, FollowersActivity.class);
+                intent.putExtra("userId", currentUserId);
+                intent.putExtra("mode", "followers");
+                startActivity(intent);
+            });
+        }
+
+        if (followingContainer != null) {
+            followingContainer.setOnClickListener(v -> {
+                Intent intent = new Intent(profilepage.this, FollowersActivity.class);
+                intent.putExtra("userId", currentUserId);
+                intent.putExtra("mode", "following");
+                startActivity(intent);
+            });
+        }
     }
 
     // ============================================================
@@ -501,33 +523,7 @@ public class profilepage extends AppCompatActivity {
                                         .into(imgProfile);
                             }
 
-                            // FOLLOWERS
-                            Long followers =
-                                    document.getLong(
-                                            "followerCount"
-                                    );
-
-                            tvFollowerCount.setText(
-                                    String.valueOf(
-                                            followers == null
-                                                    ? 0
-                                                    : followers
-                                    )
-                            );
-
-                            // FOLLOWING
-                            Long following =
-                                    document.getLong(
-                                            "followingCount"
-                                    );
-
-                            tvFollowingCount.setText(
-                                    String.valueOf(
-                                            following == null
-                                                    ? 0
-                                                    : following
-                                    )
-                            );
+                            loadFollowCounts();
                         }
                 )
                 .addOnFailureListener(
@@ -538,6 +534,30 @@ public class profilepage extends AppCompatActivity {
                                         Toast.LENGTH_SHORT
                                 ).show()
                 );
+    }
+
+    private void loadFollowCounts() {
+        if (currentUserId == null || currentUserId.isEmpty()) return;
+
+        db.collection("relationships")
+                .whereEqualTo("followingId", currentUserId)
+                .whereEqualTo("status", "accepted")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (tvFollowerCount != null) {
+                        tvFollowerCount.setText(String.valueOf(snapshot.size()));
+                    }
+                });
+
+        db.collection("relationships")
+                .whereEqualTo("followerId", currentUserId)
+                .whereEqualTo("status", "accepted")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (tvFollowingCount != null) {
+                        tvFollowingCount.setText(String.valueOf(snapshot.size()));
+                    }
+                });
     }
 
     // ============================================================
@@ -693,6 +713,8 @@ public class profilepage extends AppCompatActivity {
     protected void onResume() {
 
         super.onResume();
+
+        UnreadChatManager.startListening(this, findViewById(R.id.btnMessageBadge));
 
         if (mAuth != null &&
                 mAuth.getCurrentUser() != null) {

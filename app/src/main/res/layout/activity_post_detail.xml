@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/postDetailRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:orientation="vertical"
+    android:background="#000000"
+    android:fitsSystemWindows="true">
 
-    <!-- ========================================================
-         HEADER
-         ======================================================== -->
-
+    <!-- HEADER -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/postHeader"
-        android:layout_width="0dp"
-        android:layout_height="64dp"
-        android:background="#000000"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#000000">
 
         <ImageButton
             android:id="@+id/btnBack"
@@ -30,7 +25,7 @@
             android:contentDescription="Back"
             android:padding="10dp"
             android:src="@drawable/ic_arrow_back"
-            android:tint="#FFFFFF"
+            app:tint="#FFFFFF"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
@@ -40,155 +35,24 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="Post"
+            android:text="Explore"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/btnBack"
-            app:layout_constraintEnd_toStartOf="@id/btnMorePost"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <!-- Owner-only options -->
-        <ImageButton
-            android:id="@+id/btnMorePost"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="Post options"
-            android:padding="10dp"
-            android:src="@android:drawable/ic_menu_more"
-            android:tint="#FFFFFF"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- ========================================================
-         MEDIA AREA
-         ======================================================== -->
-
-    <FrameLayout
-        android:id="@+id/mediaContainer"
-        android:layout_width="0dp"
+    <!-- POSTS RECYCLERVIEW FOR SCROLLING -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/detailRecyclerView"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#000000"
-        app:layout_constraintTop_toBottomOf="@id/postHeader"
-        app:layout_constraintBottom_toTopOf="@id/actionLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="none" />
 
-        <!-- PHOTO -->
-        <ImageView
-            android:id="@+id/postImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#000000"
-            android:contentDescription="Post image"
-            android:scaleType="fitCenter"/>
-
-        <!-- REEL VIDEO -->
-        <VideoView
-            android:id="@+id/postVideo"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#000000"
-            android:visibility="gone"/>
-
-    </FrameLayout>
-
-    <!-- ========================================================
-         CAPTION
-         ======================================================== -->
-
-    <TextView
-        android:id="@+id/tvCaption"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="8dp"
-        android:maxLines="4"
-        android:ellipsize="end"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/actionLayout"/>
-
-    <!-- ========================================================
-         ACTIONS
-         ======================================================== -->
-
-    <LinearLayout
-        android:id="@+id/actionLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <ImageButton
-            android:id="@+id/btnLike"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="Like"
-            android:padding="10dp"
-            android:src="@android:drawable/btn_star_big_off"
-            android:tint="#FFFFFF"/>
-
-        <ImageButton
-            android:id="@+id/btnComment"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="Comments"
-            android:padding="10dp"
-            android:src="@android:drawable/ic_menu_edit"
-            android:tint="#FFFFFF"/>
-
-        <ImageButton
-            android:id="@+id/btnShare"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="Share"
-            android:padding="10dp"
-            android:src="@android:drawable/ic_menu_share"
-            android:tint="#FFFFFF"/>
-
-        <TextView
-            android:id="@+id/tvLikeCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="0 Likes"
-            android:textColor="#FFFFFF"
-            android:textSize="13sp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/tvCommentCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="0 Comments"
-            android:textColor="#FFFFFF"
-            android:textSize="13sp"
-            android:textStyle="bold"/>
-
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

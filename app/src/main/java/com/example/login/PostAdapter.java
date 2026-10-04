@@ -418,6 +418,16 @@ public class PostAdapter
                                             post
                                     );
 
+                                    boolean isVideo = "video".equalsIgnoreCase(post.getMediaType());
+                                    NotificationHelper.createNotification(
+                                            post.getUserId(),
+                                            userId,
+                                            null,
+                                            isVideo ? "like_reel" : "like_post",
+                                            "liked your " + (isVideo ? "reel" : "post"),
+                                            post.getPostId()
+                                    );
+
                                 });
                     }
 
@@ -961,7 +971,7 @@ public class PostAdapter
         TextView tvCaption;
         TextView tvLikeCount;
 
-        Button btnPostFollow;
+        TextView btnPostFollow;
 
 
         public PostViewHolder(
