@@ -6,7 +6,9 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -2118,7 +2120,7 @@ public class homepage extends AppCompatActivity {
                         startActivity(
                                 new Intent(
                                         homepage.this,
-                                        frontpage.class
+                                        ReelsActivity.class
                                 )
                         );
                     }
@@ -2229,6 +2231,30 @@ public class homepage extends AppCompatActivity {
                         );
                     }
                 });
+    }
+
+    private final GestureDetector horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (e1 == null || e2 == null) return false;
+            float diffX = e2.getX() - e1.getX();
+            float diffY = e2.getY() - e1.getY();
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                if (diffX < 0) {
+                    // Swipe Left -> Reels
+                    startActivity(new Intent(homepage.this, ReelsActivity.class));
+                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                    return true;
+                }
+            }
+            return false;
+        }
+    });
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        horizontalGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 }
 

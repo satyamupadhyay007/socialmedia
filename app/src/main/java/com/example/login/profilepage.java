@@ -2,6 +2,8 @@ package com.example.login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -756,7 +758,7 @@ public class profilepage extends AppCompatActivity {
                     Intent intent =
                             new Intent(
                                     profilepage.this,
-                                    frontpage.class
+                                    ReelsActivity.class
                             );
 
                     startActivity(intent);
@@ -801,5 +803,30 @@ public class profilepage extends AppCompatActivity {
                     // Already on Profile
                 }
         );
+    }
+
+    private final GestureDetector horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (e1 == null || e2 == null) return false;
+            float diffX = e2.getX() - e1.getX();
+            float diffY = e2.getY() - e1.getY();
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                if (diffX > 0) {
+                    // Swipe Right -> Search
+                    startActivity(new Intent(profilepage.this, Search.class));
+                    finish();
+                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                    return true;
+                }
+            }
+            return false;
+        }
+    });
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        horizontalGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 }

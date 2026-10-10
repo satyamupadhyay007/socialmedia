@@ -3,6 +3,8 @@ package com.example.login;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -397,7 +399,7 @@ public class ChatListActivity extends AppCompatActivity {
                         hideKeyboard();
 
                         openActivity(
-                                frontpage.class
+                                ReelsActivity.class
                         );
                     }
             );
@@ -1821,5 +1823,36 @@ public class ChatListActivity extends AppCompatActivity {
 
             loadChats();
         }
+    }
+
+    private final GestureDetector horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (e1 == null || e2 == null) return false;
+            float diffX = e2.getX() - e1.getX();
+            float diffY = e2.getY() - e1.getY();
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                if (diffX > 0) {
+                    // Swipe Right -> Reels
+                    startActivity(new Intent(ChatListActivity.this, ReelsActivity.class));
+                    finish();
+                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                    return true;
+                } else {
+                    // Swipe Left -> Search
+                    startActivity(new Intent(ChatListActivity.this, Search.class));
+                    finish();
+                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                    return true;
+                }
+            }
+            return false;
+        }
+    });
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        horizontalGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 }
