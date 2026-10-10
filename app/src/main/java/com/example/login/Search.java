@@ -120,6 +120,31 @@ public class Search extends AppCompatActivity {
             });
         }
 
+        horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null || e2 == null) return false;
+                float diffX = e2.getX() - e1.getX();
+                float diffY = e2.getY() - e1.getY();
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                    if (diffX > 0) {
+                        // Swipe Right -> ChatListActivity
+                        startActivity(new Intent(Search.this, ChatListActivity.class));
+                        finish();
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        return true;
+                    } else {
+                        // Swipe Left -> Profile
+                        startActivity(new Intent(Search.this, profilepage.class));
+                        finish();
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
 
         // ==================================================
         // FIND SEARCH UI
@@ -878,30 +903,7 @@ public class Search extends AppCompatActivity {
         }
     }
 
-    private final GestureDetector horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (e1 == null || e2 == null) return false;
-            float diffX = e2.getX() - e1.getX();
-            float diffY = e2.getY() - e1.getY();
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
-                if (diffX > 0) {
-                    // Swipe Right -> ChatListActivity
-                    startActivity(new Intent(Search.this, ChatListActivity.class));
-                    finish();
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                    return true;
-                } else {
-                    // Swipe Left -> Profile
-                    startActivity(new Intent(Search.this, profilepage.class));
-                    finish();
-                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                    return true;
-                }
-            }
-            return false;
-        }
-    });
+    private GestureDetector horizontalGestureDetector;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {

@@ -83,36 +83,26 @@ public class NotificationsActivity extends AppCompatActivity {
 
     private void setupInsets() {
         View root = findViewById(R.id.notificationsRoot);
-        View header = findViewById(R.id.notificationsHeader);
 
-        ViewCompat.setOnApplyWindowInsetsListener(
-                root,
-                (view, insets) -> {
-
-                    Insets bars = insets.getInsets(
-                            WindowInsetsCompat.Type.systemBars()
-                                    | WindowInsetsCompat.Type.displayCutout()
-                    );
-
-                    header.setPadding(
-                            header.getPaddingLeft(),
-                            bars.top,
-                            header.getPaddingRight(),
-                            header.getPaddingBottom()
-                    );
-
-                    recyclerNotifications.setPadding(
-                            recyclerNotifications.getPaddingLeft(),
-                            recyclerNotifications.getPaddingTop(),
-                            recyclerNotifications.getPaddingRight(),
-                            bars.bottom
-                    );
-
-                    return insets;
-                }
-        );
-
-        ViewCompat.requestApplyInsets(root);
+        if (root != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(
+                    root,
+                    (view, insets) -> {
+                        Insets bars = insets.getInsets(
+                                WindowInsetsCompat.Type.systemBars()
+                                        | WindowInsetsCompat.Type.displayCutout()
+                        );
+                        view.setPadding(
+                                bars.left,
+                                bars.top,
+                                bars.right,
+                                bars.bottom
+                        );
+                        return insets;
+                    }
+            );
+            ViewCompat.requestApplyInsets(root);
+        }
     }
 
     private void loadRequestCount() {

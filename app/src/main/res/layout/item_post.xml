@@ -120,7 +120,7 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:background="@android:color/transparent"
-            android:src="@android:drawable/ic_menu_edit"
+            android:src="@drawable/ic_comment"
             android:contentDescription="Comment"
             android:padding="8dp"
             app:tint="#FFFFFF" />

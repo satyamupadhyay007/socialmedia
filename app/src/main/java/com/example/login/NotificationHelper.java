@@ -19,10 +19,12 @@ public class NotificationHelper {
             return;
         }
 
-        // Do not notify yourself
+        // Allow notifying yourself (self-like/self-comment)
+        /*
         if (toUserId.equals(fromUserId)) {
             return;
         }
+        */
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
