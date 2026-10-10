@@ -77,7 +77,6 @@ public class NotificationHelper {
         notification.put("read", false);
         notification.put("createdAt", System.currentTimeMillis());
         notification.put("timestamp", System.currentTimeMillis());
-
         db.collection("notifications").add(notification);
     }
 }
