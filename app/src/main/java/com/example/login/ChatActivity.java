@@ -31,6 +31,7 @@ import com.cloudinary.android.callback.ErrorInfo;
 import com.cloudinary.android.callback.UploadCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
@@ -487,6 +488,15 @@ public class ChatActivity extends AppCompatActivity {
         // ==================================================
 
         setupWindowInsets();
+
+        // Clear unread count when opening chat
+        clearUnreadCount();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        clearUnreadCount();
     }
 
 
@@ -1414,12 +1424,28 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
+        data.put(
+                "unread_" + receiverId,
+                FieldValue.increment(1)
+        );
+
         db.collection("chats")
                 .document(chatId)
                 .set(
                         data,
                         SetOptions.merge()
                 );
+    }
+
+    private void clearUnreadCount() {
+        if (db == null || chatId == null || chatId.isEmpty() || currentUserId == null || currentUserId.isEmpty()) {
+            return;
+        }
+        Map<String, Object> clear = new HashMap<>();
+        clear.put("unread_" + currentUserId, 0);
+        db.collection("chats")
+                .document(chatId)
+                .set(clear, SetOptions.merge());
     }
 
 

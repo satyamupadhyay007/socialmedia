@@ -82,6 +82,11 @@
 
             <!-- Notification Bell -->
 
+
+            <!-- ================================================= -->
+            <!-- UNREAD NOTIFICATION BADGE -->
+            <!-- ================================================= -->
+
             <ImageButton
                 android:id="@+id/btnNotifications"
 
@@ -96,14 +101,9 @@
 
                 android:scaleType="centerInside"
 
-                android:src="@android:drawable/ic_popup_reminder"
+                android:src="@drawable/ic_notification_bell"
 
                 app:tint="#FFFFFF" />
-
-
-            <!-- ================================================= -->
-            <!-- UNREAD NOTIFICATION BADGE -->
-            <!-- ================================================= -->
 
             <TextView
                 android:id="@+id/notificationBadge"
@@ -300,7 +300,7 @@
 
                 android:background="@android:color/transparent"
 
-                android:contentDescription="Create"
+                android:contentDescription="Reels"
 
                 android:padding="0dp"
 
@@ -309,35 +309,48 @@
                 android:scaleX="1.25"
                 android:scaleY="1.25"
 
-                android:src="@drawable/play"
+                android:src="@drawable/reel_white"
 
                 app:tint="#FFFFFF" />
 
 
             <!-- MESSAGE -->
 
-            <ImageButton
-                android:id="@+id/btnMessage"
-
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1">
 
-                android:layout_weight="1"
+                <ImageButton
+                    android:id="@+id/btnMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Messages"
+                    android:padding="0dp"
+                    android:scaleType="centerInside"
+                    android:scaleX="1.25"
+                    android:scaleY="1.25"
+                    android:src="@drawable/chat"
+                    app:tint="#FFFFFF" />
 
-                android:background="@android:color/transparent"
+                <TextView
+                    android:id="@+id/btnMessageBadge"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/notification_badge"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:text="0"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
-                android:contentDescription="Messages"
-
-                android:padding="0dp"
-
-                android:scaleType="centerInside"
-
-                android:scaleX="1.25"
-                android:scaleY="1.25"
-
-                android:src="@drawable/chat"
-
-                app:tint="#FFFFFF" />
+            </FrameLayout>
 
 
             <!-- SEARCH -->

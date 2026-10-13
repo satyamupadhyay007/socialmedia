@@ -2,6 +2,8 @@ package com.example.login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -355,6 +357,28 @@ public class profilepage extends AppCompatActivity {
         btnReels.setOnClickListener(
                 v -> showReels()
         );
+
+        // FOLLOWERS & FOLLOWING LIST
+        View followersContainer = findViewById(R.id.followersContainer);
+        View followingContainer = findViewById(R.id.followingContainer);
+
+        if (followersContainer != null) {
+            followersContainer.setOnClickListener(v -> {
+                Intent intent = new Intent(profilepage.this, FollowersActivity.class);
+                intent.putExtra("userId", currentUserId);
+                intent.putExtra("mode", "followers");
+                startActivity(intent);
+            });
+        }
+
+        if (followingContainer != null) {
+            followingContainer.setOnClickListener(v -> {
+                Intent intent = new Intent(profilepage.this, FollowersActivity.class);
+                intent.putExtra("userId", currentUserId);
+                intent.putExtra("mode", "following");
+                startActivity(intent);
+            });
+        }
     }
 
     // ============================================================
@@ -501,33 +525,7 @@ public class profilepage extends AppCompatActivity {
                                         .into(imgProfile);
                             }
 
-                            // FOLLOWERS
-                            Long followers =
-                                    document.getLong(
-                                            "followerCount"
-                                    );
-
-                            tvFollowerCount.setText(
-                                    String.valueOf(
-                                            followers == null
-                                                    ? 0
-                                                    : followers
-                                    )
-                            );
-
-                            // FOLLOWING
-                            Long following =
-                                    document.getLong(
-                                            "followingCount"
-                                    );
-
-                            tvFollowingCount.setText(
-                                    String.valueOf(
-                                            following == null
-                                                    ? 0
-                                                    : following
-                                    )
-                            );
+                            loadFollowCounts();
                         }
                 )
                 .addOnFailureListener(
@@ -538,6 +536,30 @@ public class profilepage extends AppCompatActivity {
                                         Toast.LENGTH_SHORT
                                 ).show()
                 );
+    }
+
+    private void loadFollowCounts() {
+        if (currentUserId == null || currentUserId.isEmpty()) return;
+
+        db.collection("relationships")
+                .whereEqualTo("followingId", currentUserId)
+                .whereEqualTo("status", "accepted")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (tvFollowerCount != null) {
+                        tvFollowerCount.setText(String.valueOf(snapshot.size()));
+                    }
+                });
+
+        db.collection("relationships")
+                .whereEqualTo("followerId", currentUserId)
+                .whereEqualTo("status", "accepted")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (tvFollowingCount != null) {
+                        tvFollowingCount.setText(String.valueOf(snapshot.size()));
+                    }
+                });
     }
 
     // ============================================================
@@ -694,6 +716,8 @@ public class profilepage extends AppCompatActivity {
 
         super.onResume();
 
+        UnreadChatManager.startListening(this, findViewById(R.id.btnMessageBadge));
+
         if (mAuth != null &&
                 mAuth.getCurrentUser() != null) {
 
@@ -734,7 +758,7 @@ public class profilepage extends AppCompatActivity {
                     Intent intent =
                             new Intent(
                                     profilepage.this,
-                                    frontpage.class
+                                    ReelsActivity.class
                             );
 
                     startActivity(intent);
@@ -779,5 +803,32 @@ public class profilepage extends AppCompatActivity {
                     // Already on Profile
                 }
         );
+
+        horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null || e2 == null) return false;
+                float diffX = e2.getX() - e1.getX();
+                float diffY = e2.getY() - e1.getY();
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                    if (diffX > 0) {
+                        // Swipe Right -> Search
+                        startActivity(new Intent(profilepage.this, Search.class));
+                        finish();
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    private GestureDetector horizontalGestureDetector;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        horizontalGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 }

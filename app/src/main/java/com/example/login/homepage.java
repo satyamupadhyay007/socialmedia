@@ -1,11 +1,14 @@
 package com.example.login;
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -20,6 +23,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -178,6 +185,8 @@ public class homepage extends AppCompatActivity {
 
         setupNotifications();
 
+        requestNotificationPermission();
+
         // ==================================================
         // SAFE AREA
         // ==================================================
@@ -196,6 +205,7 @@ public class homepage extends AppCompatActivity {
                         Insets systemBars =
                                 insets.getInsets(
                                         WindowInsetsCompat.Type.systemBars()
+                                                | WindowInsetsCompat.Type.displayCutout()
                                 );
 
                         view.setPadding(
@@ -278,6 +288,24 @@ public class homepage extends AppCompatActivity {
 
         initializeCloudinary();
 
+        horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null || e2 == null) return false;
+                float diffX = e2.getX() - e1.getX();
+                float diffY = e2.getY() - e1.getY();
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                    if (diffX < 0) {
+                        // Swipe Left -> Reels
+                        startActivity(new Intent(homepage.this, ReelsActivity.class));
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
         // ==================================================
         // BOTTOM NAV
         // ==================================================
@@ -289,6 +317,24 @@ public class homepage extends AppCompatActivity {
         // ==================================================
 
         loadPosts();
+
+        horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null || e2 == null) return false;
+                float diffX = e2.getX() - e1.getX();
+                float diffY = e2.getY() - e1.getY();
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                    if (diffX < 0) {
+                        // Swipe Left -> Reels
+                        startActivity(new Intent(homepage.this, ReelsActivity.class));
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         // ==================================================
         // IMPORTANT
@@ -308,6 +354,8 @@ public class homepage extends AppCompatActivity {
     protected void onResume() {
 
         super.onResume();
+
+        UnreadChatManager.startListening(this, findViewById(R.id.btnMessageBadge));
 
         if (mAuth == null) {
             return;
@@ -1973,6 +2021,24 @@ public class homepage extends AppCompatActivity {
         loadUnreadNotificationCount();
     }
 
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        101
+                );
+            }
+        }
+        try {
+            Intent serviceIntent = new Intent(this, FrenzoPushService.class);
+            startService(serviceIntent);
+        } catch (Exception ignored) {
+        }
+    }
+
     private void loadUnreadNotificationCount() {
 
         if (db == null || currentUserId == null ||
@@ -2039,89 +2105,7 @@ public class homepage extends AppCompatActivity {
     }
 
     private void openNotifications() {
-
-        if (db == null || currentUserId == null ||
-                currentUserId.isEmpty()) {
-            return;
-        }
-
-        db.collection("notifications")
-                .whereEqualTo(
-                        "toUserId",
-                        currentUserId
-                )
-                .get()
-                .addOnSuccessListener(
-                        snapshot -> {
-
-                            if (snapshot == null ||
-                                    snapshot.isEmpty()) {
-
-                                new AlertDialog.Builder(this)
-                                        .setTitle("Notifications")
-                                        .setMessage("No notifications yet.")
-                                        .setPositiveButton("OK", null)
-                                        .show();
-
-                                return;
-                            }
-
-                            StringBuilder message =
-                                    new StringBuilder();
-
-                            for (DocumentSnapshot document :
-                                    snapshot.getDocuments()) {
-
-                                String notificationText =
-                                        document.getString("message");
-
-                                if (notificationText == null ||
-                                        notificationText.trim().isEmpty()) {
-
-                                    String fromUsername =
-                                            document.getString("fromUsername");
-
-                                    String type =
-                                            document.getString("type");
-
-                                    if (fromUsername == null ||
-                                            fromUsername.trim().isEmpty()) {
-                                        fromUsername = "Someone";
-                                    }
-
-                                    if (type == null ||
-                                            type.trim().isEmpty()) {
-                                        type = "sent you a notification";
-                                    }
-
-                                    notificationText =
-                                            fromUsername + " " + type;
-                                }
-
-                                message.append("• ")
-                                        .append(notificationText)
-                                        .append("\n\n");
-
-                                document.getReference().update(
-                                        "read",
-                                        true
-                                );
-                            }
-
-                            new AlertDialog.Builder(this)
-                                    .setTitle("Notifications")
-                                    .setMessage(message.toString().trim())
-                                    .setPositiveButton("OK", null)
-                                    .show();
-                        }
-                )
-                .addOnFailureListener(
-                        e -> Toast.makeText(
-                                homepage.this,
-                                "Could not load notifications",
-                                Toast.LENGTH_SHORT
-                        ).show()
-                );
+        startActivity(new Intent(homepage.this, NotificationsActivity.class));
     }
 
     // ==================================================
@@ -2172,7 +2156,7 @@ public class homepage extends AppCompatActivity {
                         startActivity(
                                 new Intent(
                                         homepage.this,
-                                        frontpage.class
+                                        ReelsActivity.class
                                 )
                         );
                     }
@@ -2283,6 +2267,14 @@ public class homepage extends AppCompatActivity {
                         );
                     }
                 });
+    }
+
+    private GestureDetector horizontalGestureDetector;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        horizontalGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 }
 

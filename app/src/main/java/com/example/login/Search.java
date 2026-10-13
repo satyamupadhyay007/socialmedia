@@ -5,13 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,7 +48,7 @@ public class Search extends AppCompatActivity {
 
     private SearchAdapter searchAdapter;
 
-    private PostAdapter postAdapter;
+    private ProfilePostAdapter postAdapter;
 
 
     // ==================================================
@@ -87,18 +93,57 @@ public class Search extends AppCompatActivity {
             Bundle savedInstanceState
     ) {
 
+        EdgeToEdge.enable(this);
+
         super.onCreate(
                 savedInstanceState
         );
 
-
-        // ==================================================
-        // LAYOUT
-        // ==================================================
-
         setContentView(
                 R.layout.activity_search
         );
+
+        View searchRoot = findViewById(R.id.searchRoot);
+        if (searchRoot != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(searchRoot, (view, insets) -> {
+                Insets bars = insets.getInsets(
+                        WindowInsetsCompat.Type.systemBars()
+                                | WindowInsetsCompat.Type.displayCutout()
+                );
+                view.setPadding(
+                        bars.left,
+                        bars.top,
+                        bars.right,
+                        bars.bottom
+                );
+                return insets;
+            });
+        }
+
+        horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null || e2 == null) return false;
+                float diffX = e2.getX() - e1.getX();
+                float diffY = e2.getY() - e1.getY();
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
+                    if (diffX > 0) {
+                        // Swipe Right -> ChatListActivity
+                        startActivity(new Intent(Search.this, ChatListActivity.class));
+                        finish();
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        return true;
+                    } else {
+                        // Swipe Left -> Profile
+                        startActivity(new Intent(Search.this, profilepage.class));
+                        finish();
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
 
         // ==================================================
@@ -198,16 +243,15 @@ public class Search extends AppCompatActivity {
         );
 
 
-        postRecyclerView.setAdapter(
-                new PostAdapter(
-                        postList
-                )
-        );
-
-
         postAdapter =
-                (PostAdapter)
-                        postRecyclerView.getAdapter();
+                new ProfilePostAdapter(
+                        postList
+                );
+
+
+        postRecyclerView.setAdapter(
+                postAdapter
+        );
 
 
         // ==================================================
@@ -311,7 +355,7 @@ public class Search extends AppCompatActivity {
                         hideKeyboard();
 
                         openActivity(
-                                frontpage.class
+                                ReelsActivity.class
                         );
                     }
             );
@@ -814,6 +858,8 @@ public class Search extends AppCompatActivity {
 
         super.onResume();
 
+        UnreadChatManager.startListening(this, findViewById(R.id.btnMessageBadge));
+
 
         if (
                 searchEditText != null
@@ -855,5 +901,13 @@ public class Search extends AppCompatActivity {
                     0
             );
         }
+    }
+
+    private GestureDetector horizontalGestureDetector;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        horizontalGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
     }
 }
