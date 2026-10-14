@@ -67,6 +67,7 @@ public class homepage extends AppCompatActivity {
     private FrameLayout notificationContainer;
     private ImageButton btnNotifications;
     private TextView notificationBadge;
+    private ImageButton btnTopCreate;
 
     // ==================================================
     // STORIES
@@ -182,6 +183,17 @@ public class homepage extends AppCompatActivity {
                 findViewById(
                         R.id.notificationBadge
                 );
+
+        btnTopCreate =
+                findViewById(
+                        R.id.btnTopCreate
+                );
+
+        if (btnTopCreate != null) {
+            btnTopCreate.setOnClickListener(
+                    v -> showCreateOptionsDialog()
+            );
+        }
 
         setupNotifications();
 
@@ -1496,6 +1508,36 @@ public class homepage extends AppCompatActivity {
                         e ->
                                 showStoryTypeDialog()
                 );
+    }
+
+    // ==================================================
+    // CREATE OPTIONS DIALOG (POST, REELS, STORY)
+    // ==================================================
+
+    private void showCreateOptionsDialog() {
+        String[] options = {
+                "Post",
+                "Reels",
+                "Story"
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle("Create")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        // Post
+                        startActivity(new Intent(homepage.this, UploadPostActivity.class));
+                    } else if (which == 1) {
+                        // Reels
+                        Intent intent = new Intent(homepage.this, UploadPostActivity.class);
+                        intent.putExtra("mediaType", "video");
+                        startActivity(intent);
+                    } else if (which == 2) {
+                        // Story
+                        showStoryTypeDialog();
+                    }
+                })
+                .show();
     }
 
     // ==================================================

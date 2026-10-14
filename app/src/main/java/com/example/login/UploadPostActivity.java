@@ -129,6 +129,11 @@ public class UploadPostActivity extends AppCompatActivity {
         currentUserId =
                 mAuth.getCurrentUser().getUid();
 
+        String typeExtra = getIntent().getStringExtra("mediaType");
+        if (typeExtra != null && !typeExtra.isEmpty()) {
+            selectedMediaType = typeExtra;
+        }
+
         // ========================================================
         // FIND VIEWS
         // ========================================================
