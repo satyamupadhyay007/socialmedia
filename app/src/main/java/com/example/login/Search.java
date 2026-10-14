@@ -114,7 +114,7 @@ public class Search extends AppCompatActivity {
                         bars.left,
                         bars.top,
                         bars.right,
-                        bars.bottom
+                        0
                 );
                 return insets;
             });
