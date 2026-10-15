@@ -1,277 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/editProfileRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:background="#000000"
-
     android:fillViewport="true">
 
-
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:orientation="vertical"
-
         android:padding="24dp">
 
-
-        <!-- ================================================= -->
         <!-- TOP BAR -->
-        <!-- ================================================= -->
-
         <LinearLayout
-
             android:layout_width="match_parent"
             android:layout_height="56dp"
-
             android:gravity="center_vertical"
-
             android:orientation="horizontal">
 
-
             <ImageButton
-
                 android:id="@+id/btnBack"
-
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-
                 android:background="@android:color/transparent"
-
                 android:contentDescription="Back"
-
                 android:padding="10dp"
-
                 android:src="@drawable/ic_arrow_back" />
 
-
             <TextView
-
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-
                 android:layout_weight="1"
-
                 android:gravity="center"
-
                 android:text="Edit Profile"
-
                 android:textColor="#FFFFFF"
-
                 android:textSize="20sp"
-
                 android:textStyle="bold" />
 
-
             <View
-
                 android:layout_width="48dp"
                 android:layout_height="48dp" />
 
         </LinearLayout>
 
-
-        <!-- ================================================= -->
         <!-- PROFILE PHOTO -->
-        <!-- ================================================= -->
-
-        <ImageView
-
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imgEditProfile"
-
             android:layout_width="110dp"
             android:layout_height="110dp"
-
             android:layout_gravity="center"
-
-            android:layout_marginTop="25dp"
-
-            android:background="@drawable/profile_circle"
-
-            android:padding="3dp"
-
+            android:layout_marginTop="20dp"
+            android:contentDescription="Profile Photo"
+            android:padding="2dp"
             android:scaleType="centerCrop"
+            android:src="@drawable/account_white"
+            app:shapeAppearanceOverlay="@style/CircleImageStyle"
+            app:strokeColor="#FF3956F2"
+            app:strokeWidth="2dp" />
 
-            android:src="@android:drawable/ic_menu_gallery"
-
-            android:contentDescription="Profile Photo" />
-
-
-        <!-- ================================================= -->
-        <!-- CHANGE PHOTO -->
-        <!-- ================================================= -->
-
+        <!-- CHANGE PHOTO BUTTON -->
         <Button
-
             android:id="@+id/btnChangePhoto"
-
             android:layout_width="wrap_content"
             android:layout_height="46dp"
-
             android:layout_gravity="center"
-
             android:layout_marginTop="12dp"
-
             android:background="@drawable/edit_profile_bg"
-
+            android:stateListAnimator="@null"
             android:text="Change Profile Photo"
-
             android:textAllCaps="false"
-
             android:textColor="#FFFFFF"
-
             android:textSize="14sp"
+            app:backgroundTint="@null" />
 
-            android:stateListAnimator="@null" />
-
-
-        <!-- ================================================= -->
         <!-- NAME -->
-        <!-- ================================================= -->
-
         <TextView
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:layout_marginTop="30dp"
-
+            android:layout_marginTop="24dp"
             android:text="Name"
-
             android:textColor="#FFFFFF"
-
             android:textSize="14sp"
-
             android:textStyle="bold" />
 
-
         <EditText
-
             android:id="@+id/editName"
-
             android:layout_width="match_parent"
             android:layout_height="55dp"
-
             android:layout_marginTop="8dp"
-
             android:background="@drawable/message_input_background"
-
             android:hint="Enter your name"
-
+            android:inputType="textCapWords"
+            android:maxLength="50"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-
             android:textColor="#FFFFFF"
-
             android:textColorHint="#888888"
+            android:textSize="16sp" />
 
-            android:textSize="16sp"
-
-            android:inputType="textCapWords"
-
-            android:maxLength="50" />
-
-
-        <!-- ================================================= -->
-        <!-- BIO -->
-        <!-- ================================================= -->
-
+        <!-- USERNAME / USER ID -->
         <TextView
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:layout_marginTop="22dp"
-
-            android:text="Bio"
-
+            android:layout_marginTop="18dp"
+            android:text="Username / User ID"
             android:textColor="#FFFFFF"
-
             android:textSize="14sp"
-
             android:textStyle="bold" />
 
+        <EditText
+            android:id="@+id/editUsername"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/message_input_background"
+            android:hint="Enter username / user ID"
+            android:inputType="textNoSuggestions"
+            android:maxLength="30"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:textSize="16sp" />
+
+        <!-- BIO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="Bio"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <EditText
-
             android:id="@+id/editBio"
-
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-
+            android:layout_height="110dp"
             android:layout_marginTop="8dp"
-
             android:background="@drawable/message_input_background"
-
             android:gravity="top"
-
             android:hint="Tell people about yourself"
-
-            android:padding="16dp"
-
-            android:textColor="#FFFFFF"
-
-            android:textColorHint="#888888"
-
-            android:textSize="16sp"
-
             android:inputType="textMultiLine"
+            android:maxLength="150"
+            android:padding="16dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#888888"
+            android:textSize="16sp" />
 
-            android:maxLength="150" />
-
-
-        <!-- ================================================= -->
-        <!-- PROGRESS -->
-        <!-- ================================================= -->
-
+        <!-- PROGRESS BAR -->
         <ProgressBar
-
             android:id="@+id/progressBar"
-
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="6dp"
-
-            android:layout_marginTop="18dp"
-
+            android:layout_marginTop="16dp"
             android:max="100"
+            android:visibility="gone" />
 
-            android:visibility="gone"
-
-            style="?android:attr/progressBarStyleHorizontal" />
-
-
-        <!-- ================================================= -->
-        <!-- SAVE -->
-        <!-- ================================================= -->
-
+        <!-- SAVE BUTTON -->
         <Button
-
             android:id="@+id/btnSave"
-
             android:layout_width="match_parent"
             android:layout_height="52dp"
-
-            android:layout_marginTop="24dp"
-
+            android:layout_marginTop="20dp"
             android:background="@drawable/edit_profile_bg"
-
+            android:stateListAnimator="@null"
             android:text="Save Changes"
-
             android:textAllCaps="false"
-
             android:textColor="#FFFFFF"
-
             android:textSize="15sp"
-
             android:textStyle="bold"
-
-            android:stateListAnimator="@null" />
+            app:backgroundTint="@null" />
 
     </LinearLayout>
 

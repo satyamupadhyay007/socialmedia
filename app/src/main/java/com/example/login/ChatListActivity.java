@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,11 +28,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ChatListActivity extends AppCompatActivity {
 
@@ -40,11 +41,7 @@ public class ChatListActivity extends AppCompatActivity {
 
     private EditText searchUserEditText;
 
-    private ImageButton searchUserButton;
-
     private TextView currentUserIdText;
-
-    private RecyclerView chatListRecyclerView;
 
 
     // ==================================================
@@ -56,8 +53,6 @@ public class ChatListActivity extends AppCompatActivity {
     private ImageButton btnMessage;
     private ImageButton btnSearch;
     private ImageButton btnProfile;
-
-    private View bottomNavigation;
 
 
     // ==================================================
@@ -215,7 +210,7 @@ public class ChatListActivity extends AppCompatActivity {
                         R.id.searchUserEditText
                 );
 
-        searchUserButton =
+        ImageButton searchUserButton =
                 findViewById(
                         R.id.searchUserButton
                 );
@@ -225,7 +220,7 @@ public class ChatListActivity extends AppCompatActivity {
                         R.id.currentUserIdText
                 );
 
-        chatListRecyclerView =
+        RecyclerView chatListRecyclerView =
                 findViewById(
                         R.id.chatListRecyclerView
                 );
@@ -260,10 +255,9 @@ public class ChatListActivity extends AppCompatActivity {
                         R.id.btnProfile
                 );
 
-        bottomNavigation =
-                findViewById(
-                        R.id.bottomNavigation
-                );
+        findViewById(
+                R.id.bottomNavigation
+        );
 
 
         // ==================================================
@@ -277,10 +271,7 @@ public class ChatListActivity extends AppCompatActivity {
         chatListAdapter =
                 new ChatListAdapter(
                         chatList,
-                        chatItem ->
-                                openChat(
-                                        chatItem
-                                )
+                        this::openChat
                 );
 
 
@@ -304,24 +295,17 @@ public class ChatListActivity extends AppCompatActivity {
 
         horizontalGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (e1 == null || e2 == null) return false;
+            @SuppressWarnings("deprecation")
+            public boolean onFling(@Nullable MotionEvent e1, @NonNull MotionEvent e2, float velocityX, float velocityY) {
+                if (e1 == null) return false;
                 float diffX = e2.getX() - e1.getX();
                 float diffY = e2.getY() - e1.getY();
                 if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 120 && Math.abs(velocityX) > 150) {
-                    if (diffX > 0) {
-                        // Swipe Right -> Reels
-                        startActivity(new Intent(ChatListActivity.this, ReelsActivity.class));
-                        finish();
-                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                        return true;
-                    } else {
-                        // Swipe Left -> Search
-                        startActivity(new Intent(ChatListActivity.this, Search.class));
-                        finish();
-                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-                        return true;
-                    }
+                    Class<?> targetActivity = diffX > 0 ? ReelsActivity.class : Search.class;
+                    startActivity(new Intent(ChatListActivity.this, targetActivity));
+                    finish();
+                    overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                    return true;
                 }
                 return false;
             }
@@ -496,6 +480,7 @@ public class ChatListActivity extends AppCompatActivity {
     // OPEN ACTIVITY
     // ==================================================
 
+    @SuppressWarnings("deprecation")
     private void openActivity(
             Class<?> targetActivity
     ) {
@@ -541,7 +526,7 @@ public class ChatListActivity extends AppCompatActivity {
         ) {
 
             currentUserIdText.setText(
-                    "User"
+                    R.string.user
             );
 
             return;
@@ -564,29 +549,23 @@ public class ChatListActivity extends AppCompatActivity {
                             ) {
 
                                 currentUserIdText.setText(
-                                        "User"
+                                        R.string.user
                                 );
 
                                 return;
                             }
 
 
-                            String username =
+                            String rawUserId =
                                     document.getString(
                                             "userId"
                                     );
 
 
-                            if (
-                                    username == null ||
-                                            username.isEmpty()
-                            ) {
-
-                                username =
-                                        document.getString(
-                                                "username"
-                                        );
-                            }
+                            String username =
+                                    (rawUserId != null && !rawUserId.isEmpty())
+                                            ? rawUserId
+                                            : document.getString("username");
 
 
                             if (
@@ -595,7 +574,7 @@ public class ChatListActivity extends AppCompatActivity {
                             ) {
 
                                 username =
-                                        "User";
+                                        getString(R.string.user);
                             }
 
 
@@ -606,7 +585,7 @@ public class ChatListActivity extends AppCompatActivity {
                 )
                 .addOnFailureListener(
                         e -> currentUserIdText.setText(
-                                "User"
+                                R.string.user
                         )
                 );
     }
@@ -1136,9 +1115,10 @@ public class ChatListActivity extends AppCompatActivity {
 
 
                             long timestamp =
-                                    time != null
-                                            ? time
-                                            : 0L;
+                                    Objects.requireNonNullElse(
+                                            time,
+                                            0L
+                                    );
 
 
                             ChatItem chatItem =
@@ -1381,7 +1361,8 @@ public class ChatListActivity extends AppCompatActivity {
         ) {
 
             if (
-                    currentUid.equals(
+                    Objects.equals(
+                            currentUid,
                             senderId
                     )
             ) {
@@ -1391,7 +1372,8 @@ public class ChatListActivity extends AppCompatActivity {
 
 
             if (
-                    currentUid.equals(
+                    Objects.equals(
+                            currentUid,
                             receiverId
                     )
             ) {
@@ -1414,9 +1396,9 @@ public class ChatListActivity extends AppCompatActivity {
         if (
                 parts.length == 2
         ) {
-
             if (
-                    currentUid.equals(
+                    Objects.equals(
+                            currentUid,
                             parts[0]
                     )
             ) {
@@ -1426,7 +1408,8 @@ public class ChatListActivity extends AppCompatActivity {
 
 
             if (
-                    currentUid.equals(
+                    Objects.equals(
+                            currentUid,
                             parts[1]
                     )
             ) {
@@ -1478,22 +1461,12 @@ public class ChatListActivity extends AppCompatActivity {
 
     private void sortChats() {
 
-        Collections.sort(
-                chatList,
-                new Comparator<ChatItem>() {
-
-                    @Override
-                    public int compare(
-                            ChatItem first,
-                            ChatItem second
-                    ) {
-
-                        return Long.compare(
+        chatList.sort(
+                (first, second) ->
+                        Long.compare(
                                 second.getLastMessageTime(),
                                 first.getLastMessageTime()
-                        );
-                    }
-                }
+                        )
         );
     }
 
@@ -1632,7 +1605,8 @@ public class ChatListActivity extends AppCompatActivity {
 
 
                             if (
-                                    uid.equals(
+                                    Objects.equals(
+                                            uid,
                                             currentUid
                                     )
                             ) {

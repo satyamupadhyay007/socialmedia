@@ -14,6 +14,9 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.cloudinary.android.MediaManager;
@@ -34,6 +37,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private Button btnSave;
 
     private EditText editName;
+    private EditText editUsername;
     private EditText editBio;
 
     private ProgressBar progressBar;
@@ -67,7 +71,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                         EditProfileActivity.this
                                 )
                                 .load(uri)
-                                .centerCrop()
+                                .circleCrop()
                                 .into(imgEditProfile);
                     }
             );
@@ -87,6 +91,19 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(
                 R.layout.activity_edit_profile
         );
+
+        // System Bar Insets for Responsive Edge-To-Edge
+        View root = findViewById(R.id.editProfileRoot);
+        if (root != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                Insets bars = insets.getInsets(
+                        WindowInsetsCompat.Type.systemBars()
+                                | WindowInsetsCompat.Type.displayCutout()
+                );
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                return insets;
+            });
+        }
 
 
         // ==================================================
@@ -127,6 +144,9 @@ public class EditProfileActivity extends AppCompatActivity {
         editName =
                 findViewById(R.id.editName);
 
+        editUsername =
+                findViewById(R.id.editUsername);
+
         editBio =
                 findViewById(R.id.editBio);
 
@@ -145,28 +165,33 @@ public class EditProfileActivity extends AppCompatActivity {
         // BACK
         // ==================================================
 
-        btnBack.setOnClickListener(
-                v -> finish()
-        );
+        if (btnBack != null) {
+            btnBack.setOnClickListener(
+                    v -> finish()
+            );
+        }
 
 
         // ==================================================
         // CHANGE PHOTO
         // ==================================================
 
-        btnChangePhoto.setOnClickListener(
-                v ->
-                        imagePicker.launch("image/*")
-        );
+        if (btnChangePhoto != null) {
+            btnChangePhoto.setOnClickListener(
+                    v -> imagePicker.launch("image/*")
+            );
+        }
 
 
         // ==================================================
         // SAVE
         // ==================================================
 
-        btnSave.setOnClickListener(
-                v -> saveProfile()
-        );
+        if (btnSave != null) {
+            btnSave.setOnClickListener(
+                    v -> saveProfile()
+            );
+        }
     }
 
 
@@ -194,6 +219,15 @@ public class EditProfileActivity extends AppCompatActivity {
                         editName.setText(name);
                     }
 
+                    String primaryHandle = document.getString("userId");
+                    String username = (primaryHandle != null && !primaryHandle.isEmpty())
+                            ? primaryHandle
+                            : document.getString("username");
+
+                    if (username != null) {
+                        editUsername.setText(username);
+                    }
+
 
                     String bio =
                             document.getString("bio");
@@ -216,7 +250,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                         EditProfileActivity.this
                                 )
                                 .load(profileImage)
-                                .centerCrop()
+                                .circleCrop()
                                 .into(imgEditProfile);
                     }
 
@@ -244,6 +278,14 @@ public class EditProfileActivity extends AppCompatActivity {
                         .toString()
                         .trim();
 
+        String rawUsername =
+                editUsername
+                        .getText()
+                        .toString()
+                        .trim();
+
+        String username = rawUsername.contains(" ") ? rawUsername.replaceAll("\\s+", "_") : rawUsername;
+
         String bio =
                 editBio
                         .getText()
@@ -260,6 +302,16 @@ public class EditProfileActivity extends AppCompatActivity {
             editName.requestFocus();
 
             return;
+        }
+
+        if (username.length() > 30) {
+            editUsername.setError("Maximum 30 characters");
+            editUsername.requestFocus();
+            return;
+        }
+
+        if (!java.util.Objects.equals(username, rawUsername)) {
+            editUsername.setText(username);
         }
 
 
@@ -283,6 +335,7 @@ public class EditProfileActivity extends AppCompatActivity {
             uploadPhoto(
                     selectedImageUri,
                     name,
+                    username,
                     bio
             );
 
@@ -290,6 +343,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
             saveToFirestore(
                     name,
+                    username,
                     bio,
                     null
             );
@@ -304,6 +358,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private void uploadPhoto(
             Uri imageUri,
             String name,
+            String username,
             String bio
     ) {
 
@@ -396,6 +451,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
                                             saveToFirestore(
                                                     name,
+                                                    username,
                                                     bio,
                                                     finalImageUrl
                                             );
@@ -462,6 +518,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void saveToFirestore(
             String name,
+            String username,
             String bio,
             String imageUrl
     ) {
@@ -474,6 +531,11 @@ public class EditProfileActivity extends AppCompatActivity {
                 "name",
                 name
         );
+
+        if (!username.isEmpty()) {
+            data.put("userId", username);
+            data.put("username", username);
+        }
 
 
         data.put(

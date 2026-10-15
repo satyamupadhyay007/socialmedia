@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settingsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
 
     <!-- Top Bar -->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/settingsTopBar"
         android:layout_width="match_parent"
@@ -22,7 +21,7 @@
             android:id="@+id/btnBackSettings"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:background="@android:color/transparent"
             android:contentDescription="Back"
             android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -30,35 +29,32 @@
             android:src="@drawable/ic_arrow_back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Settings"
-            android:textColor="#111111"
+            android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <!-- Settings Options -->
-
+    <!-- Settings Options ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/settingsTopBar"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/settingsTopBar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -66,69 +62,124 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Account -->
             <Button
                 android:id="@+id/btnAccount"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:text="Account"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/settings_item_bg"
+                android:gravity="start|center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="Account &amp; Profile"
                 android:textAllCaps="false"
-                android:gravity="start|center_vertical" />
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:backgroundTint="@null" />
 
+            <!-- Privacy -->
             <Button
                 android:id="@+id/btnPrivacy"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/settings_item_bg"
+                android:gravity="start|center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:text="Privacy"
                 android:textAllCaps="false"
-                android:gravity="start|center_vertical" />
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:backgroundTint="@null" />
 
+            <!-- Security -->
             <Button
                 android:id="@+id/btnSecurity"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:text="Security"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/settings_item_bg"
+                android:gravity="start|center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="Security &amp; Password"
                 android:textAllCaps="false"
-                android:gravity="start|center_vertical" />
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:backgroundTint="@null" />
 
+            <!-- Notifications -->
             <Button
                 android:id="@+id/btnNotifications"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/settings_item_bg"
+                android:gravity="start|center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:text="Notifications"
                 android:textAllCaps="false"
-                android:gravity="start|center_vertical" />
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:backgroundTint="@null" />
 
+            <!-- Help & Support -->
             <Button
                 android:id="@+id/btnHelp"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/settings_item_bg"
+                android:gravity="start|center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:text="Help &amp; Support"
                 android:textAllCaps="false"
-                android:gravity="start|center_vertical" />
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:backgroundTint="@null" />
 
+            <!-- About -->
             <Button
                 android:id="@+id/btnAbout"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:text="About"
+                android:layout_height="56dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/settings_item_bg"
+                android:gravity="start|center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="About Frenzo"
                 android:textAllCaps="false"
-                android:gravity="start|center_vertical" />
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                app:backgroundTint="@null" />
 
+            <!-- Divider -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:background="#DDDDDD" />
+                android:layout_marginBottom="24dp"
+                android:background="#333333" />
 
+            <!-- Log Out -->
             <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="56dp"
+                android:background="@drawable/logout_button_bg"
+                android:gravity="start|center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:text="Log Out"
                 android:textAllCaps="false"
-                android:textColor="#D32F2F"
-                android:gravity="start|center_vertical" />
+                android:textColor="#FF5252"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
 
         </LinearLayout>
 
